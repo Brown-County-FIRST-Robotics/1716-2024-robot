@@ -5,11 +5,16 @@
 
 package frc.robot;
 
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import frc.robot.Constants.OperatorConstants;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import edu.wpi.first.wpilibj.Filesystem;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.util.Scanner;
 
 
 /**
@@ -32,6 +37,42 @@ public class RobotContainer
     {
         // Configure the trigger bindings
         configureBindings();
+    }
+
+    private void postGitData(){
+        File deployDir = Filesystem.getDeployDirectory();
+        File hashFile = new File(deployDir, "git_hash.txt");
+        File statusFile = new File(deployDir, "git_status.txt");
+        File deployerFile = new File(deployDir, "deployer.txt");
+        String hash;
+        String status="";
+        String deployer;
+        try {
+            Scanner reader = new Scanner(hashFile);
+            hash = reader.nextLine();
+            reader.close();
+        } catch (FileNotFoundException e) {
+            hash="Deploy did not send git data";
+        }
+        try {
+            Scanner reader = new Scanner(statusFile);
+            while(reader.hasNext()){
+                status += reader.nextLine();
+            }
+            reader.close();
+        } catch (FileNotFoundException e) {
+            status="Deploy did not send git data";
+        }
+        try {
+            Scanner reader = new Scanner(deployerFile);
+            deployer = reader.nextLine();
+            reader.close();
+        } catch (FileNotFoundException e) {
+            deployer="Unknown deployer";
+        }
+        Shuffleboard.getTab("Deploy Metadata").add("Commit Hash", hash);
+        Shuffleboard.getTab("Deploy Metadata").add("Git Status", status);
+        Shuffleboard.getTab("Deploy Metadata").add("Deployer", deployer);
     }
     
     
