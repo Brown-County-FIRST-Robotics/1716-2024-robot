@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj.Filesystem;
+import org.littletonrobotics.junction.Logger;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -70,9 +71,9 @@ public class RobotContainer
         } catch (FileNotFoundException e) {
             deployer="Unknown deployer";
         }
-        Shuffleboard.getTab("Deploy Metadata").add("Commit Hash", hash);
-        Shuffleboard.getTab("Deploy Metadata").add("Git Status", status);
-        Shuffleboard.getTab("Deploy Metadata").add("Deployer", deployer);
+        Logger.recordMetadata("Commit Hash", hash);
+        Logger.recordMetadata("Git Status", status);
+        Logger.recordMetadata("Deployer", deployer);
     }
     
     
