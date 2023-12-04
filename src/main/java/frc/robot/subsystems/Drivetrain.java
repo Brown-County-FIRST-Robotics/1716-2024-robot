@@ -16,7 +16,8 @@ public interface Drivetrain extends Subsystem {
     Command getDriveToPointCmd(Pose2d pose, double endVelX, double endVelY);
     Command getFollowWaypointsCmd(List<Translation2d> waypoints, Pose2d pose);
     Command getFollowWaypointsCmd(List<Translation2d> waypoints, Pose2d pose, double endVelX, double endVelY);
-    void humanDrive(ChassisSpeeds cmd);
+    void humanDrive(ChassisSpeeds cmd, boolean foc);
+
     Rotation3d getGyro();
     /**
      * Gets the acceleration values from the IMU
