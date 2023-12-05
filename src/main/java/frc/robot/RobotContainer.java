@@ -11,6 +11,11 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj.Filesystem;
+import frc.robot.commands.TeleopDrive;
+import frc.robot.subsystems.Drivetrain;
+import frc.robot.subsystems.IMUIONavx;
+import frc.robot.subsystems.mecanum.MecanumDrivetrain;
+import frc.robot.subsystems.mecanum.MecanumIOSpark;
 import org.littletonrobotics.junction.Logger;
 
 import java.io.File;
@@ -31,11 +36,21 @@ public class RobotContainer
     // Replace with CommandPS4Controller or CommandJoystick if needed
     private final CommandXboxController driverController =
             new CommandXboxController(OperatorConstants.DRIVER_CONTROLLER_PORT);
+    private final Drivetrain driveSys;
     
     
     /** The container for the robot. Contains subsystems, OI devices, and commands. */
     public RobotContainer()
     {
+        switch (WhoAmI.bot){
+            case MECHBASE:
+                driveSys=new MecanumDrivetrain(new MecanumIOSpark(1,2,3,4),new IMUIONavx());
+                break;
+            default:
+                driveSys=new MecanumDrivetrain(new MecanumIOSpark(1,2,3,4),new IMUIONavx());
+        }
+
+        driveSys.setDefaultCommand(new TeleopDrive(driveSys, driverController));
         // Configure the trigger bindings
         configureBindings();
     }

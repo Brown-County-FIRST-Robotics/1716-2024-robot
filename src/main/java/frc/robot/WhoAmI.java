@@ -1,8 +1,8 @@
 package frc.robot;
 
 public final class WhoAmI {
-  final Mode mode=Mode.REAL;
-  final RobotType bot=RobotType.SWERVEBASE;
+  public static final Mode mode=Mode.REAL;
+  public static final RobotType bot=RobotType.MECHBASE;
   final Appendages[] appendages={};
   public static enum RobotType {
     MECHBASE, SWERVEBASE

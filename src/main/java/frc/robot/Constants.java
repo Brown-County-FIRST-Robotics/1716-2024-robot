@@ -42,6 +42,13 @@ public final class Constants
     public static final double MAX_ACCELERATION = 3;
   }
 
+  public static final class Driver {
+    public static final double MAX_X_SPEED = 4;
+    public static final double MAX_Y_SPEED = 4;
+    public static final double MAX_THETA_SPEED = 6;
+  }
+
+
 
   public static final Pose2d INIT_POSE = new Pose2d(0, 0, Rotation2d.fromDegrees(180));
   public static final Pose2d RED_INIT_POSE = new Pose2d(0, 0, Rotation2d.fromDegrees(180));
