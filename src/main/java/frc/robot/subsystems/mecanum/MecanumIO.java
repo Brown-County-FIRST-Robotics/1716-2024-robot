@@ -7,11 +7,14 @@ import org.littletonrobotics.junction.AutoLog;
 public interface MecanumIO {
   @AutoLog
   public static class MecanumIOInputs{
-    MecanumDriveWheelPositions pos=new MecanumDriveWheelPositions();
     double flTemp=0;
+    double flPos=0;
     double frTemp=0;
+    double frPos=0;
     double blTemp=0;
+    double blPos=0;
     double brTemp=0;
+    double brPos=0;
   }
 
   public default void setSpeeds(MecanumDriveWheelSpeeds cmd) {}

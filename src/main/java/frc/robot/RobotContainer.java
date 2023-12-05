@@ -5,6 +5,7 @@
 
 package frc.robot;
 
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import frc.robot.Constants.OperatorConstants;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -49,10 +50,14 @@ public class RobotContainer
             default:
                 driveSys=new MecanumDrivetrain(new MecanumIOSpark(1,2,3,4),new IMUIONavx());
         }
-
+        useAlliance();
         driveSys.setDefaultCommand(new TeleopDrive(driveSys, driverController));
+
         // Configure the trigger bindings
         configureBindings();
+    }
+    public void useAlliance(){
+           driveSys.setPosition(DriverStation.getAlliance()== DriverStation.Alliance.Blue?Constants.BLUE_INIT_POSE:Constants.RED_INIT_POSE);
     }
 
     private void postGitData(){

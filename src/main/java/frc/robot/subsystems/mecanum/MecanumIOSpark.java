@@ -29,13 +29,13 @@ public class MecanumIOSpark implements MecanumIO{
 
   public MecanumIOSpark(int flID, int frID, int blID, int brID) {
     fl = new CANSparkMax(flID, CANSparkMaxLowLevel.MotorType.kBrushless);
-    brEncoder = fl.getEncoder();
+    flEncoder = fl.getEncoder();
     flPID = fl.getPIDController();
     fr = new CANSparkMax(frID, CANSparkMaxLowLevel.MotorType.kBrushless);
-    brEncoder = fr.getEncoder();
+    frEncoder = fr.getEncoder();
     frPID = fr.getPIDController();
     bl = new CANSparkMax(blID, CANSparkMaxLowLevel.MotorType.kBrushless);
-    brEncoder = bl.getEncoder();
+    blEncoder = bl.getEncoder();
     blPID = bl.getPIDController();
     br = new CANSparkMax(brID, CANSparkMaxLowLevel.MotorType.kBrushless);
     brEncoder = br.getEncoder();
@@ -54,6 +54,28 @@ public class MecanumIOSpark implements MecanumIO{
     blPID.setOutputRange(-1,1);
     brPID.setFeedbackDevice(brEncoder);
     brPID.setOutputRange(-1,1);
+      flPID.setFF(ffTuner.get());
+      frPID.setFF(ffTuner.get());
+      blPID.setFF(ffTuner.get());
+      brPID.setFF(ffTuner.get());
+//    }
+      flPID.setP(pTuner.get());
+      frPID.setP(pTuner.get());
+      blPID.setP(pTuner.get());
+      brPID.setP(pTuner.get());
+//    }
+//    if(iTuner.hasChanged()){
+      flPID.setI(iTuner.get());
+      frPID.setI(iTuner.get());
+      blPID.setI(iTuner.get());
+      brPID.setI(iTuner.get());
+//    }
+//    if(dTuner.hasChanged()){
+      flPID.setD(dTuner.get());
+      frPID.setD(dTuner.get());
+      blPID.setD(dTuner.get());
+      brPID.setD(dTuner.get());
+//    }
     reconfigure();
     fl.burnFlash();
     fr.burnFlash();
@@ -72,6 +94,7 @@ public class MecanumIOSpark implements MecanumIO{
 
   @Override
   public void reconfigure() {
+/*
     if(ffTuner.hasChanged()){
       flPID.setFF(ffTuner.get());
       frPID.setFF(ffTuner.get());
@@ -96,6 +119,7 @@ public class MecanumIOSpark implements MecanumIO{
       blPID.setD(ffTuner.get());
       brPID.setD(ffTuner.get());
     }
+*/
   }
 
   @Override
@@ -104,10 +128,9 @@ public class MecanumIOSpark implements MecanumIO{
     inputs.frTemp=fr.getMotorTemperature();
     inputs.blTemp=bl.getMotorTemperature();
     inputs.brTemp=br.getMotorTemperature();
-    inputs.pos=new MecanumDriveWheelPositions(
-            flEncoder.getPosition()*EFFECTIVE_WHEEL_DIAMETER,
-            frEncoder.getPosition()*EFFECTIVE_WHEEL_DIAMETER,
-            blEncoder.getPosition()*EFFECTIVE_WHEEL_DIAMETER,
-            brEncoder.getPosition()*EFFECTIVE_WHEEL_DIAMETER);
+            inputs.flPos=flEncoder.getPosition()*EFFECTIVE_WHEEL_DIAMETER;
+            inputs.frPos=frEncoder.getPosition()*EFFECTIVE_WHEEL_DIAMETER;
+            inputs.blPos=blEncoder.getPosition()*EFFECTIVE_WHEEL_DIAMETER;
+            inputs.brPos=brEncoder.getPosition()*EFFECTIVE_WHEEL_DIAMETER;
   }
 }

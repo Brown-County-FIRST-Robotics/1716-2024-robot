@@ -6,10 +6,8 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.math.kinematics.MecanumDriveKinematics;
-import edu.wpi.first.math.kinematics.MecanumDriveWheelSpeeds;
-import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.math.kinematics.*;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants;
 import frc.robot.subsystems.Drivetrain;
@@ -38,7 +36,7 @@ public class MecanumDrivetrain implements Drivetrain {
     imu.updateInputs(imuInputs);
     Logger.getInstance().processInputs("Drive/MecanumInputs", driveInputs);
     Logger.getInstance().processInputs("Drive/IMU", imuInputs);
-    poseEstimator=new MecanumDrivePoseEstimator(KINEMATICS, Rotation2d.fromDegrees(imuInputs.yaw),driveInputs.pos, Constants.INIT_POSE);
+    poseEstimator=new MecanumDrivePoseEstimator(KINEMATICS, Rotation2d.fromDegrees(imuInputs.yaw),new MecanumDriveWheelPositions(driveInputs.flPos,driveInputs.frPos,driveInputs.blPos,driveInputs.brPos), Constants.INIT_POSE);
   }
 
   @Override
@@ -47,7 +45,8 @@ public class MecanumDrivetrain implements Drivetrain {
     imu.updateInputs(imuInputs);
     Logger.getInstance().processInputs("Drive/MecanumInputs", driveInputs);
     Logger.getInstance().processInputs("Drive/IMU", imuInputs);
-    poseEstimator.update(Rotation2d.fromDegrees(imuInputs.yaw),driveInputs.pos);
+    Logger.getInstance().recordOutput("Drive/Pose", getPosition());
+    poseEstimator.update(Rotation2d.fromDegrees(imuInputs.yaw),new MecanumDriveWheelPositions(driveInputs.flPos,driveInputs.frPos,driveInputs.blPos,driveInputs.brPos));
   }
   @Override
   public Pose2d getPosition() {
@@ -56,7 +55,7 @@ public class MecanumDrivetrain implements Drivetrain {
 
   @Override
   public void setPosition(Pose2d newPose) {
-    poseEstimator.resetPosition(Rotation2d.fromDegrees(imuInputs.yaw),driveInputs.pos,newPose);
+    poseEstimator.resetPosition(Rotation2d.fromDegrees(imuInputs.yaw),new MecanumDriveWheelPositions(driveInputs.flPos,driveInputs.frPos,driveInputs.blPos,driveInputs.brPos),newPose);
   }
 
   @Override
@@ -83,7 +82,8 @@ public class MecanumDrivetrain implements Drivetrain {
   public void humanDrive(ChassisSpeeds cmd, boolean foc) {
     ChassisSpeeds sp=new ChassisSpeeds(-cmd.vxMetersPerSecond, -cmd.vyMetersPerSecond, -cmd.omegaRadiansPerSecond);
     if (foc) {
-      sp = ChassisSpeeds.fromFieldRelativeSpeeds(sp, getPosition().getRotation().unaryMinus());
+      Rotation2d rot= DriverStation.getAlliance()== DriverStation.Alliance.Red ?getPosition().getRotation():getPosition().getRotation().rotateBy(Rotation2d.fromRotations(0.5));
+      sp = ChassisSpeeds.fromFieldRelativeSpeeds(new ChassisSpeeds(cmd.vxMetersPerSecond, cmd.vyMetersPerSecond, -cmd.omegaRadiansPerSecond), rot);
     }
     MecanumDriveWheelSpeeds speeds = KINEMATICS.toWheelSpeeds(sp);
     drive.setSpeeds(speeds);

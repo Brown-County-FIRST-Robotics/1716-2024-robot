@@ -51,6 +51,6 @@ public final class Constants
 
 
   public static final Pose2d INIT_POSE = new Pose2d(0, 0, Rotation2d.fromDegrees(180));
-  public static final Pose2d RED_INIT_POSE = new Pose2d(0, 0, Rotation2d.fromDegrees(180));
+  public static final Pose2d RED_INIT_POSE = new Pose2d(0, 0, Rotation2d.fromDegrees(0));
   public static final Pose2d BLUE_INIT_POSE = new Pose2d(0, 0, Rotation2d.fromDegrees(180));
 }

@@ -39,9 +39,8 @@ public class TeleopDrive extends CommandBase {
   public void execute() {
     if (deadband(controller.getLeftY())
         && deadband(controller.getLeftX())
-        && deadband(controller.getRightX())
-        && !locked) {
-      drivetrain.humanDrive(new ChassisSpeeds(), false);
+        && deadband(controller.getRightX())) {
+      drivetrain.humanDrive(new ChassisSpeeds(0,0,0), false);
 
     } else {
       locked = false;
@@ -56,7 +55,6 @@ public class TeleopDrive extends CommandBase {
               * Math.abs(controller.getRightX())
               * Constants.Driver.MAX_THETA_SPEED),
           foc);
-      foc = controller.getHID().getStartButtonPressed() != foc;
     }
     if (controller.getHID().getBackButtonPressed()) {
       drivetrain.setPosition(
@@ -65,6 +63,8 @@ public class TeleopDrive extends CommandBase {
     if (controller.getHID().getXButtonPressed()) {
       locked = true;
     }
+          foc = controller.getHID().getStartButtonPressed() != foc;
+
 
 
     Logger.getInstance().recordOutput("TeleopDrive/locked", locked);
