@@ -54,28 +54,6 @@ public class MecanumIOSpark implements MecanumIO{
     blPID.setOutputRange(-1,1);
     brPID.setFeedbackDevice(brEncoder);
     brPID.setOutputRange(-1,1);
-      flPID.setFF(ffTuner.get());
-      frPID.setFF(ffTuner.get());
-      blPID.setFF(ffTuner.get());
-      brPID.setFF(ffTuner.get());
-//    }
-      flPID.setP(pTuner.get());
-      frPID.setP(pTuner.get());
-      blPID.setP(pTuner.get());
-      brPID.setP(pTuner.get());
-//    }
-//    if(iTuner.hasChanged()){
-      flPID.setI(iTuner.get());
-      frPID.setI(iTuner.get());
-      blPID.setI(iTuner.get());
-      brPID.setI(iTuner.get());
-//    }
-//    if(dTuner.hasChanged()){
-      flPID.setD(dTuner.get());
-      frPID.setD(dTuner.get());
-      blPID.setD(dTuner.get());
-      brPID.setD(dTuner.get());
-//    }
     reconfigure();
     fl.burnFlash();
     fr.burnFlash();
@@ -94,7 +72,7 @@ public class MecanumIOSpark implements MecanumIO{
 
   @Override
   public void reconfigure() {
-/*
+
     if(ffTuner.hasChanged()){
       flPID.setFF(ffTuner.get());
       frPID.setFF(ffTuner.get());
@@ -102,24 +80,24 @@ public class MecanumIOSpark implements MecanumIO{
       brPID.setFF(ffTuner.get());
     }
     if(pTuner.hasChanged()){
-      flPID.setP(ffTuner.get());
-      frPID.setP(ffTuner.get());
-      blPID.setP(ffTuner.get());
-      brPID.setP(ffTuner.get());
+      flPID.setP(pTuner.get());
+      frPID.setP(pTuner.get());
+      blPID.setP(pTuner.get());
+      brPID.setP(pTuner.get());
     }
     if(iTuner.hasChanged()){
-      flPID.setI(ffTuner.get());
-      frPID.setI(ffTuner.get());
-      blPID.setI(ffTuner.get());
-      brPID.setI(ffTuner.get());
+      flPID.setI(iTuner.get());
+      frPID.setI(iTuner.get());
+      blPID.setI(iTuner.get());
+      brPID.setI(iTuner.get());
     }
     if(dTuner.hasChanged()){
-      flPID.setD(ffTuner.get());
-      frPID.setD(ffTuner.get());
-      blPID.setD(ffTuner.get());
-      brPID.setD(ffTuner.get());
+      flPID.setD(dTuner.get());
+      frPID.setD(dTuner.get());
+      blPID.setD(dTuner.get());
+      brPID.setD(dTuner.get());
     }
-*/
+
   }
 
   @Override
