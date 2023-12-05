@@ -36,8 +36,8 @@ public class MecanumDrivetrain implements Drivetrain {
     this.imu = imu;
     drive.updateInputs(driveInputs);
     imu.updateInputs(imuInputs);
-    Logger.processInputs("Drive/MecanumInputs", driveInputs);
-    Logger.processInputs("Drive/IMU", imuInputs);
+    Logger.getInstance().processInputs("Drive/MecanumInputs", driveInputs);
+    Logger.getInstance().processInputs("Drive/IMU", imuInputs);
     poseEstimator=new MecanumDrivePoseEstimator(KINEMATICS, Rotation2d.fromDegrees(imuInputs.yaw),driveInputs.pos, Constants.INIT_POSE);
   }
 
@@ -45,8 +45,8 @@ public class MecanumDrivetrain implements Drivetrain {
   public void periodic(){
     drive.updateInputs(driveInputs);
     imu.updateInputs(imuInputs);
-    Logger.processInputs("Drive/MecanumInputs", driveInputs);
-    Logger.processInputs("Drive/IMU", imuInputs);
+    Logger.getInstance().processInputs("Drive/MecanumInputs", driveInputs);
+    Logger.getInstance().processInputs("Drive/IMU", imuInputs);
     poseEstimator.update(Rotation2d.fromDegrees(imuInputs.yaw),driveInputs.pos);
   }
   @Override

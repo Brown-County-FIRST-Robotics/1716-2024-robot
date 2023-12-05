@@ -86,9 +86,9 @@ public class RobotContainer
         } catch (FileNotFoundException e) {
             deployer="Unknown deployer";
         }
-        Logger.recordMetadata("Commit Hash", hash);
-        Logger.recordMetadata("Git Status", status);
-        Logger.recordMetadata("Deployer", deployer);
+        Logger.getInstance().recordMetadata("Commit Hash", hash);
+        Logger.getInstance().recordMetadata("Git Status", status);
+        Logger.getInstance().recordMetadata("Deployer", deployer);
     }
     
     

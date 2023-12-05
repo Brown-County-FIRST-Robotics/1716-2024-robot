@@ -1,12 +1,12 @@
 plugins {
     id "java"
-    id "edu.wpi.first.GradleRIO" version "2024.1.1-beta-3"
+    id "edu.wpi.first.GradleRIO" version "2023.4.3"
+    id 'com.diffplug.spotless' version '6.12.0'
+    id "com.peterabeles.gversion" version "1.10"
 }
 
-java {
-    sourceCompatibility = JavaVersion.VERSION_17
-    targetCompatibility = JavaVersion.VERSION_17
-}
+sourceCompatibility = JavaVersion.VERSION_11
+targetCompatibility = JavaVersion.VERSION_11
 
 def ROBOT_MAIN_CLASS = "frc.robot.Main"
 
@@ -27,6 +27,8 @@ deploy {
                 // getTargetTypeClass is a shortcut to get the class type using a string
 
                 frcJava(getArtifactTypeClass('FRCJavaArtifact')) {
+                    gcType = edu.wpi.first.gradlerio.deploy.roborio.GarbageCollectorType.Other
+                    jvmArgs << '-XX:+UseG1GC'
                 }
 
                 // Static files artifact
@@ -63,12 +65,6 @@ configurations.all {
     exclude group: "edu.wpi.first.wpilibj"
 }
 
-task(checkAkitInstall, dependsOn: "classes", type: JavaExec) {
-    mainClass = "org.littletonrobotics.junction.CheckInstall"
-    classpath = sourceSets.main.runtimeClasspath
-}
-compileJava.finalizedBy checkAkitInstall
-
 // Defining my dependencies. In this case, WPILib (+ friends), and vendor libraries.
 // Also defines JUnit 4.
 dependencies {
@@ -89,11 +85,9 @@ dependencies {
     nativeRelease wpi.java.vendor.jniRelease(wpi.platforms.desktop)
     simulationRelease wpi.sim.enableRelease()
 
-    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.2'
-    testImplementation 'org.junit.jupiter:junit-jupiter-params:5.8.2'
-    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.2'
-
-    implementation "gov.nist.math:jama:1.0.3"
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.4.2'
+    testImplementation 'org.junit.jupiter:junit-jupiter-params:5.4.2'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.4.2'
 
     def akitJson = new groovy.json.JsonSlurper().parseText(new File(projectDir.getAbsolutePath() + "/vendordeps/AdvantageKit.json").text)
     annotationProcessor "org.littletonrobotics.akit.junction:junction-autolog:$akitJson.version"
@@ -113,7 +107,6 @@ wpi.sim.addDriverstation()
 // knows where to look for our Robot Class.
 jar {
     from { configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) } }
-    from sourceSets.main.allSource
     manifest edu.wpi.first.gradlerio.GradleRIOPlugin.javaManifest(ROBOT_MAIN_CLASS)
     duplicatesStrategy = DuplicatesStrategy.INCLUDE
 }
@@ -128,50 +121,4 @@ tasks.withType(JavaCompile) {
     options.compilerArgs.add '-XDstringConcat=inline'
 }
 
-tasks.register("writeGitData") {
-    // Define an output stream to write to instead of terminal
-    def hashstdout = new ByteArrayOutputStream()
-    def diffstdout = new ByteArrayOutputStream()
-    def userstdout = new ByteArrayOutputStream()
 
-
-    // Execute the git command
-    exec {
-        commandLine "git", "rev-parse", "--short", "HEAD"
-        // Write to the output stream instead of terminal
-        standardOutput = hashstdout
-    }
-    exec {
-        commandLine "git", "status", "-v", "-v"
-        // Write to the output stream instead of terminal
-        standardOutput = diffstdout
-    }
-    exec {
-        commandLine "git", "config", "--get", "user.name"
-        // Write to the output stream instead of terminal
-        standardOutput = userstdout
-    }
-
-    // Create a new file
-    new File(
-            // Join project directory and deploy directory
-            projectDir.toString() + "/src/main/deploy",
-            // File name to write to
-            "git_hash.txt"
-    ).text = hashstdout.toString().trim()
-
-    new File(
-            // Join project directory and deploy directory
-            projectDir.toString() + "/src/main/deploy",
-            // File name to write to
-            "git_status.txt"
-    ).text = diffstdout.toString().trim()
-    new File(
-            // Join project directory and deploy directory
-            projectDir.toString() + "/src/main/deploy",
-            // File name to write to
-            "deployer.txt"
-    ).text = userstdout.toString().trim()
-}
-
-deploy.targets.roborio.artifacts.frcStaticFileDeploy.dependsOn(writeGitData)

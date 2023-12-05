@@ -18,7 +18,6 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.DeferredCommand;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
 import frc.robot.Constants;
@@ -29,6 +28,7 @@ import frc.robot.subsystems.IMUIOInputsAutoLogged;
 import java.util.List;
 import java.util.Set;
 
+import frc.robot.utils.SuppliedCommand;
 import org.littletonrobotics.junction.Logger;
 
 public class SwerveDrivetrain implements Drivetrain {
@@ -86,18 +86,18 @@ public class SwerveDrivetrain implements Drivetrain {
   @Override
   public void periodic() {
     imu.updateInputs(imuInputs);
-    Logger.processInputs("Drive/IMU", imuInputs);
+    Logger.getInstance().processInputs("Drive/IMU", imuInputs);
     fl.updateInputs(flInputs);
     fr.updateInputs(frInputs);
     bl.updateInputs(blInputs);
     br.updateInputs(brInputs);
-    Logger.processInputs("Drive/FL", flInputs);
-    Logger.processInputs("Drive/FR", frInputs);
-    Logger.processInputs("Drive/BL", blInputs);
-    Logger.processInputs("Drive/BR", brInputs);
+    Logger.getInstance().processInputs("Drive/FL", flInputs);
+    Logger.getInstance().processInputs("Drive/FR", frInputs);
+    Logger.getInstance().processInputs("Drive/BL", blInputs);
+    Logger.getInstance().processInputs("Drive/BR", brInputs);
 
     poseEstimator.update(getNavxRotation(), getPositions());
-    Logger.recordOutput("Drive/Pose", getPosition());
+    Logger.getInstance().recordOutput("Drive/Pose", getPosition());
     field.setRobotPose(getPosition());
   }
 
@@ -111,7 +111,7 @@ public class SwerveDrivetrain implements Drivetrain {
 
   public void setModuleStates(SwerveModuleState[] states) {
     SwerveDriveKinematics.desaturateWheelSpeeds(states, MAX_WHEEL_SPEED);
-    Logger.recordOutput("Drive/CmdStates", states);
+    Logger.getInstance().recordOutput("Drive/CmdStates", states);
     fl.setCmdState(states[0]);
     fr.setCmdState(states[1]);
     bl.setCmdState(states[2]);
@@ -151,7 +151,7 @@ public class SwerveDrivetrain implements Drivetrain {
 
   @Override
   public Command getDriveToPointCmd(Pose2d pose, double endVelX, double endVelY) {
-    return new DeferredCommand(
+    return new SuppliedCommand(
         () -> {
           TrajectoryConfig conf =
               new TrajectoryConfig(Constants.Auto.MAX_VELOCITY, Constants.Auto.MAX_ACCELERATION).setEndVelocity(Math.hypot(endVelX,endVelY));
@@ -160,7 +160,7 @@ public class SwerveDrivetrain implements Drivetrain {
               TrajectoryGenerator.generateTrajectory(getPosition(), List.of(), pose, conf);
           return makeTrajectoryCommand(trajectory);
         },
-        Set.of(this));
+        this);
   }
 
   @Override
@@ -170,7 +170,7 @@ public class SwerveDrivetrain implements Drivetrain {
 
   @Override
   public Command getFollowWaypointsCmd(List<Translation2d> waypoints, Pose2d pose, double endVelX, double endVelY) {
-    return new DeferredCommand(
+    return new SuppliedCommand(
             () -> {
               TrajectoryConfig conf =
                       new TrajectoryConfig(Constants.Auto.MAX_VELOCITY, Constants.Auto.MAX_ACCELERATION).setEndVelocity(Math.hypot(endVelX,endVelY));
@@ -182,7 +182,7 @@ public class SwerveDrivetrain implements Drivetrain {
                               pose,
                               conf);
               return makeTrajectoryCommand(trajectory);
-            },Set.of(this));
+            },this);
   }
 
 
