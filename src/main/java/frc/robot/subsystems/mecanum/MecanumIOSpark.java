@@ -7,6 +7,7 @@ import com.revrobotics.SparkMaxPIDController;
 import edu.wpi.first.math.kinematics.MecanumDriveWheelPositions;
 import edu.wpi.first.math.kinematics.MecanumDriveWheelSpeeds;
 import frc.robot.utils.LoggedTunableNumber;
+import org.littletonrobotics.junction.Logger;
 
 public class MecanumIOSpark implements MecanumIO{
   public static final double EFFECTIVE_WHEEL_DIAMETER=0.05411255411255412;
@@ -59,6 +60,10 @@ public class MecanumIOSpark implements MecanumIO{
     fr.burnFlash();
     bl.burnFlash();
     br.burnFlash();
+    Logger.getInstance().recordMetadata("FLFW",fl.getFirmwareString());
+    Logger.getInstance().recordMetadata("FRFW",fr.getFirmwareString());
+    Logger.getInstance().recordMetadata("BLFW",bl.getFirmwareString());
+    Logger.getInstance().recordMetadata("BRFW",br.getFirmwareString());
   }
 
   @Override

@@ -1,5 +1,6 @@
 package frc.robot;
 
+import edu.wpi.first.hal.HALUtil;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -68,7 +69,7 @@ public class Robot extends LoggedRobot {
         Logger.getInstance().recordMetadata("Git Status", status);
         Logger.getInstance().recordMetadata("Deployer", deployer);
                 Logger.getInstance().recordMetadata("Bot", String.valueOf(WhoAmI.bot));
-
+        Logger.getInstance().recordMetadata("SN",HALUtil.getSerialNumber());
 
         // Running on a real robot, log to a USB stick
         Logger.getInstance().addDataReceiver(new WPILOGWriter("/home/lvuser/"));
