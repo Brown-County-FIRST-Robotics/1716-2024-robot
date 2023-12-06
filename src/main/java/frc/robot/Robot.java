@@ -1,6 +1,7 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import org.littletonrobotics.junction.LogFileUtil;
@@ -9,6 +10,10 @@ import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.NT4Publisher;
 import org.littletonrobotics.junction.wpilog.WPILOGReader;
 import org.littletonrobotics.junction.wpilog.WPILOGWriter;
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.util.Scanner;
 
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
@@ -28,7 +33,42 @@ public class Robot extends LoggedRobot {
   @Override
   public void robotInit() {
     // Record metadata
-    Logger.getInstance().recordMetadata("ProjectName", "Swervebase");
+    Logger.getInstance().recordMetadata("ProjectName", "2024");
+            File deployDir = Filesystem.getDeployDirectory();
+        File hashFile = new File(deployDir, "git_hash.txt");
+        File statusFile = new File(deployDir, "git_status.txt");
+        File deployerFile = new File(deployDir, "deployer.txt");
+        String hash;
+        String status="";
+        String deployer;
+        try {
+            Scanner reader = new Scanner(hashFile);
+            hash = reader.nextLine();
+            reader.close();
+        } catch (FileNotFoundException e) {
+            hash="Deploy did not send git data";
+        }
+        try {
+            Scanner reader = new Scanner(statusFile);
+            while(reader.hasNext()){
+                status += reader.nextLine();
+            }
+            reader.close();
+        } catch (FileNotFoundException e) {
+            status="Deploy did not send git data";
+        }
+        try {
+            Scanner reader = new Scanner(deployerFile);
+            deployer = reader.nextLine();
+            reader.close();
+        } catch (FileNotFoundException e) {
+            deployer="Unknown deployer";
+        }
+        Logger.getInstance().recordMetadata("Commit Hash", hash);
+        Logger.getInstance().recordMetadata("Git Status", status);
+        Logger.getInstance().recordMetadata("Deployer", deployer);
+                Logger.getInstance().recordMetadata("Bot", String.valueOf(WhoAmI.bot));
+
 
         // Running on a real robot, log to a USB stick
         Logger.getInstance().addDataReceiver(new WPILOGWriter("/home/lvuser/"));

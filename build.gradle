@@ -122,3 +122,51 @@ tasks.withType(JavaCompile) {
 }
 
 
+
+tasks.register("writeGitData") {
+    // Define an output stream to write to instead of terminal
+    def hashstdout = new ByteArrayOutputStream()
+    def diffstdout = new ByteArrayOutputStream()
+    def userstdout = new ByteArrayOutputStream()
+
+
+    // Execute the git command
+    exec {
+        commandLine "git", "rev-parse", "--short", "HEAD"
+        // Write to the output stream instead of terminal
+        standardOutput = hashstdout
+    }
+    exec {
+        commandLine "git", "status", "-v", "-v"
+        // Write to the output stream instead of terminal
+        standardOutput = diffstdout
+    }
+    exec {
+        commandLine "git", "config", "--get", "user.name"
+        // Write to the output stream instead of terminal
+        standardOutput = userstdout
+    }
+
+    // Create a new file
+    new File(
+            // Join project directory and deploy directory
+            projectDir.toString() + "/src/main/deploy",
+            // File name to write to
+            "git_hash.txt"
+    ).text = hashstdout.toString().trim()
+
+    new File(
+            // Join project directory and deploy directory
+            projectDir.toString() + "/src/main/deploy",
+            // File name to write to
+            "git_status.txt"
+    ).text = diffstdout.toString().trim()
+    new File(
+            // Join project directory and deploy directory
+            projectDir.toString() + "/src/main/deploy",
+            // File name to write to
+            "deployer.txt"
+    ).text = userstdout.toString().trim()
+}
+
+deploy.targets.roborio.artifacts.frcStaticFileDeploy.dependsOn(writeGitData)

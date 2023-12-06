@@ -62,41 +62,7 @@ public class RobotContainer
            driveSys.setPosition(DriverStation.getAlliance()== DriverStation.Alliance.Blue?Constants.BLUE_INIT_POSE:Constants.RED_INIT_POSE);
     }
 
-    private void postGitData(){
-        File deployDir = Filesystem.getDeployDirectory();
-        File hashFile = new File(deployDir, "git_hash.txt");
-        File statusFile = new File(deployDir, "git_status.txt");
-        File deployerFile = new File(deployDir, "deployer.txt");
-        String hash;
-        String status="";
-        String deployer;
-        try {
-            Scanner reader = new Scanner(hashFile);
-            hash = reader.nextLine();
-            reader.close();
-        } catch (FileNotFoundException e) {
-            hash="Deploy did not send git data";
-        }
-        try {
-            Scanner reader = new Scanner(statusFile);
-            while(reader.hasNext()){
-                status += reader.nextLine();
-            }
-            reader.close();
-        } catch (FileNotFoundException e) {
-            status="Deploy did not send git data";
-        }
-        try {
-            Scanner reader = new Scanner(deployerFile);
-            deployer = reader.nextLine();
-            reader.close();
-        } catch (FileNotFoundException e) {
-            deployer="Unknown deployer";
-        }
-        Logger.getInstance().recordMetadata("Commit Hash", hash);
-        Logger.getInstance().recordMetadata("Git Status", status);
-        Logger.getInstance().recordMetadata("Deployer", deployer);
-    }
+
     
     
     /**
