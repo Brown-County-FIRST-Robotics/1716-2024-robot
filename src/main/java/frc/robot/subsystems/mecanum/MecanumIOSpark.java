@@ -22,7 +22,7 @@ public class MecanumIOSpark implements MecanumIO{
   SparkMaxPIDController frPID;
   SparkMaxPIDController blPID;
   SparkMaxPIDController brPID;
-  LoggedTunableNumber ffTuner = new LoggedTunableNumber("Mecanum FF", 1.0/6500); // TODO: calculate
+  LoggedTunableNumber ffTuner = new LoggedTunableNumber("Mecanum FF", 1.0/6500);
   LoggedTunableNumber pTuner = new LoggedTunableNumber("Mecanum P", 0);
   LoggedTunableNumber iTuner = new LoggedTunableNumber("Mecanum I", 0);
   LoggedTunableNumber dTuner = new LoggedTunableNumber("Mecanum D", 0);

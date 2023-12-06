@@ -5,6 +5,8 @@
 
 package frc.robot;
 
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import frc.robot.Constants.OperatorConstants;
@@ -120,6 +122,6 @@ public class RobotContainer
     public Command getAutonomousCommand()
     {
         // An example command will be run in autonomous
-        return null;
+        return driveSys.getDriveToPointCmd(new Pose2d(2,0, Rotation2d.fromRotations(0)),0,0);
     }
 }
