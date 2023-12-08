@@ -6,6 +6,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -53,8 +54,11 @@ public class TeleopDrive extends CommandBase {
   @Override
   public void execute() {
      double ext=0;
-      if((drivetrain.getPosition().getRotation().minus(minRot).getRotations()+1.0)%1.0<lockBand.getRotations()){
+      if((drivetrain.getPosition().getRotation().minus(minRot).getRotations()+1.0)%1.0<lockBand.getRotations() && !controller.getHID().getRightStickButtonPressed()){
       ext+=ppc.calculate(drivetrain.getPosition().getRotation().minus(lockRot).getRotations(),0);
+      controller.getHID().setRumble(GenericHID.RumbleType.kRightRumble, 1);
+    }else{
+        controller.getHID().setRumble(GenericHID.RumbleType.kRightRumble, 0);
     }
     Logger.getInstance().recordOutput("TeleopDrive/ext", ext);
 
