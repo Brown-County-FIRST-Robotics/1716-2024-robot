@@ -13,6 +13,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import frc.robot.utils.LoggedTunableNumber;
+import org.littletonrobotics.junction.Logger;
 
 import java.util.Objects;
 
@@ -78,6 +79,9 @@ public class ModuleIOSparkFX implements ModuleIO {
 
     reconfigure();
     steer.burnFlash();
+    Logger.getInstance().recordMetadata(name+"_Steer_FW",steer.getFirmwareString());
+    Logger.getInstance().recordMetadata(name+"_Thrust_FW", String.valueOf(thrust.getFirmwareVersion()));
+    Logger.getInstance().recordMetadata(name+"_Thrust_Name", thrust.getDescription());
   }
 
   @Override
