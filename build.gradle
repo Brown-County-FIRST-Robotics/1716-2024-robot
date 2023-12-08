@@ -125,27 +125,43 @@ tasks.withType(JavaCompile) {
 
 tasks.register("writeGitData") {
     // Define an output stream to write to instead of terminal
-    def hashstdout = new ByteArrayOutputStream()
-    def diffstdout = new ByteArrayOutputStream()
+    def tagnamestdout = new ByteArrayOutputStream()
     def userstdout = new ByteArrayOutputStream()
+    def rawtime= new Date();
+    def mstr=(rawtime.toCalendar().get(Calendar.MONTH)+1).toString()
+    def dstr=rawtime.toCalendar().get(Calendar.DAY_OF_MONTH).toString()
+    def hrstr=rawtime.toCalendar().get(Calendar.HOUR_OF_DAY).toString()
+    def minstr=rawtime.toCalendar().get(Calendar.MINUTE).toString()
+    def secstr=rawtime.toCalendar().get(Calendar.SECOND).toString()
+    def iso8601=rawtime.toCalendar().get(Calendar.YEAR).toString()+(mstr.length()==2?mstr:("0"+mstr))+(dstr.length()==2?dstr:("0"+dstr))+"_"+(hrstr.length()==2?hrstr:("0"+hrstr))+(minstr.length()==2?minstr:("0"+minstr))+(secstr.length()==2?secstr:("0"+secstr))
 
 
-    // Execute the git command
+//     Execute the git command
+    exec {
+        commandLine "git", "add", "."
+    }
+    exec {
+        commandLine "git", "commit", "-m", "Deploy at "+iso8601
+    }
+
+    exec {
+        commandLine "git", "tag", "zzzz_"+iso8601+"_deploy"
+    }
     exec {
         commandLine "git", "rev-parse", "--short", "HEAD"
         // Write to the output stream instead of terminal
-        standardOutput = hashstdout
+        standardOutput = tagnamestdout
     }
     exec {
-        commandLine "git", "status", "-v", "-v"
-        // Write to the output stream instead of terminal
-        standardOutput = diffstdout
+        commandLine "git", "reset", "--soft", "HEAD^1"
     }
+
     exec {
         commandLine "git", "config", "--get", "user.name"
         // Write to the output stream instead of terminal
         standardOutput = userstdout
     }
+
 
     // Create a new file
     new File(
@@ -153,14 +169,9 @@ tasks.register("writeGitData") {
             projectDir.toString() + "/src/main/deploy",
             // File name to write to
             "git_hash.txt"
-    ).text = hashstdout.toString().trim()
+    ).text = tagnamestdout.toString().trim()
 
-    new File(
-            // Join project directory and deploy directory
-            projectDir.toString() + "/src/main/deploy",
-            // File name to write to
-            "git_status.txt"
-    ).text = diffstdout.toString().trim()
+
     new File(
             // Join project directory and deploy directory
             projectDir.toString() + "/src/main/deploy",
