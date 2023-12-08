@@ -15,6 +15,7 @@ import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import edu.wpi.first.math.trajectory.TrajectoryGenerator;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -191,7 +192,8 @@ public class SwerveDrivetrain implements Drivetrain {
   public void humanDrive(ChassisSpeeds cmd, boolean foc) {
     ChassisSpeeds sp=new ChassisSpeeds(-cmd.vxMetersPerSecond, -cmd.vyMetersPerSecond, -cmd.omegaRadiansPerSecond);
     if (foc) {
-      sp = ChassisSpeeds.fromFieldRelativeSpeeds(sp, getPosition().getRotation().unaryMinus());
+      Rotation2d rot= DriverStation.getAlliance()== DriverStation.Alliance.Red ?getPosition().getRotation():getPosition().getRotation().rotateBy(Rotation2d.fromRotations(0.5));
+      sp = ChassisSpeeds.fromFieldRelativeSpeeds(new ChassisSpeeds(cmd.vxMetersPerSecond, cmd.vyMetersPerSecond, -cmd.omegaRadiansPerSecond), rot);
     }
     SwerveModuleState[] states = KINEMATICS.toSwerveModuleStates(sp);
     setModuleStates(states);
