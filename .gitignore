@@ -331,6 +331,5 @@ bin/
 
 # End entries from WPI Lib team
 
-src/main/deploy/git_hash.txt
-src/main/deploy/git_status.txt
+src/main/deploy/git_tag.txt
 src/main/deploy/deployer.txt

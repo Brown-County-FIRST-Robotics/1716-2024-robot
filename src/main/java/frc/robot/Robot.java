@@ -35,28 +35,17 @@ public class Robot extends LoggedRobot {
   public void robotInit() {
     // Record metadata
     Logger.getInstance().recordMetadata("ProjectName", "2024");
-            File deployDir = Filesystem.getDeployDirectory();
-        File hashFile = new File(deployDir, "git_hash.txt");
-        File statusFile = new File(deployDir, "git_status.txt");
+    File deployDir = Filesystem.getDeployDirectory();
+        File tagFile = new File(deployDir, "git_tag.txt");
         File deployerFile = new File(deployDir, "deployer.txt");
-        String hash;
-        String status="";
+        String tagName;
         String deployer;
         try {
-            Scanner reader = new Scanner(hashFile);
-            hash = reader.nextLine();
+            Scanner reader = new Scanner(tagFile);
+            tagName = reader.nextLine();
             reader.close();
         } catch (FileNotFoundException e) {
-            hash="Deploy did not send git data";
-        }
-        try {
-            Scanner reader = new Scanner(statusFile);
-            while(reader.hasNext()){
-                status += reader.nextLine();
-            }
-            reader.close();
-        } catch (FileNotFoundException e) {
-            status="Deploy did not send git data";
+          tagName = "Deploy did not send git data";
         }
         try {
             Scanner reader = new Scanner(deployerFile);
@@ -65,8 +54,7 @@ public class Robot extends LoggedRobot {
         } catch (FileNotFoundException e) {
             deployer="Unknown deployer";
         }
-        Logger.getInstance().recordMetadata("Commit Hash", hash);
-        Logger.getInstance().recordMetadata("Git Status", status);
+        Logger.getInstance().recordMetadata("Tag Name", tagName);
         Logger.getInstance().recordMetadata("Deployer", deployer);
                 Logger.getInstance().recordMetadata("Bot", String.valueOf(WhoAmI.bot));
         Logger.getInstance().recordMetadata("SN",HALUtil.getSerialNumber());
