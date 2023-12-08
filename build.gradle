@@ -135,7 +135,11 @@ tasks.register("writeGitData") {
     def secstr=rawtime.toCalendar().get(Calendar.SECOND).toString()
     def iso8601=rawtime.toCalendar().get(Calendar.YEAR).toString()+(mstr.length()==2?mstr:("0"+mstr))+(dstr.length()==2?dstr:("0"+dstr))+"_"+(hrstr.length()==2?hrstr:("0"+hrstr))+(minstr.length()==2?minstr:("0"+minstr))+(secstr.length()==2?secstr:("0"+secstr))
 
-
+exec {
+        commandLine "git", "config", "--get", "user.name"
+        // Write to the output stream instead of terminal
+        standardOutput = userstdout
+    }
 //     Execute the git command
     exec {
         commandLine "git", "add", "."
@@ -145,22 +149,17 @@ tasks.register("writeGitData") {
     }
 
     exec {
-        commandLine "git", "tag", "zzzz_"+iso8601+"_deploy"
-    }
-    exec {
-        commandLine "git", "rev-parse", "--short", "HEAD"
-        // Write to the output stream instead of terminal
-        standardOutput = tagnamestdout
+        commandLine "git", "tag", "zzzz_"+userstdout.toString().trim()+"_"+iso8601+"_deploy"
     }
     exec {
         commandLine "git", "reset", "--soft", "HEAD^1"
     }
 
     exec {
-        commandLine "git", "config", "--get", "user.name"
-        // Write to the output stream instead of terminal
-        standardOutput = userstdout
+        commandLine "git", "restore", "--staged", "."
     }
+
+
 
 
     // Create a new file
@@ -169,7 +168,11 @@ tasks.register("writeGitData") {
             projectDir.toString() + "/src/main/deploy",
             // File name to write to
             "git_hash.txt"
-    ).text = tagnamestdout.toString().trim()
+    ).text =     "zzzz_"+userstdout.toString().trim()+"_"+iso8601+"_deploy"
+
+
+
+
 
 
     new File(
