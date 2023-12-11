@@ -122,7 +122,8 @@ tasks.withType(JavaCompile) {
 
 
 
-tasks.register("writeGitData") {
+def writeGitData =tasks.create("writeGitData") {
+    doLast(){
     // Define an output stream to write to instead of terminal
     def userstdout = new ByteArrayOutputStream()
     def rawtime= new Date();
@@ -143,7 +144,7 @@ tasks.register("writeGitData") {
         commandLine "git", "add", "."
     }
     exec {
-        commandLine "git", "commit", "-m", "Deploy at "+iso8601
+        commandLine "git", "commit", "--allow-empty", "-m", "Deploy at "+iso8601
     }
     exec {
         commandLine "git", "tag", tagname
