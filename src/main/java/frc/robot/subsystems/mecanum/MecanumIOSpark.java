@@ -83,7 +83,6 @@ public class MecanumIOSpark implements MecanumIO {
 
   @Override
   public void reconfigure() {
-
     if (ffTuner.hasChanged()) {
       flPID.setFF(ffTuner.get());
       frPID.setFF(ffTuner.get());
@@ -120,5 +119,9 @@ public class MecanumIOSpark implements MecanumIO {
     inputs.frPos = frEncoder.getPosition() * EFFECTIVE_WHEEL_DIAMETER;
     inputs.blPos = blEncoder.getPosition() * EFFECTIVE_WHEEL_DIAMETER;
     inputs.brPos = brEncoder.getPosition() * EFFECTIVE_WHEEL_DIAMETER;
+    inputs.flOut = fl.getAppliedOutput();
+    inputs.frOut = fr.getAppliedOutput();
+    inputs.blOut = bl.getAppliedOutput();
+    inputs.brOut = br.getAppliedOutput();
   }
 }

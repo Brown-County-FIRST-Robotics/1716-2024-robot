@@ -14,6 +14,10 @@ public interface MecanumIO {
     double blPos = 0;
     double brTemp = 0;
     double brPos = 0;
+    double flOut = 0;
+    double frOut = 0;
+    double blOut = 0;
+    double brOut = 0;
   }
 
   public default void setSpeeds(MecanumDriveWheelSpeeds cmd) {}
