@@ -4,10 +4,8 @@ import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj.GenericHID;
-import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Constants;
@@ -18,15 +16,16 @@ import org.littletonrobotics.junction.Logger;
 public class TeleopDrive extends CommandBase {
   private final Drivetrain drivetrain;
   private final CommandXboxController controller;
-  private final Rotation2d lockBand=Rotation2d.fromDegrees(20);
-  private final Rotation2d lockRot=Rotation2d.fromDegrees(180);
+  private final Rotation2d lockBand = Rotation2d.fromDegrees(20);
+  private final Rotation2d lockRot = Rotation2d.fromDegrees(180);
 
-  private final Rotation2d minRot=lockRot.rotateBy(lockBand.times(-0.5));
-  private final Rotation2d maxRot=lockRot.rotateBy(lockBand.times(0.5));
-  private final ProfiledPIDController ppc=new ProfiledPIDController(0,0,0,new TrapezoidProfile.Constraints(3,3));
-  LoggedTunableNumber p=new LoggedTunableNumber("drP", -100);
-  LoggedTunableNumber i=new LoggedTunableNumber("drI", 0);
-  LoggedTunableNumber d=new LoggedTunableNumber("drD", 0);
+  private final Rotation2d minRot = lockRot.rotateBy(lockBand.times(-0.5));
+  private final Rotation2d maxRot = lockRot.rotateBy(lockBand.times(0.5));
+  private final ProfiledPIDController ppc =
+      new ProfiledPIDController(0, 0, 0, new TrapezoidProfile.Constraints(3, 3));
+  LoggedTunableNumber p = new LoggedTunableNumber("drP", -100);
+  LoggedTunableNumber i = new LoggedTunableNumber("drI", 0);
+  LoggedTunableNumber d = new LoggedTunableNumber("drD", 0);
   boolean foc = true;
   boolean locked = false;
 
@@ -34,9 +33,9 @@ public class TeleopDrive extends CommandBase {
     this.drivetrain = drivetrain;
     this.controller = controller;
     addRequirements(this.drivetrain);
-          ppc.setP(p.get());
-      ppc.setI(i.get());
-      ppc.setD(d.get());
+    ppc.setP(p.get());
+    ppc.setI(i.get());
+    ppc.setD(d.get());
   }
 
   /** The initial subroutine of a command. Called once when the command is initially scheduled. */
@@ -53,31 +52,35 @@ public class TeleopDrive extends CommandBase {
 
   @Override
   public void execute() {
-     double ext=0;
-      if((drivetrain.getPosition().getRotation().minus(minRot).getRotations()+1.0)%1.0<lockBand.getRotations() && !controller.getHID().getRightStickButtonPressed()){
-      ext+=ppc.calculate(drivetrain.getPosition().getRotation().minus(lockRot).getRotations(),0);
+    double ext = 0;
+    if ((drivetrain.getPosition().getRotation().minus(minRot).getRotations() + 1.0) % 1.0
+            < lockBand.getRotations()
+        && !controller.getHID().getRightStickButtonPressed()) {
+      ext += ppc.calculate(drivetrain.getPosition().getRotation().minus(lockRot).getRotations(), 0);
       controller.getHID().setRumble(GenericHID.RumbleType.kRightRumble, 1);
-    }else{
-        controller.getHID().setRumble(GenericHID.RumbleType.kRightRumble, 0);
+    } else {
+      controller.getHID().setRumble(GenericHID.RumbleType.kRightRumble, 0);
     }
     Logger.getInstance().recordOutput("TeleopDrive/ext", ext);
 
     if (deadband(controller.getLeftY())
         && deadband(controller.getLeftX())
         && deadband(controller.getRightX())) {
-      drivetrain.humanDrive(new ChassisSpeeds(0,0,ext), false);
+      drivetrain.humanDrive(new ChassisSpeeds(0, 0, ext), false);
     } else {
       locked = false;
-      drivetrain.humanDrive(new ChassisSpeeds(
-          controller.getLeftY()
-              * Math.abs(Math.pow(controller.getLeftY(), 2))
-              * Constants.Driver.MAX_X_SPEED,
-          controller.getLeftX()
-              * Math.abs(Math.pow(controller.getLeftX(), 2))
-              * Constants.Driver.MAX_Y_SPEED,
-          controller.getRightX()
-              * Math.abs(controller.getRightX())
-              * Constants.Driver.MAX_THETA_SPEED+ext),
+      drivetrain.humanDrive(
+          new ChassisSpeeds(
+              controller.getLeftY()
+                  * Math.abs(Math.pow(controller.getLeftY(), 2))
+                  * Constants.Driver.MAX_X_SPEED,
+              controller.getLeftX()
+                  * Math.abs(Math.pow(controller.getLeftX(), 2))
+                  * Constants.Driver.MAX_Y_SPEED,
+              controller.getRightX()
+                      * Math.abs(controller.getRightX())
+                      * Constants.Driver.MAX_THETA_SPEED
+                  + ext),
           foc);
     }
     if (controller.getHID().getBackButtonPressed()) {
@@ -87,19 +90,16 @@ public class TeleopDrive extends CommandBase {
     if (controller.getHID().getXButtonPressed()) {
       locked = true;
     }
-          foc = controller.getHID().getStartButtonPressed() != foc;
-    if(p.hasChanged()){
+    foc = controller.getHID().getStartButtonPressed() != foc;
+    if (p.hasChanged()) {
       ppc.setP(p.get());
     }
-    if(i.hasChanged()){
+    if (i.hasChanged()) {
       ppc.setI(i.get());
     }
-    if(d.hasChanged()){
+    if (d.hasChanged()) {
       ppc.setD(d.get());
     }
-
-
-
 
     Logger.getInstance().recordOutput("TeleopDrive/locked", locked);
     Logger.getInstance().recordOutput("TeleopDrive/foc", foc);

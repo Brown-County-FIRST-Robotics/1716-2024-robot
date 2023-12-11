@@ -15,5 +15,6 @@ public interface IMUIO {
     public double tempC = 0.0;
   }
 
-  public default void updateInputs(IMUIOInputs inputs) {};
+  public default void updateInputs(IMUIOInputs inputs) {}
+  ;
 }

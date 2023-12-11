@@ -16,14 +16,12 @@ import edu.wpi.first.math.geometry.Rotation2d;
  * <p>It is advised to statically import this class (or one of its inner classes) wherever the
  * constants are needed, to reduce verbosity.
  */
-public final class Constants
-{
-    public static class OperatorConstants
-    {
-        public static final int DRIVER_CONTROLLER_PORT = 0;
-    }
+public final class Constants {
+  public static class OperatorConstants {
+    public static final int DRIVER_CONTROLLER_PORT = 0;
+  }
 
-    public static final class Auto {
+  public static final class Auto {
     public static final double X_P = 0;
     public static final double X_I = 0;
     public static final double X_D = 0;
@@ -47,8 +45,6 @@ public final class Constants
     public static final double MAX_Y_SPEED = 4;
     public static final double MAX_THETA_SPEED = 6;
   }
-
-
 
   public static final Pose2d INIT_POSE = new Pose2d(0, 0, Rotation2d.fromDegrees(180));
   public static final Pose2d RED_INIT_POSE = new Pose2d(0, 0, Rotation2d.fromDegrees(0));

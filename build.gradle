@@ -124,94 +124,94 @@ tasks.withType(JavaCompile) {
 
 def writeGitData =tasks.create("writeGitData") {
     doLast(){
-    // Define an output stream to write to instead of terminal
-    def userstdout = new ByteArrayOutputStream()
-    def rawtime= new Date();
-    def mstr=(rawtime.toCalendar().get(Calendar.MONTH)+1).toString()
-    def dstr=rawtime.toCalendar().get(Calendar.DAY_OF_MONTH).toString()
-    def hrstr=rawtime.toCalendar().get(Calendar.HOUR_OF_DAY).toString()
-    def minstr=rawtime.toCalendar().get(Calendar.MINUTE).toString()
-    def secstr=rawtime.toCalendar().get(Calendar.SECOND).toString()
-    def iso8601=rawtime.toCalendar().get(Calendar.YEAR).toString()+(mstr.length()==2?mstr:("0"+mstr))+(dstr.length()==2?dstr:("0"+dstr))+"_"+(hrstr.length()==2?hrstr:("0"+hrstr))+(minstr.length()==2?minstr:("0"+minstr))+(secstr.length()==2?secstr:("0"+secstr))
+        // Define an output stream to write to instead of terminal
+        def userstdout = new ByteArrayOutputStream()
+        def rawtime= new Date();
+        def mstr=(rawtime.toCalendar().get(Calendar.MONTH)+1).toString()
+        def dstr=rawtime.toCalendar().get(Calendar.DAY_OF_MONTH).toString()
+        def hrstr=rawtime.toCalendar().get(Calendar.HOUR_OF_DAY).toString()
+        def minstr=rawtime.toCalendar().get(Calendar.MINUTE).toString()
+        def secstr=rawtime.toCalendar().get(Calendar.SECOND).toString()
+        def iso8601=rawtime.toCalendar().get(Calendar.YEAR).toString()+(mstr.length()==2?mstr:("0"+mstr))+(dstr.length()==2?dstr:("0"+dstr))+"_"+(hrstr.length()==2?hrstr:("0"+hrstr))+(minstr.length()==2?minstr:("0"+minstr))+(secstr.length()==2?secstr:("0"+secstr))
 
-    exec {
-        commandLine "git", "config", "--get", "user.name"
-        // Write to the output stream instead of terminal
-        standardOutput = userstdout
-    }
-    def tagname="zzzz_"+userstdout.toString().trim()+"_"+iso8601+"_deploy"
-    exec {
-        commandLine "git", "add", "."
-    }
-    exec {
-        commandLine "git", "commit", "--allow-empty", "-m", "Deploy at "+iso8601
-    }
-    exec {
-        commandLine "git", "tag", tagname
-    }
-    exec {
-        commandLine "git", "reset", "--soft", "HEAD^1"
-    }
-    exec {
-        commandLine "git", "restore", "--staged", "."
-    }
-    // Create a new file
-    new File(
-            // Join project directory and deploy directory
-            projectDir.toString() + "/src/main/deploy",
-            // File name to write to
-            "git_tag.txt"
-    ).text = tagname
-    new File(
-            // Join project directory and deploy directory
-            projectDir.toString() + "/src/main/deploy",
-            // File name to write to
-            "deployer.txt"
-    ).text = userstdout.toString().trim()
-}
+        exec {
+            commandLine "git", "config", "--get", "user.name"
+            // Write to the output stream instead of terminal
+            standardOutput = userstdout
+        }
+        def tagname="zzzz_"+userstdout.toString().trim()+"_"+iso8601+"_deploy"
+        exec {
+            commandLine "git", "add", "."
+        }
+        exec {
+            commandLine "git", "commit", "--allow-empty", "-m", "Deploy at "+iso8601
+        }
+        exec {
+            commandLine "git", "tag", tagname
+        }
+        exec {
+            commandLine "git", "reset", "--soft", "HEAD^1"
+        }
+        exec {
+            commandLine "git", "restore", "--staged", "."
+        }
+        // Create a new file
+        new File(
+                // Join project directory and deploy directory
+                projectDir.toString() + "/src/main/deploy",
+                // File name to write to
+                "git_tag.txt"
+                ).text = tagname
+        new File(
+                // Join project directory and deploy directory
+                projectDir.toString() + "/src/main/deploy",
+                // File name to write to
+                "deployer.txt"
+                ).text = userstdout.toString().trim()
+    }}
 
 deploy.targets.roborio.artifacts.frcStaticFileDeploy.dependsOn(writeGitData)
 
 
 spotless {
-   java {
-      target fileTree('.') {
+    java {
+        target fileTree('.') {
             include '**/*.java'
             exclude '**/build/**', '**/build-*/**'
-      }
-      toggleOffOn()
-      googleJavaFormat()
-      removeUnusedImports()
-      trimTrailingWhitespace()
-      endWithNewline()
-   }
-   groovyGradle {
-      target fileTree('.') {
+        }
+        toggleOffOn()
+        googleJavaFormat()
+        removeUnusedImports()
+        trimTrailingWhitespace()
+        endWithNewline()
+    }
+    groovyGradle {
+        target fileTree('.') {
             include '**/*.gradle'
             exclude '**/build/**', '**/build-*/**'
-      }
-      greclipse()
-      indentWithSpaces(4)
-      trimTrailingWhitespace()
-      endWithNewline()
-   }
-   format 'xml', {
-      target fileTree('.') {
+        }
+        greclipse()
+        indentWithSpaces(4)
+        trimTrailingWhitespace()
+        endWithNewline()
+    }
+    format 'xml', {
+        target fileTree('.') {
             include '**/*.xml'
             exclude '**/build/**', '**/build-*/**'
-      }
-      eclipseWtp('xml')
-      trimTrailingWhitespace()
-      indentWithSpaces(2)
-      endWithNewline()
-   }
-   format 'misc', {
-      target fileTree('.') {
+        }
+        eclipseWtp('xml')
+        trimTrailingWhitespace()
+        indentWithSpaces(2)
+        endWithNewline()
+    }
+    format 'misc', {
+        target fileTree('.') {
             include '**/*.md', '**/.gitignore'
             exclude '**/build/**', '**/build-*/**'
-      }
-      trimTrailingWhitespace()
-      indentWithSpaces(2)
-      endWithNewline()
-   }
+        }
+        trimTrailingWhitespace()
+        indentWithSpaces(2)
+        endWithNewline()
+    }
 }

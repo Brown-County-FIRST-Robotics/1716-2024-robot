@@ -4,13 +4,12 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkMaxPIDController;
-import edu.wpi.first.math.kinematics.MecanumDriveWheelPositions;
 import edu.wpi.first.math.kinematics.MecanumDriveWheelSpeeds;
 import frc.robot.utils.LoggedTunableNumber;
 import org.littletonrobotics.junction.Logger;
 
-public class MecanumIOSpark implements MecanumIO{
-  public static final double EFFECTIVE_WHEEL_DIAMETER=0.05411255411255412;
+public class MecanumIOSpark implements MecanumIO {
+  public static final double EFFECTIVE_WHEEL_DIAMETER = 0.05411255411255412;
   CANSparkMax fl;
   CANSparkMax fr;
   CANSparkMax bl;
@@ -23,7 +22,7 @@ public class MecanumIOSpark implements MecanumIO{
   SparkMaxPIDController frPID;
   SparkMaxPIDController blPID;
   SparkMaxPIDController brPID;
-  LoggedTunableNumber ffTuner = new LoggedTunableNumber("Mecanum FF", 1.0/6500);
+  LoggedTunableNumber ffTuner = new LoggedTunableNumber("Mecanum FF", 1.0 / 6500);
   LoggedTunableNumber pTuner = new LoggedTunableNumber("Mecanum P", 0);
   LoggedTunableNumber iTuner = new LoggedTunableNumber("Mecanum I", 0);
   LoggedTunableNumber dTuner = new LoggedTunableNumber("Mecanum D", 0);
@@ -48,72 +47,78 @@ public class MecanumIOSpark implements MecanumIO{
     br.setSmartCurrentLimit(30);
 
     flPID.setFeedbackDevice(flEncoder);
-    flPID.setOutputRange(-1,1);
+    flPID.setOutputRange(-1, 1);
     frPID.setFeedbackDevice(frEncoder);
-    frPID.setOutputRange(-1,1);
+    frPID.setOutputRange(-1, 1);
     blPID.setFeedbackDevice(blEncoder);
-    blPID.setOutputRange(-1,1);
+    blPID.setOutputRange(-1, 1);
     brPID.setFeedbackDevice(brEncoder);
-    brPID.setOutputRange(-1,1);
+    brPID.setOutputRange(-1, 1);
     reconfigure();
     fl.burnFlash();
     fr.burnFlash();
     bl.burnFlash();
     br.burnFlash();
-    Logger.getInstance().recordMetadata("FLFW",fl.getFirmwareString());
-    Logger.getInstance().recordMetadata("FRFW",fr.getFirmwareString());
-    Logger.getInstance().recordMetadata("BLFW",bl.getFirmwareString());
-    Logger.getInstance().recordMetadata("BRFW",br.getFirmwareString());
+    Logger.getInstance().recordMetadata("FLFW", fl.getFirmwareString());
+    Logger.getInstance().recordMetadata("FRFW", fr.getFirmwareString());
+    Logger.getInstance().recordMetadata("BLFW", bl.getFirmwareString());
+    Logger.getInstance().recordMetadata("BRFW", br.getFirmwareString());
   }
 
   @Override
   public void setSpeeds(MecanumDriveWheelSpeeds cmd) {
-    flPID.setReference(60*cmd.frontLeftMetersPerSecond/EFFECTIVE_WHEEL_DIAMETER, CANSparkMax.ControlType.kVelocity);
-    frPID.setReference(60*cmd.frontRightMetersPerSecond/EFFECTIVE_WHEEL_DIAMETER, CANSparkMax.ControlType.kVelocity);
-    blPID.setReference(60*cmd.rearLeftMetersPerSecond/EFFECTIVE_WHEEL_DIAMETER, CANSparkMax.ControlType.kVelocity);
-    brPID.setReference(60*cmd.rearRightMetersPerSecond/EFFECTIVE_WHEEL_DIAMETER, CANSparkMax.ControlType.kVelocity);
-
+    flPID.setReference(
+        60 * cmd.frontLeftMetersPerSecond / EFFECTIVE_WHEEL_DIAMETER,
+        CANSparkMax.ControlType.kVelocity);
+    frPID.setReference(
+        60 * cmd.frontRightMetersPerSecond / EFFECTIVE_WHEEL_DIAMETER,
+        CANSparkMax.ControlType.kVelocity);
+    blPID.setReference(
+        60 * cmd.rearLeftMetersPerSecond / EFFECTIVE_WHEEL_DIAMETER,
+        CANSparkMax.ControlType.kVelocity);
+    brPID.setReference(
+        60 * cmd.rearRightMetersPerSecond / EFFECTIVE_WHEEL_DIAMETER,
+        CANSparkMax.ControlType.kVelocity);
   }
 
   @Override
   public void reconfigure() {
 
-    if(ffTuner.hasChanged()){
+    if (ffTuner.hasChanged()) {
       flPID.setFF(ffTuner.get());
       frPID.setFF(ffTuner.get());
       blPID.setFF(ffTuner.get());
       brPID.setFF(ffTuner.get());
     }
-    if(pTuner.hasChanged()){
+    if (pTuner.hasChanged()) {
       flPID.setP(pTuner.get());
       frPID.setP(pTuner.get());
       blPID.setP(pTuner.get());
       brPID.setP(pTuner.get());
     }
-    if(iTuner.hasChanged()){
+    if (iTuner.hasChanged()) {
       flPID.setI(iTuner.get());
       frPID.setI(iTuner.get());
       blPID.setI(iTuner.get());
       brPID.setI(iTuner.get());
     }
-    if(dTuner.hasChanged()){
+    if (dTuner.hasChanged()) {
       flPID.setD(dTuner.get());
       frPID.setD(dTuner.get());
       blPID.setD(dTuner.get());
       brPID.setD(dTuner.get());
     }
-
   }
 
   @Override
   public void updateInputs(MecanumIOInputs inputs) {
-    inputs.flTemp=fl.getMotorTemperature();
-    inputs.frTemp=fr.getMotorTemperature();
-    inputs.blTemp=bl.getMotorTemperature();
-    inputs.brTemp=br.getMotorTemperature();
-            inputs.flPos=flEncoder.getPosition()*EFFECTIVE_WHEEL_DIAMETER;
-            inputs.frPos=frEncoder.getPosition()*EFFECTIVE_WHEEL_DIAMETER;
-            inputs.blPos=blEncoder.getPosition()*EFFECTIVE_WHEEL_DIAMETER;
-            inputs.brPos=brEncoder.getPosition()*EFFECTIVE_WHEEL_DIAMETER;
+    inputs.flTemp = fl.getMotorTemperature();
+    inputs.frTemp = fr.getMotorTemperature();
+    inputs.blTemp = bl.getMotorTemperature();
+    inputs.brTemp = br.getMotorTemperature();
+    inputs.flPos = flEncoder.getPosition() * EFFECTIVE_WHEEL_DIAMETER;
+    inputs.frPos = frEncoder.getPosition() * EFFECTIVE_WHEEL_DIAMETER;
+    inputs.blPos = blEncoder.getPosition() * EFFECTIVE_WHEEL_DIAMETER;
+    inputs.brPos = brEncoder.getPosition() * EFFECTIVE_WHEEL_DIAMETER;
   }
 }

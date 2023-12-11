@@ -9,10 +9,10 @@ public class IMUIONavx implements IMUIO {
 
   public IMUIONavx() {
     imu = new AHRS(SPI.Port.kMXP);
-    while(!imu.isConnected()){
+    while (!imu.isConnected()) {
       imu.isConnected();
     }
-    Logger.getInstance().recordMetadata("IMUFW",imu.getFirmwareVersion());
+    Logger.getInstance().recordMetadata("IMUFW", imu.getFirmwareVersion());
   }
 
   @Override

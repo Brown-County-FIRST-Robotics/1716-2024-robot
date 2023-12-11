@@ -17,8 +17,12 @@ public interface ModuleIO {
     public double thrustErr = 0.0;
   }
 
-  public default void updateInputs(ModuleIOInputs inputs) {};
+  public default void updateInputs(ModuleIOInputs inputs) {}
+  ;
 
-  public default void setCmdState(SwerveModuleState state) {};
-  public default void reconfigure() {};
+  public default void setCmdState(SwerveModuleState state) {}
+  ;
+
+  public default void reconfigure() {}
+  ;
 }
