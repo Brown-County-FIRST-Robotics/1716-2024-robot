@@ -17,6 +17,12 @@ public class SwerveSimManager {
           new Translation2d(D / 2, -D / 2),
           new Translation2d(-D / 2, D / 2),
           new Translation2d(-D / 2, -D / 2));
+  static SwerveSimManager single = new SwerveSimManager();
+
+  public static SwerveSimManager getInstance() {
+    return single;
+  }
+
   private Pose2d realPose = new Pose2d();
   private double[] thrustPos = {0, 0, 0, 0};
   private double[] thrustVel = {0, 0, 0, 0};
