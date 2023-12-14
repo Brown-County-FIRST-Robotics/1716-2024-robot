@@ -8,6 +8,7 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import org.littletonrobotics.junction.Logger;
 
 public class SwerveSimManager {
   private static final double D = 21.125 * 0.0254; // TODO: Rename this
@@ -72,5 +73,6 @@ public class SwerveSimManager {
                 new SwerveModulePosition(thrustVel[1] * 0.02, getModPos(1).angle),
                 new SwerveModulePosition(thrustVel[2] * 0.02, getModPos(2).angle),
                 new SwerveModulePosition(thrustVel[3] * 0.02, getModPos(3).angle)));
+    Logger.getInstance().recordOutput("Sim/RealPose", realPose);
   }
 }

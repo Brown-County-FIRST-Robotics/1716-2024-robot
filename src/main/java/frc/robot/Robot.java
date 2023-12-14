@@ -6,10 +6,14 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Scanner;
+import org.littletonrobotics.junction.LogFileUtil;
 import org.littletonrobotics.junction.LoggedRobot;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.NT4Publisher;
+import org.littletonrobotics.junction.wpilog.WPILOGReader;
 import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 
 /**
@@ -59,16 +63,23 @@ public class Robot extends LoggedRobot {
     switch (WhoAmI.mode) {
       case REAL:
         Logger.getInstance().addDataReceiver(new WPILOGWriter("/home/lvuser/"));
-        Logger.getInstance().addDataReceiver(new NT4Publisher());
         break;
       case SIM:
-        Logger.getInstance().addDataReceiver(new NT4Publisher());
+        Logger.getInstance().addDataReceiver(new WPILOGWriter("SimLogs/"));
         break;
       case REPLAY:
-        // TODO: add something to specify which logfile to replay
-        Logger.getInstance().addDataReceiver(new NT4Publisher());
+        setUseTiming(false); // Run as fast as possible
+        String logPath = LogFileUtil.findReplayLog();
+        Logger.getInstance().setReplaySource(new WPILOGReader(logPath));
+        Logger.getInstance()
+            .addDataReceiver(
+                new WPILOGWriter(
+                    LogFileUtil.addPathSuffix(
+                        logPath,
+                        "_replay" + new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date()))));
         break;
     }
+    Logger.getInstance().addDataReceiver(new NT4Publisher());
 
     // See http://bit.ly/3YIzFZ6 for more information on timestamps in AdvantageKit.
     // Logger.disableDeterministicTimestamps()

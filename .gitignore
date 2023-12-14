@@ -205,7 +205,8 @@ replay_pid*
 .LSOverride
 
 # Icon must end with two \r
-Icon
+Icon
+
 
 # Thumbnails
 ._*
@@ -333,3 +334,4 @@ bin/
 
 src/main/deploy/git_tag.txt
 src/main/deploy/deployer.txt
+SimLogs/
