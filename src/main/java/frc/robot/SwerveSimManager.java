@@ -25,9 +25,10 @@ public class SwerveSimManager {
 
   private Pose2d realPose = new Pose2d();
   private double[] thrustPos = {0, 0, 0, 0};
+  private double[] lastthrustPos = {0, 0, 0, 0};
   private double[] thrustVel = {0, 0, 0, 0};
   private SlewRateLimiter[] thrustRateLimiters = {
-    new SlewRateLimiter(1), new SlewRateLimiter(1), new SlewRateLimiter(1), new SlewRateLimiter(1)
+    new SlewRateLimiter(3), new SlewRateLimiter(3), new SlewRateLimiter(3), new SlewRateLimiter(3)
   };
   private TrapezoidProfile.State[] steerStates = {
     new TrapezoidProfile.State(),
@@ -57,13 +58,19 @@ public class SwerveSimManager {
     for (int mnum = 0; mnum < 4; mnum++) {
       steerStates[mnum] =
           (new TrapezoidProfile(
-                  new TrapezoidProfile.Constraints(1, 1),
+                  new TrapezoidProfile.Constraints(6, 6),
                   new TrapezoidProfile.State(cmdSteerPos[mnum], 0),
                   steerStates[mnum]))
               .calculate(0.02);
+      lastthrustPos = thrustPos.clone();
       thrustPos[mnum] += thrustVel[mnum] * 0.02;
     }
     realPose =
-        realPose.exp(KINEMATICS.toTwist2d(getModPos(0), getModPos(1), getModPos(2), getModPos(3)));
+        realPose.exp(
+            KINEMATICS.toTwist2d(
+                new SwerveModulePosition(thrustVel[0] * 0.02, getModPos(0).angle),
+                new SwerveModulePosition(thrustVel[1] * 0.02, getModPos(1).angle),
+                new SwerveModulePosition(thrustVel[2] * 0.02, getModPos(2).angle),
+                new SwerveModulePosition(thrustVel[3] * 0.02, getModPos(3).angle)));
   }
 }

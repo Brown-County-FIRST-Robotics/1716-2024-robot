@@ -20,10 +20,10 @@ import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
 import frc.robot.Constants;
+import frc.robot.SuppliedCommand;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.IMUIO;
 import frc.robot.subsystems.IMUIOInputsAutoLogged;
-import frc.robot.utils.SuppliedCommand;
 import java.util.List;
 import org.littletonrobotics.junction.Logger;
 

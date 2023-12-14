@@ -7,7 +7,8 @@ public final class WhoAmI {
 
   public static enum RobotType {
     MECHBASE,
-    SWERVEBASE
+    SWERVEBASE,
+    SIMSWERVEBASE
   }
 
   public static enum Appendages {}

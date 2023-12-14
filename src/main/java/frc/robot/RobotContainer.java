@@ -15,8 +15,11 @@ import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.TeleopDrive;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.IMUIONavx;
+import frc.robot.subsystems.IMUIOSim;
 import frc.robot.subsystems.mecanum.MecanumDrivetrain;
 import frc.robot.subsystems.mecanum.MecanumIOSpark;
+import frc.robot.subsystems.swerve.ModuleIOSim;
+import frc.robot.subsystems.swerve.SwerveDrivetrain;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -37,6 +40,15 @@ public class RobotContainer {
     switch (WhoAmI.bot) {
       case MECHBASE:
         driveSys = new MecanumDrivetrain(new MecanumIOSpark(1, 2, 3, 4), new IMUIONavx());
+        break;
+      case SIMSWERVEBASE:
+        driveSys =
+            new SwerveDrivetrain(
+                new ModuleIOSim(0),
+                new ModuleIOSim(1),
+                new ModuleIOSim(2),
+                new ModuleIOSim(3),
+                new IMUIOSim());
         break;
       default:
         driveSys = new MecanumDrivetrain(new MecanumIOSpark(1, 2, 3, 4), new IMUIONavx());
