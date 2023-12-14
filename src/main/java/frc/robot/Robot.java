@@ -56,8 +56,19 @@ public class Robot extends LoggedRobot {
     Logger.getInstance().recordMetadata("SN", HALUtil.getSerialNumber());
 
     // Running on a real robot, log to a USB stick
-    Logger.getInstance().addDataReceiver(new WPILOGWriter("/home/lvuser/"));
-    Logger.getInstance().addDataReceiver(new NT4Publisher());
+    switch (WhoAmI.mode) {
+      case REAL:
+        Logger.getInstance().addDataReceiver(new WPILOGWriter("/home/lvuser/"));
+        Logger.getInstance().addDataReceiver(new NT4Publisher());
+        break;
+      case SIM:
+        Logger.getInstance().addDataReceiver(new NT4Publisher());
+        break;
+      case REPLAY:
+        // TODO: add something to specify which logfile to replay
+        Logger.getInstance().addDataReceiver(new NT4Publisher());
+        break;
+    }
 
     // See http://bit.ly/3YIzFZ6 for more information on timestamps in AdvantageKit.
     // Logger.disableDeterministicTimestamps()
@@ -144,5 +155,7 @@ public class Robot extends LoggedRobot {
 
   /** This function is called periodically whilst in simulation. */
   @Override
-  public void simulationPeriodic() {}
+  public void simulationPeriodic() {
+    SwerveSimManager.getInstance().propagate();
+  }
 }
