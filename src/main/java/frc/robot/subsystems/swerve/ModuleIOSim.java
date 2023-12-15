@@ -1,6 +1,5 @@
 package frc.robot.subsystems.swerve;
 
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import frc.robot.SwerveSimManager;
@@ -20,10 +19,8 @@ public class ModuleIOSim implements ModuleIO {
   }
 
   @Override
-  public void setCmdState(SwerveModuleState cmd_state) {
+  public void setCmdState(SwerveModuleState state) {
     SwerveModulePosition pos = SwerveSimManager.getInstance().getModPos(id);
-    SwerveModuleState state =
-        SwerveModuleState.optimize(cmd_state, pos.angle.plus(Rotation2d.fromRotations(1.0)));
     state.speedMetersPerSecond *= pos.angle.minus(state.angle).getCos();
     SwerveSimManager.getInstance().commandState(id, state);
   }

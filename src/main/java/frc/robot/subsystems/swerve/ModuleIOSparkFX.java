@@ -91,10 +91,7 @@ public class ModuleIOSparkFX implements ModuleIO {
   }
 
   @Override
-  public void setCmdState(SwerveModuleState cmd_state) {
-    SwerveModuleState state =
-        SwerveModuleState.optimize(
-            cmd_state, getModulePosition().angle.plus(Rotation2d.fromRotations(1.0)));
+  public void setCmdState(SwerveModuleState state) {
     state.speedMetersPerSecond *= getModulePosition().angle.minus(state.angle).getCos();
     double cmd_ang = state.angle.unaryMinus().getRotations() + steerOffset.get();
     thrust.set(
