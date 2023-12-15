@@ -10,6 +10,10 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import frc.robot.utils.DualRateLimiter;
 import org.littletonrobotics.junction.Logger;
 
+/**
+ * Manages swerve simulation <br>
+ * Access using {@link #getInstance()}
+ */
 public class SwerveSimManager {
   private static final double D = 21.125 * 0.0254; // TODO: Rename this
   private static final SwerveDriveKinematics KINEMATICS =
@@ -46,20 +50,41 @@ public class SwerveSimManager {
 
   public SwerveSimManager() {}
 
+  /**
+   * Sets the desired state of a swerve module
+   *
+   * @param mnum The index of the swerve module
+   * @param state The desired state
+   */
   public void commandState(int mnum, SwerveModuleState state) {
     thrustVel[mnum] = thrustRateLimiters[mnum].calculate(state.speedMetersPerSecond);
     cmdSteerPos[mnum] = state.angle.getRotations();
   }
 
+  /**
+   * Gets the position of a swerve module
+   *
+   * @param mnum The index of the module
+   * @return The position of the module
+   */
   public SwerveModulePosition getModPos(int mnum) {
     return new SwerveModulePosition(
         thrustPos[mnum], Rotation2d.fromRotations(steerStates[mnum].position));
   }
 
+  /**
+   * Gets the yaw value from the simulated IMU
+   *
+   * @return The yaw value
+   */
   public Rotation2d getIMUOutput() {
     return realPose.getRotation();
   }
 
+  /**
+   * Step the simulation one tick (20 ms) forward. During simulation, this should be called at the
+   * end of every loop.
+   */
   public void propagate() {
     for (int mnum = 0; mnum < 4; mnum++) {
       if (Math.abs(
