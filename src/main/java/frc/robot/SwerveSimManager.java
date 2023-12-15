@@ -62,12 +62,26 @@ public class SwerveSimManager {
 
   public void propagate() {
     for (int mnum = 0; mnum < 4; mnum++) {
+      if (Math.abs(
+              Rotation2d.fromRotations(cmdSteerPos[mnum] - 1.0)
+                  .minus(Rotation2d.fromRotations(steerStates[mnum].position))
+                  .getRotations())
+          <= 0.5) {
+        cmdSteerPos[mnum] -= 1.0;
+      } else if (Math.abs(
+              Rotation2d.fromRotations(cmdSteerPos[mnum] + 1.0)
+                  .minus(Rotation2d.fromRotations(steerStates[mnum].position))
+                  .getRotations())
+          <= 0.5) {
+        cmdSteerPos[mnum] += 1.0;
+      }
       steerStates[mnum] =
           (new TrapezoidProfile(
                   new TrapezoidProfile.Constraints(5, 20),
                   new TrapezoidProfile.State(cmdSteerPos[mnum], 0),
                   steerStates[mnum]))
               .calculate(0.02);
+      steerStates[mnum].position = ((steerStates[mnum].position % 1.0) + 1.0) % 1.0;
       lastthrustPos = thrustPos.clone();
       thrustPos[mnum] += thrustVel[mnum] * 0.02;
     }

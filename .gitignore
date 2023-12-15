@@ -329,7 +329,7 @@ bin/
 
 # Simulation GUI and other tools window save file
 *-window.json
-
+simgui*.json
 # End entries from WPI Lib team
 
 src/main/deploy/git_tag.txt
