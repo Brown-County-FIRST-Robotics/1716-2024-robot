@@ -10,6 +10,7 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Constants;
 import frc.robot.subsystems.Drivetrain;
+import frc.robot.utils.DualRateLimiter;
 import frc.robot.utils.LoggedTunableNumber;
 import org.littletonrobotics.junction.Logger;
 
@@ -28,6 +29,9 @@ public class TeleopDrive extends CommandBase {
   LoggedTunableNumber d = new LoggedTunableNumber("drD", 0);
   boolean foc = true;
   boolean locked = false;
+  DualRateLimiter xVelLimiter = new DualRateLimiter(4, 100);
+  DualRateLimiter yVelLimiter = new DualRateLimiter(4, 100);
+  DualRateLimiter omegaLimiter = new DualRateLimiter(6, 100);
 
   public TeleopDrive(Drivetrain drivetrain, CommandXboxController controller) {
     this.drivetrain = drivetrain;
@@ -69,15 +73,18 @@ public class TeleopDrive extends CommandBase {
       locked = false;
       drivetrain.humanDrive(
           new ChassisSpeeds(
-              controller.getLeftY()
-                  * Math.abs(Math.pow(controller.getLeftY(), 2))
-                  * Constants.Driver.MAX_X_SPEED,
-              controller.getLeftX()
-                  * Math.abs(Math.pow(controller.getLeftX(), 2))
-                  * Constants.Driver.MAX_Y_SPEED,
-              controller.getRightX()
-                      * Math.abs(controller.getRightX())
-                      * Constants.Driver.MAX_THETA_SPEED
+              xVelLimiter.calculate(
+                  controller.getLeftY()
+                      * Math.abs(Math.pow(controller.getLeftY(), 2))
+                      * Constants.Driver.MAX_X_SPEED),
+              yVelLimiter.calculate(
+                  controller.getLeftX()
+                      * Math.abs(Math.pow(controller.getLeftX(), 2))
+                      * Constants.Driver.MAX_Y_SPEED),
+              omegaLimiter.calculate(
+                      controller.getRightX()
+                          * Math.abs(controller.getRightX())
+                          * Constants.Driver.MAX_THETA_SPEED)
                   + ext),
           foc);
     }

@@ -1,6 +1,5 @@
 package frc.robot;
 
-import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -8,6 +7,7 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import frc.robot.utils.DualRateLimiter;
 import org.littletonrobotics.junction.Logger;
 
 public class SwerveSimManager {
@@ -28,8 +28,13 @@ public class SwerveSimManager {
   private double[] thrustPos = {0, 0, 0, 0};
   private double[] lastthrustPos = {0, 0, 0, 0};
   private double[] thrustVel = {0, 0, 0, 0};
-  private SlewRateLimiter[] thrustRateLimiters = {
-    new SlewRateLimiter(3), new SlewRateLimiter(3), new SlewRateLimiter(3), new SlewRateLimiter(3)
+  private final double thrustMaxAccel = 5;
+  private final double thrustBrakeAccel = 30;
+  private DualRateLimiter[] thrustRateLimiters = {
+    new DualRateLimiter(thrustMaxAccel, thrustBrakeAccel),
+    new DualRateLimiter(thrustMaxAccel, thrustBrakeAccel),
+    new DualRateLimiter(thrustMaxAccel, thrustBrakeAccel),
+    new DualRateLimiter(thrustMaxAccel, thrustBrakeAccel)
   };
   private TrapezoidProfile.State[] steerStates = {
     new TrapezoidProfile.State(),
@@ -59,7 +64,7 @@ public class SwerveSimManager {
     for (int mnum = 0; mnum < 4; mnum++) {
       steerStates[mnum] =
           (new TrapezoidProfile(
-                  new TrapezoidProfile.Constraints(6, 6),
+                  new TrapezoidProfile.Constraints(5, 20),
                   new TrapezoidProfile.State(cmdSteerPos[mnum], 0),
                   steerStates[mnum]))
               .calculate(0.02);
