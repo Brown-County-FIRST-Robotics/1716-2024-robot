@@ -31,4 +31,7 @@ public interface Drivetrain extends Subsystem {
    * @return Array of accelerations (in MPS^2) as [x,y,z]
    */
   double[] getAcceleration();
+
+  default void lockWheels() {}
+  ;
 }

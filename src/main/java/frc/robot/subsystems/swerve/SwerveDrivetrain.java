@@ -202,4 +202,15 @@ public class SwerveDrivetrain implements Drivetrain {
   public double[] getAcceleration() {
     return new double[] {imuInputs.xAccelMPS, imuInputs.yAccelMPS, imuInputs.zAccelMPS};
   }
+
+  @Override
+  public void lockWheels() {
+    setModuleStates(
+        new SwerveModuleState[] {
+          new SwerveModuleState(0, Rotation2d.fromDegrees(45)),
+          new SwerveModuleState(0, Rotation2d.fromDegrees(-45)),
+          new SwerveModuleState(0, Rotation2d.fromDegrees(-45)),
+          new SwerveModuleState(0, Rotation2d.fromDegrees(45))
+        });
+  }
 }

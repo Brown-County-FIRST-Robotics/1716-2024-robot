@@ -55,12 +55,10 @@ public class TeleopDrive extends CommandBase {
     double ext = 0;
     if ((drivetrain.getPosition().getRotation().minus(minRot).getRotations() + 1.0) % 1.0
             < lockBand.getRotations()
-        && !controller.getHID().getRightStickButtonPressed()) {
+        && !controller.getHID().getRightStickButton()) {
       ext += ppc.calculate(drivetrain.getPosition().getRotation().minus(lockRot).getRotations(), 0);
-      controller.getHID().setRumble(GenericHID.RumbleType.kRightRumble, 1);
-    } else {
-      controller.getHID().setRumble(GenericHID.RumbleType.kRightRumble, 0);
     }
+    controller.getHID().setRumble(GenericHID.RumbleType.kRightRumble, Math.abs(ext / 3.0));
     Logger.getInstance().recordOutput("TeleopDrive/ext", ext);
 
     if (deadband(controller.getLeftY())
@@ -87,9 +85,7 @@ public class TeleopDrive extends CommandBase {
       drivetrain.setPosition(
           new Pose2d(drivetrain.getPosition().getTranslation(), Rotation2d.fromRotations(0.5)));
     }
-    if (controller.getHID().getXButtonPressed()) {
-      locked = true;
-    }
+    locked = controller.getHID().getXButtonPressed() || locked;
     foc = controller.getHID().getStartButtonPressed() != foc;
     if (p.hasChanged()) {
       ppc.setP(p.get());
@@ -99,6 +95,9 @@ public class TeleopDrive extends CommandBase {
     }
     if (d.hasChanged()) {
       ppc.setD(d.get());
+    }
+    if (locked) {
+      drivetrain.lockWheels();
     }
 
     Logger.getInstance().recordOutput("TeleopDrive/locked", locked);
