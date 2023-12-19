@@ -12,7 +12,6 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import frc.robot.utils.LoggedTunableNumber;
-import java.util.Objects;
 import org.littletonrobotics.junction.Logger;
 
 public class ModuleIOSparkFX implements ModuleIO {
@@ -31,10 +30,12 @@ public class ModuleIOSparkFX implements ModuleIO {
   LoggedTunableNumber steerI = new LoggedTunableNumber("Steer I", 0);
   LoggedTunableNumber steerD = new LoggedTunableNumber("Steer D", 0);
   LoggedTunableNumber steerKV = new LoggedTunableNumber("Steer KV", 1.0 / 300.0);
-  LoggedTunableNumber steerOffset = new LoggedTunableNumber("Steer Offset");
+  Rotation2d steerOffset;
+  Rotation2d chasisOffset;
 
-  public ModuleIOSparkFX(int thrustID, int steerID, String name) {
+  public ModuleIOSparkFX(int thrustID, int steerID, String name, Rotation2d chasisOffset) {
     this.name = name;
+    this.chasisOffset = chasisOffset;
     thrust = new WPI_TalonFX(thrustID);
     thrust.setNeutralMode(NeutralMode.Coast);
     thrust.configSelectedFeedbackSensor(TalonFXFeedbackDevice.IntegratedSensor, 0, 20);
@@ -61,17 +62,6 @@ public class ModuleIOSparkFX implements ModuleIO {
     pid.setPositionPIDWrappingMaxInput(1);
     pid.setPositionPIDWrappingMinInput(0);
     steer.setSmartCurrentLimit(30);
-    if (Objects.equals(name, "FL")) {
-      steerOffset.initDefault(0.262);
-    } else if (Objects.equals(name, "FR")) {
-      steerOffset.initDefault(0.817);
-    } else if (Objects.equals(name, "BL")) {
-      steerOffset.initDefault(-0.050);
-    } else if (Objects.equals(name, "BR")) {
-      steerOffset.initDefault(-0.250);
-    } else {
-      throw new RuntimeException("name is not a registered swerve module");
-    }
 
     reconfigure();
     steer.burnFlash();
@@ -79,11 +69,12 @@ public class ModuleIOSparkFX implements ModuleIO {
     Logger.getInstance()
         .recordMetadata(name + "_Thrust_FW", String.valueOf(thrust.getFirmwareVersion()));
     Logger.getInstance().recordMetadata(name + "_Thrust_Name", thrust.getDescription());
+    steerOffset = Rotation2d.fromRotations(thrust.configGetCustomParam(0) / 1000000.0);
   }
 
   @Override
   public void updateInputs(ModuleIOInputs inputs) {
-    inputs.steerPos = getModulePosition().angle.getRotations();
+    inputs.steerPos = getModulePosition().angle.minus(chasisOffset).getRotations();
     inputs.thrustPos = getModulePosition().distanceMeters;
     inputs.steerTempC = steer.getMotorTemperature();
     inputs.thrustErr = thrust.getClosedLoopError();
@@ -93,7 +84,7 @@ public class ModuleIOSparkFX implements ModuleIO {
   @Override
   public void setCmdState(SwerveModuleState state) {
     state.speedMetersPerSecond *= getModulePosition().angle.minus(state.angle).getCos();
-    double cmd_ang = state.angle.unaryMinus().getRotations() + steerOffset.get();
+    double cmd_ang = state.angle.plus(chasisOffset).unaryMinus().plus(steerOffset).getRotations();
     thrust.set(
         TalonFXControlMode.Velocity, 0.1 * state.speedMetersPerSecond / THRUST_DISTANCE_PER_TICK);
 
@@ -103,7 +94,7 @@ public class ModuleIOSparkFX implements ModuleIO {
   private SwerveModulePosition getModulePosition() {
     return new SwerveModulePosition(
         thrust.getSelectedSensorPosition() * THRUST_DISTANCE_PER_TICK,
-        Rotation2d.fromRotations(encoder.getPosition() - steerOffset.get()).unaryMinus());
+        Rotation2d.fromRotations(encoder.getPosition()).minus(steerOffset).unaryMinus());
   }
 
   @Override

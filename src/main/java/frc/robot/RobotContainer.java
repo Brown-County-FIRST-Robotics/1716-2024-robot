@@ -19,6 +19,7 @@ import frc.robot.subsystems.IMUIOSim;
 import frc.robot.subsystems.mecanum.MecanumDrivetrain;
 import frc.robot.subsystems.mecanum.MecanumIOSpark;
 import frc.robot.subsystems.swerve.ModuleIOSim;
+import frc.robot.subsystems.swerve.ModuleIOSparkFX;
 import frc.robot.subsystems.swerve.SwerveDrivetrain;
 
 /**
@@ -49,6 +50,15 @@ public class RobotContainer {
                 new ModuleIOSim(2),
                 new ModuleIOSim(3),
                 new IMUIOSim());
+        break;
+      case SWERVEBASE:
+        driveSys =
+            new SwerveDrivetrain(
+                new ModuleIOSparkFX(20, 10, "FL", Rotation2d.fromDegrees(-90)),
+                new ModuleIOSparkFX(21, 11, "FR", Rotation2d.fromDegrees(0)),
+                new ModuleIOSparkFX(22, 12, "BL", Rotation2d.fromDegrees(180)),
+                new ModuleIOSparkFX(23, 13, "BR", Rotation2d.fromDegrees(90)),
+                new IMUIONavx());
         break;
       default:
         driveSys = new MecanumDrivetrain(new MecanumIOSpark(1, 2, 3, 4), new IMUIONavx());
