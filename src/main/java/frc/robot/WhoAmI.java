@@ -2,7 +2,7 @@ package frc.robot;
 
 public final class WhoAmI {
   public static final Mode mode = Mode.REAL;
-  public static final RobotType bot = RobotType.MECHBASE;
+  public static final RobotType bot = RobotType.SWERVEBASE;
   final Appendages[] appendages = {};
 
   public static enum RobotType {
