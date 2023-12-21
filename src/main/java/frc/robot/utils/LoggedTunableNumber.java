@@ -8,7 +8,7 @@ public class LoggedTunableNumber {
   private LoggedDashboardNumber dashboardNumber;
   private double defaultValue;
   private boolean hasDefault;
-  private double lastHasChangedValue;
+  private double lastHasChangedValue=-1;
 
   public LoggedTunableNumber(String name) {
     key = tableKey + "/" + name;
