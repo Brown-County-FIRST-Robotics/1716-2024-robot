@@ -106,16 +106,16 @@ public class SwerveDrivetrain implements Drivetrain {
     SwerveDriveKinematics.desaturateWheelSpeeds(states, MAX_WHEEL_SPEED);
     states[0] =
         SwerveModuleState.optimize(
-            states[0], getPositions()[0].angle.plus(Rotation2d.fromRotations(1.0)));
+            states[0], getPositions()[0].angle);
     states[1] =
         SwerveModuleState.optimize(
-            states[1], getPositions()[1].angle.plus(Rotation2d.fromRotations(1.0)));
+            states[1], getPositions()[1].angle);
     states[2] =
         SwerveModuleState.optimize(
-            states[2], getPositions()[2].angle.plus(Rotation2d.fromRotations(1.0)));
+            states[2], getPositions()[2].angle);
     states[3] =
         SwerveModuleState.optimize(
-            states[3], getPositions()[3].angle.plus(Rotation2d.fromRotations(1.0)));
+            states[3], getPositions()[3].angle);
     Logger.getInstance().recordOutput("Drive/CmdStates", states);
     fl.setCmdState(states[0]);
     fr.setCmdState(states[1]);

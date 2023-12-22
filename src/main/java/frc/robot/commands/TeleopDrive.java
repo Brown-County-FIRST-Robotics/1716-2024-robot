@@ -3,6 +3,7 @@ package frc.robot.commands;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj.GenericHID;
@@ -10,7 +11,6 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Constants;
 import frc.robot.subsystems.Drivetrain;
-import frc.robot.utils.DualRateLimiter;
 import frc.robot.utils.LoggedTunableNumber;
 import org.littletonrobotics.junction.Logger;
 
@@ -24,14 +24,17 @@ public class TeleopDrive extends CommandBase {
   private final Rotation2d maxRot = lockRot.rotateBy(lockBand.times(0.5));
   private final ProfiledPIDController ppc =
       new ProfiledPIDController(0, 0, 0, new TrapezoidProfile.Constraints(3, 3));
-  LoggedTunableNumber p = new LoggedTunableNumber("drP", -100);
+  LoggedTunableNumber p = new LoggedTunableNumber("drP", -50);
   LoggedTunableNumber i = new LoggedTunableNumber("drI", 0);
   LoggedTunableNumber d = new LoggedTunableNumber("drD", 0);
   boolean foc = true;
   boolean locked = false;
-  DualRateLimiter xVelLimiter = new DualRateLimiter(4, 100);
-  DualRateLimiter yVelLimiter = new DualRateLimiter(4, 100);
-  DualRateLimiter omegaLimiter = new DualRateLimiter(6, 100);
+
+  static double maxv = 5;
+  static double maxa = 10;
+  static double overpowered = 1.1;
+  static double veldeadband = .1;
+  Translation2d vel = new Translation2d();
 
   public TeleopDrive(Drivetrain drivetrain, CommandXboxController controller) {
     this.drivetrain = drivetrain;
@@ -50,8 +53,25 @@ public class TeleopDrive extends CommandBase {
    * The main body of a command. Called repeatedly while the command is scheduled. (That is, it is
    * called repeatedly until {@link #isFinished()} returns true.)
    */
-  static boolean deadband(double x) {
-    return Math.abs(x) < 0.1;
+  static Translation2d dedeadband(Translation2d sp) {
+    double len = sp.getNorm();
+    if (len < 0.1) {
+      return new Translation2d();
+    }
+    double new_len = (len - 0.1) / (1.0 - 0.1);
+    return new Translation2d(new_len, sp.getAngle());
+  }
+
+  static Translation2d desaturate(Translation2d inp, double maxVel) {
+    return new Translation2d(Math.min(maxVel, inp.getNorm()), inp.getAngle());
+  }
+
+  static double powerWeight(double x, double exponent) {
+    return x * Math.abs(Math.pow(x, exponent - 1.0));
+  }
+
+  static Translation2d powerWeight(Translation2d x, double exponent) {
+    return new Translation2d(powerWeight(x.getNorm(), exponent), x.getAngle());
   }
 
   @Override
@@ -64,27 +84,28 @@ public class TeleopDrive extends CommandBase {
     }
     controller.getHID().setRumble(GenericHID.RumbleType.kRightRumble, Math.abs(ext / 3.0));
     Logger.getInstance().recordOutput("TeleopDrive/ext", ext);
+    Translation2d sticks = new Translation2d(controller.getLeftY(), controller.getLeftX());
+    Translation2d spsd =
+        powerWeight(dedeadband(sticks), 2);
+    Translation2d cmdAccel = powerWeight(spsd.minus(vel.div(maxv * overpowered)), 2);
 
-    if (deadband(controller.getLeftY())
-        && deadband(controller.getLeftX())
-        && deadband(controller.getRightX())) {
+    Translation2d applV = desaturate(vel.plus(desaturate(cmdAccel, maxa).times(0.02)), maxv);
+    vel=sticks;//applV;
+System.out.printf("stickvel %f %f %s\n", controller.getLeftX(), controller.getLeftX(), vel);
+    if (Math.abs(controller.getLeftY()) < 0.1
+        && Math.abs(controller.getLeftX()) < 0.1
+        && Math.abs(controller.getRightX()) < 0.1) {
+      vel = new Translation2d();
       drivetrain.humanDrive(new ChassisSpeeds(0, 0, ext), false);
     } else {
       locked = false;
       drivetrain.humanDrive(
           new ChassisSpeeds(
-              xVelLimiter.calculate(
-                  controller.getLeftY()
-                      * Math.abs(Math.pow(controller.getLeftY(), 2))
-                      * Constants.Driver.MAX_X_SPEED),
-              yVelLimiter.calculate(
-                  controller.getLeftX()
-                      * Math.abs(Math.pow(controller.getLeftX(), 2))
-                      * Constants.Driver.MAX_Y_SPEED),
-              omegaLimiter.calculate(
-                      controller.getRightX()
-                          * Math.abs(controller.getRightX())
-                          * Constants.Driver.MAX_THETA_SPEED)
+              applV.getX(),
+              applV.getY(),
+              controller.getRightX()
+                      * Math.abs(controller.getRightX())
+                      * Constants.Driver.MAX_THETA_SPEED
                   + ext),
           foc);
     }
