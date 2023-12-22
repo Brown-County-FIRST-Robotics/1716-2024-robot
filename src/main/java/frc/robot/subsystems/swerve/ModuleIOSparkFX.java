@@ -67,10 +67,7 @@ public class ModuleIOSparkFX implements ModuleIO {
     pid.setI(steerI.get());
     pid.setD(steerD.get());
     pid.setFF(steerKV.get());
-    thrust.config_kP(0, thrustP.get(), 20);
-    thrust.config_kI(0, thrustI.get(), 20);
-    thrust.config_kD(0, thrustD.get(), 20);
-    thrust.config_kF(0, thrustKV.get(), 20);
+
 
     steer.burnFlash();
     Logger.getInstance().recordMetadata(name + "_Steer_FW", steer.getFirmwareString());
