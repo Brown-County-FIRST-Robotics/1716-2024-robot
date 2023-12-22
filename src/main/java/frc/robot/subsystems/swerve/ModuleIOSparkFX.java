@@ -63,13 +63,21 @@ public class ModuleIOSparkFX implements ModuleIO {
     pid.setPositionPIDWrappingMinInput(0);
     steer.setSmartCurrentLimit(30);
 
-    reconfigure();
+    pid.setP(steerP.get());
+    pid.setI(steerI.get());
+    pid.setD(steerD.get());
+    pid.setFF(steerKV.get());
+    thrust.config_kP(0, thrustP.get(), 20);
+    thrust.config_kI(0, thrustI.get(), 20);
+    thrust.config_kD(0, thrustD.get(), 20);
+    thrust.config_kF(0, thrustKV.get(), 20);
+
     steer.burnFlash();
     Logger.getInstance().recordMetadata(name + "_Steer_FW", steer.getFirmwareString());
     Logger.getInstance()
         .recordMetadata(name + "_Thrust_FW", String.valueOf(thrust.getFirmwareVersion()));
     Logger.getInstance().recordMetadata(name + "_Thrust_Name", thrust.getDescription());
-    steerOffset = Rotation2d.fromRotations(thrust.configGetCustomParam(0) / 1000000.0);
+    steerOffset = Rotation2d.fromRotations(thrust.configGetCustomParam(0) / 1000.0);
   }
 
   @Override
