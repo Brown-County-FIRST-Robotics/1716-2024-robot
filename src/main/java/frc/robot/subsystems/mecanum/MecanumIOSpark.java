@@ -116,9 +116,13 @@ public class MecanumIOSpark implements MecanumIO {
     inputs.blTemp = bl.getMotorTemperature();
     inputs.brTemp = br.getMotorTemperature();
     inputs.flPos = flEncoder.getPosition() * EFFECTIVE_WHEEL_DIAMETER;
+    inputs.flVel = flEncoder.getVelocity() * EFFECTIVE_WHEEL_DIAMETER / 60.0;
     inputs.frPos = frEncoder.getPosition() * EFFECTIVE_WHEEL_DIAMETER;
+    inputs.frVel = frEncoder.getVelocity() * EFFECTIVE_WHEEL_DIAMETER / 60.0;
     inputs.blPos = blEncoder.getPosition() * EFFECTIVE_WHEEL_DIAMETER;
+    inputs.blVel = blEncoder.getVelocity() * EFFECTIVE_WHEEL_DIAMETER / 60.0;
     inputs.brPos = brEncoder.getPosition() * EFFECTIVE_WHEEL_DIAMETER;
+    inputs.brVel = brEncoder.getVelocity() * EFFECTIVE_WHEEL_DIAMETER / 60.0;
     inputs.flOut = fl.getAppliedOutput();
     inputs.frOut = fr.getAppliedOutput();
     inputs.blOut = bl.getAppliedOutput();
