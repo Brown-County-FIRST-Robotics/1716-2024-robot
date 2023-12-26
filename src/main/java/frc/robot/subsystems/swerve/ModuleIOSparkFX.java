@@ -84,6 +84,7 @@ public class ModuleIOSparkFX implements ModuleIO {
   public void updateInputs(ModuleIOInputs inputs) {
     inputs.steerPos = getModulePosition().angle.minus(chasisOffset).getRotations();
     inputs.thrustPos = getModulePosition().distanceMeters;
+    inputs.thrustVel = thrust.getSelectedSensorVelocity() * THRUST_DISTANCE_PER_TICK * 10;
     inputs.steerTempC = steer.getMotorTemperature();
     inputs.thrustErr = thrust.getClosedLoopError();
     inputs.thrustTempC = thrust.getTemperature();

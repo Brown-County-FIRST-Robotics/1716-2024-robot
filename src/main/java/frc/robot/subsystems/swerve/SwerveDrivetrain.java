@@ -89,6 +89,13 @@ public class SwerveDrivetrain implements Drivetrain {
     Logger.getInstance().processInputs("Drive/BL", blInputs);
     Logger.getInstance().processInputs("Drive/BR", brInputs);
 
+    Logger.getInstance()
+        .recordOutput(
+            "Drive/RealStates",
+            new SwerveModuleState(flInputs.thrustVel, getPositions()[0].angle),
+            new SwerveModuleState(frInputs.thrustVel, getPositions()[1].angle),
+            new SwerveModuleState(blInputs.thrustVel, getPositions()[2].angle),
+            new SwerveModuleState(brInputs.thrustVel, getPositions()[3].angle));
     poseEstimator.update(getNavxRotation(), getPositions());
     Logger.getInstance().recordOutput("Drive/Pose", getPosition());
     field.setRobotPose(getPosition());

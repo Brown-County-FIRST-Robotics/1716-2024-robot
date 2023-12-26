@@ -73,6 +73,17 @@ public class SwerveSimManager {
   }
 
   /**
+   * Gets the state of the swerve module
+   *
+   * @param mnum The index of the module
+   * @return The state of the module
+   */
+  public SwerveModuleState getModState(int mnum) {
+    return new SwerveModuleState(
+        thrustVel[mnum], Rotation2d.fromRotations(steerStates[mnum].position));
+  }
+
+  /**
    * Gets the yaw value from the simulated IMU
    *
    * @return The yaw value

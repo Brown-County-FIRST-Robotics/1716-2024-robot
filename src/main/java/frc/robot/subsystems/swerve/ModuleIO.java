@@ -12,6 +12,7 @@ public interface ModuleIO {
     public double thrustPos =
         0.0; // Advantagekit currently doesn't currently support SwerveModulePosition here, so we
     // use an intermediate form
+    public double thrustVel = 0.0;
     public double steerTempC = 0.0;
     public double thrustTempC = 0.0;
     public double thrustErr = 0.0;
