@@ -33,5 +33,6 @@ public interface Drivetrain extends Subsystem {
   double[] getAcceleration();
 
   default void lockWheels() {}
-  ;
+
+  ChassisSpeeds getVelocity();
 }

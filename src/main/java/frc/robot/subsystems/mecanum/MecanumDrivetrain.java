@@ -177,4 +177,14 @@ public class MecanumDrivetrain implements Drivetrain {
   public double[] getAcceleration() {
     return new double[] {imuInputs.xAccelMPS, imuInputs.yAccelMPS, imuInputs.zAccelMPS};
   }
+
+  private MecanumDriveWheelSpeeds getWheelSpeeds() {
+    return new MecanumDriveWheelSpeeds(
+        driveInputs.flVel, driveInputs.frVel, driveInputs.blVel, driveInputs.brVel);
+  }
+
+  @Override
+  public ChassisSpeeds getVelocity() {
+    return KINEMATICS.toChassisSpeeds(getWheelSpeeds());
+  }
 }
