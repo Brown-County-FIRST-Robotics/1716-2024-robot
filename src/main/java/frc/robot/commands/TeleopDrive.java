@@ -46,10 +46,6 @@ public class TeleopDrive extends CommandBase {
   @Override
   public void initialize() {}
 
-  /**
-   * The main body of a command. Called repeatedly while the command is scheduled. (That is, it is
-   * called repeatedly until {@link #isFinished()} returns true.)
-   */
   static boolean deadband(double x) {
     return Math.abs(x) < 0.1;
   }

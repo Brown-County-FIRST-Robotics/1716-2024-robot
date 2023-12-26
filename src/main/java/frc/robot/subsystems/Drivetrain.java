@@ -9,6 +9,11 @@ import edu.wpi.first.wpilibj2.command.Subsystem;
 import java.util.List;
 
 public interface Drivetrain extends Subsystem {
+  /**
+   * Gets the position from the pose estimator
+   *
+   * @return The position from the pose estimator
+   */
   Pose2d getPosition();
 
   void setPosition(Pose2d newPose);
@@ -32,7 +37,13 @@ public interface Drivetrain extends Subsystem {
    */
   double[] getAcceleration();
 
+  /** Locks the wheels. In mecanum, this does nothing. */
   default void lockWheels() {}
 
+  /**
+   * Gets the velocity according to the wheels (includes slip error)
+   *
+   * @return The velocity
+   */
   ChassisSpeeds getVelocity();
 }
