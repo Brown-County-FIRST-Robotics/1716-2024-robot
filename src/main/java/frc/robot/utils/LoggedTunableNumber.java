@@ -1,17 +1,21 @@
 package frc.robot.utils;
 
+import java.util.function.Consumer;
 import org.littletonrobotics.junction.networktables.LoggedDashboardNumber;
 
 /** A dashboard number that can be used for tunable values */
-public class LoggedTunableNumber {
+public class LoggedTunableNumber extends PeriodicRunnable {
   private static final String tableKey = "Tuning";
   private final String key;
   private LoggedDashboardNumber dashboardNumber;
   private double defaultValue;
   private boolean hasDefault;
   private double lastHasChangedValue;
+  private double lastPeriodicValue;
+  private Consumer<Double> handler = (Double v) -> {};
 
   public LoggedTunableNumber(String name) {
+    super();
     key = tableKey + "/" + name;
   }
 
@@ -54,5 +58,26 @@ public class LoggedTunableNumber {
       return true;
     }
     return false;
+  }
+
+  /**
+   * Adds a handler for changes
+   *
+   * @param changeHandler The handler to use
+   */
+  public void attach(Consumer<Double> changeHandler) {
+    handler = changeHandler;
+    if (hasDefault) {
+      handler.accept(get());
+    }
+  }
+
+  @Override
+  public void periodic() {
+    double currentVal = get();
+    if (currentVal != lastPeriodicValue) {
+      lastPeriodicValue = currentVal;
+      handler.accept(currentVal);
+    }
   }
 }
