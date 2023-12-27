@@ -16,6 +16,11 @@ public interface Drivetrain extends Subsystem {
    */
   Pose2d getPosition();
 
+  /**
+   * Sets the position of the pose estimator
+   *
+   * @param newPose The new pose to use
+   */
   void setPosition(Pose2d newPose);
 
   Command getDriveToPointCmd(Pose2d pose);
@@ -29,6 +34,11 @@ public interface Drivetrain extends Subsystem {
 
   void humanDrive(ChassisSpeeds cmd, boolean foc);
 
+  /**
+   * Gets the current orientation according to the gyro
+   *
+   * @return The value from the gyro
+   */
   Rotation3d getGyro();
   /**
    * Gets the acceleration values from the IMU
