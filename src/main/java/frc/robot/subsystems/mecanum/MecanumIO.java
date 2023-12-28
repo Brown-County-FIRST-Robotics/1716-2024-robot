@@ -26,7 +26,5 @@ public interface MecanumIO {
 
   public default void setSpeeds(MecanumDriveWheelSpeeds cmd) {}
 
-  public default void reconfigure() {}
-
   public default void updateInputs(MecanumIOInputs inputs) {}
 }

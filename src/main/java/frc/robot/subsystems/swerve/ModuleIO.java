@@ -19,11 +19,6 @@ public interface ModuleIO {
   }
 
   public default void updateInputs(ModuleIOInputs inputs) {}
-  ;
 
   public default void setCmdState(SwerveModuleState state) {}
-  ;
-
-  public default void reconfigure() {}
-  ;
 }

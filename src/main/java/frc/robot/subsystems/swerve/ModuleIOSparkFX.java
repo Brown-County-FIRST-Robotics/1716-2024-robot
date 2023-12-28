@@ -63,14 +63,15 @@ public class ModuleIOSparkFX implements ModuleIO {
     pid.setPositionPIDWrappingMinInput(0);
     steer.setSmartCurrentLimit(30);
 
-    pid.setP(steerP.get());
-    pid.setI(steerI.get());
-    pid.setD(steerD.get());
-    pid.setFF(steerKV.get());
-    thrust.config_kP(0, thrustP.get(), 20);
-    thrust.config_kI(0, thrustI.get(), 20);
-    thrust.config_kD(0, thrustD.get(), 20);
-    thrust.config_kF(0, thrustKV.get(), 20);
+    steerKV.attach(pid::setFF);
+    steerP.attach(pid::setP);
+    steerI.attach(pid::setI);
+    steerD.attach(pid::setD);
+
+    thrustKV.attach((Double v) -> thrust.config_kF(0, v, 20));
+    thrustP.attach((Double v) -> thrust.config_kP(0, v, 20));
+    thrustI.attach((Double v) -> thrust.config_kI(0, v, 20));
+    thrustD.attach((Double v) -> thrust.config_kD(0, v, 20));
 
     steer.burnFlash();
     Logger.getInstance().recordMetadata(name + "_Steer_FW", steer.getFirmwareString());
@@ -104,33 +105,5 @@ public class ModuleIOSparkFX implements ModuleIO {
     return new SwerveModulePosition(
         thrust.getSelectedSensorPosition() * THRUST_DISTANCE_PER_TICK,
         Rotation2d.fromRotations(encoder.getPosition()).minus(steerOffset).unaryMinus());
-  }
-
-  @Override
-  public void reconfigure() {
-    if (steerKV.hasChanged()) {
-      pid.setP(steerP.get());
-    }
-    if (steerKV.hasChanged()) {
-      pid.setI(steerI.get());
-    }
-    if (steerKV.hasChanged()) {
-      pid.setD(steerD.get());
-    }
-    if (steerKV.hasChanged()) {
-      pid.setFF(steerKV.get());
-    }
-    if (thrustP.hasChanged()) {
-      thrust.config_kP(0, thrustP.get(), 20);
-    }
-    if (thrustI.hasChanged()) {
-      thrust.config_kI(0, thrustI.get(), 20);
-    }
-    if (thrustD.hasChanged()) {
-      thrust.config_kD(0, thrustD.get(), 20);
-    }
-    if (thrustKV.hasChanged()) {
-      thrust.config_kF(0, thrustKV.get(), 20);
-    }
   }
 }
