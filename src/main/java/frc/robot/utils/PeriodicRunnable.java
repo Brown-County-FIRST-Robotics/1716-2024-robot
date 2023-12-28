@@ -13,6 +13,7 @@ public abstract class PeriodicRunnable {
     }
   }
 
+  /** Constructs a new runnable */
   public PeriodicRunnable() {
     allRunnable.add(this);
   }

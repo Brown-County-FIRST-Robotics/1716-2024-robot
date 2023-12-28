@@ -14,11 +14,22 @@ public class LoggedTunableNumber extends PeriodicRunnable {
   private double lastPeriodicValue;
   private Consumer<Double> handler = (Double v) -> {};
 
+  /**
+   * Makes a new tunable
+   *
+   * @param name The name of the number on the dashboard
+   */
   public LoggedTunableNumber(String name) {
     super();
     key = tableKey + "/" + name;
   }
 
+  /**
+   * Makes a new tunable with a default value
+   *
+   * @param name The name of the number on the dashboard
+   * @param defaultValue The default value
+   */
   public LoggedTunableNumber(String name, double defaultValue) {
     this(name);
     initDefault(defaultValue);

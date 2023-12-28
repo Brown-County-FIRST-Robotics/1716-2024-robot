@@ -4,9 +4,11 @@ import com.kauailabs.navx.frc.AHRS;
 import edu.wpi.first.wpilibj.SPI;
 import org.littletonrobotics.junction.Logger;
 
+/** The abstraction for the Kauai labs Navx2 IMU */
 public class IMUIONavx implements IMUIO {
   AHRS imu;
 
+  /** Constructs a Navx that uses SPI */
   public IMUIONavx() {
     imu = new AHRS(SPI.Port.kMXP);
     while (!imu.isConnected()) {

@@ -29,9 +29,6 @@ import frc.robot.subsystems.swerve.SwerveDrivetrain;
  * subsystems, commands, and trigger mappings) should be declared here.
  */
 public class RobotContainer {
-  // The robot's subsystems and commands are defined here...
-
-  // Replace with CommandPS4Controller or CommandJoystick if needed
   private final CommandXboxController driverController =
       new CommandXboxController(OperatorConstants.DRIVER_CONTROLLER_PORT);
   private final Drivetrain driveSys;
@@ -65,11 +62,10 @@ public class RobotContainer {
     }
     useAlliance();
     driveSys.setDefaultCommand(new TeleopDrive(driveSys, driverController));
-
-    // Configure the trigger bindings
     configureBindings();
   }
 
+  /** Updates the pose estimator to use the correct initial pose */
   public void useAlliance() {
     driveSys.setPosition(
         DriverStation.getAlliance() == DriverStation.Alliance.Blue
@@ -86,9 +82,7 @@ public class RobotContainer {
    * PS4} controllers or {@link edu.wpi.first.wpilibj2.command.button.CommandJoystick Flight
    * joysticks}.
    */
-  private void configureBindings() {
-    // Schedule `ExampleCommand` when `exampleCondition` changes to `true`
-  }
+  private void configureBindings() {}
 
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.

@@ -3,9 +3,15 @@ package frc.robot.subsystems;
 import com.ctre.phoenix.sensors.WPI_Pigeon2;
 import org.littletonrobotics.junction.Logger;
 
+/** The abstraction for the CTRE Pigeon 2 IMU */
 public class IMUIOPigeon implements IMUIO {
   WPI_Pigeon2 imu;
 
+  /**
+   * Constructs an IMU using a CAN id
+   *
+   * @param id The CAN id of the pigeon2
+   */
   public IMUIOPigeon(int id) {
     imu = new WPI_Pigeon2(id);
     Logger.getInstance().recordMetadata("IMUFW", String.valueOf(imu.getFirmwareVersion()));

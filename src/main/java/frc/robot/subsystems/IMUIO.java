@@ -2,6 +2,7 @@ package frc.robot.subsystems;
 
 import org.littletonrobotics.junction.AutoLog;
 
+/** The abstraction layer for the IMU */
 public interface IMUIO {
   @AutoLog
   public static class IMUIOInputs {
@@ -15,6 +16,10 @@ public interface IMUIO {
     public double tempC = 0.0;
   }
 
+  /**
+   * Updates the inputs
+   *
+   * @param inputs A reference to the inputs to update
+   */
   public default void updateInputs(IMUIOInputs inputs) {}
-  ;
 }

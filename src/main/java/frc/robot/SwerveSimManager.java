@@ -24,6 +24,11 @@ public class SwerveSimManager {
           new Translation2d(-D / 2, -D / 2));
   static SwerveSimManager single = new SwerveSimManager();
 
+  /**
+   * Gets the global instance of SwerveSim
+   *
+   * @return The global instance
+   */
   public static SwerveSimManager getInstance() {
     return single;
   }
