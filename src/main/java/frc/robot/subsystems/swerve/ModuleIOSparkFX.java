@@ -37,6 +37,7 @@ public class ModuleIOSparkFX implements ModuleIO {
     this.name = name;
     this.chasisOffset = chasisOffset;
     thrust = new WPI_TalonFX(thrustID);
+    thrust.configFactoryDefault();
     thrust.setNeutralMode(NeutralMode.Coast);
     thrust.configSelectedFeedbackSensor(TalonFXFeedbackDevice.IntegratedSensor, 0, 20);
     thrust.configNominalOutputForward(0, 20);
@@ -74,10 +75,10 @@ public class ModuleIOSparkFX implements ModuleIO {
     thrustD.attach((Double v) -> thrust.config_kD(0, v, 20));
 
     steer.burnFlash();
-    Logger.getInstance().recordMetadata(name + "_Steer_FW", steer.getFirmwareString());
+    Logger.getInstance().recordOutput(name + "_Steer_FW", steer.getFirmwareString());
     Logger.getInstance()
-        .recordMetadata(name + "_Thrust_FW", String.valueOf(thrust.getFirmwareVersion()));
-    Logger.getInstance().recordMetadata(name + "_Thrust_Name", thrust.getDescription());
+        .recordOutput(name + "_Thrust_FW", String.valueOf(thrust.getFirmwareVersion()));
+    Logger.getInstance().recordOutput(name + "_Thrust_Name", thrust.getDescription());
     steerOffset = Rotation2d.fromRotations(thrust.configGetCustomParam(0) / 1000.0);
   }
 
