@@ -37,12 +37,13 @@ public class ModuleIOSparkFX implements ModuleIO {
     this.name = name;
     this.chasisOffset = chasisOffset;
     thrust = new WPI_TalonFX(thrustID);
+    thrust.configFactoryDefault(200);
     thrust.setNeutralMode(NeutralMode.Coast);
-    thrust.configSelectedFeedbackSensor(TalonFXFeedbackDevice.IntegratedSensor, 0, 20);
-    thrust.configNominalOutputForward(0, 20);
-    thrust.configNominalOutputReverse(0, 20);
-    thrust.configPeakOutputForward(1, 20);
-    thrust.configPeakOutputReverse(-1, 20);
+    thrust.configSelectedFeedbackSensor(TalonFXFeedbackDevice.IntegratedSensor, 0, 200);
+    thrust.configNominalOutputForward(0, 200);
+    thrust.configNominalOutputReverse(0, 200);
+    thrust.configPeakOutputForward(1, 200);
+    thrust.configPeakOutputReverse(-1, 200);
 
     steer = new CANSparkMax(steerID, CANSparkMaxLowLevel.MotorType.kBrushless);
     steer.restoreFactoryDefaults();
@@ -67,17 +68,17 @@ public class ModuleIOSparkFX implements ModuleIO {
     steerP.attach(pid::setP);
     steerI.attach(pid::setI);
     steerD.attach(pid::setD);
-
-    thrustKV.attach((Double v) -> thrust.config_kF(0, v, 20));
+    thrust.config_kF(0, 1023.0 * 600.0 / (6380.0 * 2048.0), 200);
+    thrustKV.attach((Double v) -> thrust.config_kF(0, v, 200));
     thrustP.attach((Double v) -> thrust.config_kP(0, v, 20));
     thrustI.attach((Double v) -> thrust.config_kI(0, v, 20));
     thrustD.attach((Double v) -> thrust.config_kD(0, v, 20));
 
     steer.burnFlash();
-    Logger.getInstance().recordMetadata(name + "_Steer_FW", steer.getFirmwareString());
+    Logger.getInstance().recordOutput(name + "_Steer_FW", steer.getFirmwareString());
     Logger.getInstance()
-        .recordMetadata(name + "_Thrust_FW", String.valueOf(thrust.getFirmwareVersion()));
-    Logger.getInstance().recordMetadata(name + "_Thrust_Name", thrust.getDescription());
+        .recordOutput(name + "_Thrust_FW", String.valueOf(thrust.getFirmwareVersion()));
+    Logger.getInstance().recordOutput(name + "_Thrust_Name", thrust.getDescription());
     steerOffset = Rotation2d.fromRotations(thrust.configGetCustomParam(0) / 1000.0);
   }
 
