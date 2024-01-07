@@ -117,11 +117,8 @@ public class SwerveSimManager {
         cmdSteerPos[mnum] += 1.0;
       }
       steerStates[mnum] =
-          (new TrapezoidProfile(
-                  new TrapezoidProfile.Constraints(5, 20),
-                  new TrapezoidProfile.State(cmdSteerPos[mnum], 0),
-                  steerStates[mnum]))
-              .calculate(0.02);
+          (new TrapezoidProfile(new TrapezoidProfile.Constraints(5, 20)))
+              .calculate(0.02, new TrapezoidProfile.State(cmdSteerPos[mnum], 0), steerStates[mnum]);
       steerStates[mnum].position = ((steerStates[mnum].position % 1.0) + 1.0) % 1.0;
       lastthrustPos = thrustPos.clone();
       thrustPos[mnum] += thrustVel[mnum] * 0.02;
@@ -133,6 +130,6 @@ public class SwerveSimManager {
                 new SwerveModulePosition(thrustVel[1] * 0.02, getModPos(1).angle),
                 new SwerveModulePosition(thrustVel[2] * 0.02, getModPos(2).angle),
                 new SwerveModulePosition(thrustVel[3] * 0.02, getModPos(3).angle)));
-    Logger.getInstance().recordOutput("Sim/RealPose", realPose);
+    Logger.recordOutput("Sim/RealPose", realPose);
   }
 }

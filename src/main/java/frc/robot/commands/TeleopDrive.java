@@ -59,7 +59,7 @@ public class TeleopDrive extends Command {
       ext += ppc.calculate(drivetrain.getPosition().getRotation().minus(lockRot).getRotations(), 0);
     }
     controller.getHID().setRumble(GenericHID.RumbleType.kRightRumble, Math.abs(ext / 3.0));
-    Logger.getInstance().recordOutput("TeleopDrive/ext", ext);
+    Logger.recordOutput("TeleopDrive/ext", ext);
 
     if (deadband(controller.getLeftY())
         && deadband(controller.getLeftX())
@@ -94,8 +94,8 @@ public class TeleopDrive extends Command {
       drivetrain.lockWheels();
     }
 
-    Logger.getInstance().recordOutput("TeleopDrive/locked", locked);
-    Logger.getInstance().recordOutput("TeleopDrive/foc", foc);
+    Logger.recordOutput("TeleopDrive/locked", locked);
+    Logger.recordOutput("TeleopDrive/foc", foc);
   }
 
   /**

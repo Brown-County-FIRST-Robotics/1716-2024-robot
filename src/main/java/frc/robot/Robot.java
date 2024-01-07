@@ -36,7 +36,7 @@ public class Robot extends LoggedRobot {
   @Override
   public void robotInit() {
     // Record metadata
-    Logger.getInstance().recordMetadata("ProjectName", "2024");
+    Logger.recordMetadata("ProjectName", "2024");
     File deployDir = Filesystem.getDeployDirectory();
     File tagFile = new File(deployDir, "git_tag.txt");
     File deployerFile = new File(deployDir, "deployer.txt");
@@ -56,38 +56,37 @@ public class Robot extends LoggedRobot {
     } catch (FileNotFoundException e) {
       deployer = "Unknown deployer";
     }
-    Logger.getInstance().recordMetadata("Tag Name", tagName);
-    Logger.getInstance().recordMetadata("Deployer", deployer);
-    Logger.getInstance().recordMetadata("Bot", String.valueOf(WhoAmI.bot));
-    Logger.getInstance().recordMetadata("SN", HALUtil.getSerialNumber());
+    Logger.recordMetadata("Tag Name", tagName);
+    Logger.recordMetadata("Deployer", deployer);
+    Logger.recordMetadata("Bot", String.valueOf(WhoAmI.bot));
+    Logger.recordMetadata("SN", HALUtil.getSerialNumber());
 
     // Running on a real robot, log to a USB stick
     switch (WhoAmI.mode) {
       case REAL:
-        Logger.getInstance().addDataReceiver(new WPILOGWriter("/home/lvuser/"));
+        Logger.addDataReceiver(new WPILOGWriter("/home/lvuser/"));
         break;
       case SIM:
-        Logger.getInstance().addDataReceiver(new WPILOGWriter("SimLogs/"));
+        Logger.addDataReceiver(new WPILOGWriter("SimLogs/"));
         break;
       case REPLAY:
         setUseTiming(false); // Run as fast as possible
         String logPath = LogFileUtil.findReplayLog();
-        Logger.getInstance().setReplaySource(new WPILOGReader(logPath));
-        Logger.getInstance()
-            .addDataReceiver(
-                new WPILOGWriter(
-                    LogFileUtil.addPathSuffix(
-                        logPath,
-                        "_replay" + new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date()))));
+        Logger.setReplaySource(new WPILOGReader(logPath));
+        Logger.addDataReceiver(
+            new WPILOGWriter(
+                LogFileUtil.addPathSuffix(
+                    logPath,
+                    "_replay" + new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date()))));
         break;
     }
-    Logger.getInstance().addDataReceiver(new NT4Publisher());
+    Logger.addDataReceiver(new NT4Publisher());
 
     // See http://bit.ly/3YIzFZ6 for more information on timestamps in AdvantageKit.
     // Logger.disableDeterministicTimestamps()
 
     // Start AdvantageKit logger
-    Logger.getInstance().start();
+    Logger.start();
     robotContainer = new RobotContainer();
     // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
     // autonomous chooser on the dashboard.

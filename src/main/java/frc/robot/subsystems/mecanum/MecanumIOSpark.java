@@ -88,10 +88,10 @@ public class MecanumIOSpark implements MecanumIO {
     fr.burnFlash();
     bl.burnFlash();
     br.burnFlash();
-    Logger.getInstance().recordMetadata("FLFW", fl.getFirmwareString());
-    Logger.getInstance().recordMetadata("FRFW", fr.getFirmwareString());
-    Logger.getInstance().recordMetadata("BLFW", bl.getFirmwareString());
-    Logger.getInstance().recordMetadata("BRFW", br.getFirmwareString());
+    Logger.recordMetadata("FLFW", fl.getFirmwareString());
+    Logger.recordMetadata("FRFW", fr.getFirmwareString());
+    Logger.recordMetadata("BLFW", bl.getFirmwareString());
+    Logger.recordMetadata("BRFW", br.getFirmwareString());
   }
 
   @Override

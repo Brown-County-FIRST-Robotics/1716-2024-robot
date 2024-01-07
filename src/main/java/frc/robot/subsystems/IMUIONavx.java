@@ -14,7 +14,7 @@ public class IMUIONavx implements IMUIO {
     while (!imu.isConnected()) {
       imu.isConnected();
     }
-    Logger.getInstance().recordMetadata("IMUFW", imu.getFirmwareVersion());
+    Logger.recordMetadata("IMUFW", imu.getFirmwareVersion());
   }
 
   @Override

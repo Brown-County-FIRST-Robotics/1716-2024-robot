@@ -14,7 +14,7 @@ public class IMUIOPigeon implements IMUIO {
    */
   public IMUIOPigeon(int id) {
     imu = new WPI_Pigeon2(id);
-    Logger.getInstance().recordMetadata("IMUFW", String.valueOf(imu.getFirmwareVersion()));
+    Logger.recordMetadata("IMUFW", String.valueOf(imu.getFirmwareVersion()));
   }
 
   @Override

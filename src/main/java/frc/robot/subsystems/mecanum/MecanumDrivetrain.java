@@ -42,8 +42,8 @@ public class MecanumDrivetrain implements Drivetrain {
     this.imu = imu;
     drive.updateInputs(driveInputs);
     imu.updateInputs(imuInputs);
-    Logger.getInstance().processInputs("Drive/MecanumInputs", driveInputs);
-    Logger.getInstance().processInputs("Drive/IMU", imuInputs);
+    Logger.processInputs("Drive/MecanumInputs", driveInputs);
+    Logger.processInputs("Drive/IMU", imuInputs);
     poseEstimator =
         new MecanumDrivePoseEstimator(
             KINEMATICS,
@@ -57,16 +57,15 @@ public class MecanumDrivetrain implements Drivetrain {
   public void periodic() {
     drive.updateInputs(driveInputs);
     imu.updateInputs(imuInputs);
-    Logger.getInstance().processInputs("Drive/MecanumInputs", driveInputs);
-    Logger.getInstance().processInputs("Drive/IMU", imuInputs);
-    Logger.getInstance().recordOutput("Drive/Pose", getPosition());
-    Logger.getInstance()
-        .recordOutput(
-            "Drive/RealSpeeds",
-            new SwerveModuleState(driveInputs.flVel, Rotation2d.fromDegrees(-45)),
-            new SwerveModuleState(driveInputs.frVel, Rotation2d.fromDegrees(45)),
-            new SwerveModuleState(driveInputs.blVel, Rotation2d.fromDegrees(45)),
-            new SwerveModuleState(driveInputs.brVel, Rotation2d.fromDegrees(-45)));
+    Logger.processInputs("Drive/MecanumInputs", driveInputs);
+    Logger.processInputs("Drive/IMU", imuInputs);
+    Logger.recordOutput("Drive/Pose", getPosition());
+    Logger.recordOutput(
+        "Drive/RealSpeeds",
+        new SwerveModuleState(driveInputs.flVel, Rotation2d.fromDegrees(-45)),
+        new SwerveModuleState(driveInputs.frVel, Rotation2d.fromDegrees(45)),
+        new SwerveModuleState(driveInputs.blVel, Rotation2d.fromDegrees(45)),
+        new SwerveModuleState(driveInputs.brVel, Rotation2d.fromDegrees(-45)));
     poseEstimator.update(
         Rotation2d.fromDegrees(imuInputs.yaw),
         new MecanumDriveWheelPositions(
@@ -119,7 +118,7 @@ public class MecanumDrivetrain implements Drivetrain {
   }
 
   public Command makeTrajectoryCommand(Trajectory trajectory) {
-    Logger.getInstance().recordOutput("Drive/CurrentTraj", trajectory);
+    Logger.recordOutput("Drive/CurrentTraj", trajectory);
     return new MecanumControllerCommand(
         trajectory,
         this::getPosition,
@@ -158,13 +157,12 @@ public class MecanumDrivetrain implements Drivetrain {
   }
 
   private void setWheelSpeeds(MecanumDriveWheelSpeeds speeds) {
-    Logger.getInstance()
-        .recordOutput(
-            "Drive/CmdSpeeds",
-            new SwerveModuleState(speeds.frontLeftMetersPerSecond, Rotation2d.fromDegrees(-45)),
-            new SwerveModuleState(speeds.frontRightMetersPerSecond, Rotation2d.fromDegrees(45)),
-            new SwerveModuleState(speeds.rearLeftMetersPerSecond, Rotation2d.fromDegrees(45)),
-            new SwerveModuleState(speeds.rearRightMetersPerSecond, Rotation2d.fromDegrees(-45)));
+    Logger.recordOutput(
+        "Drive/CmdSpeeds",
+        new SwerveModuleState(speeds.frontLeftMetersPerSecond, Rotation2d.fromDegrees(-45)),
+        new SwerveModuleState(speeds.frontRightMetersPerSecond, Rotation2d.fromDegrees(45)),
+        new SwerveModuleState(speeds.rearLeftMetersPerSecond, Rotation2d.fromDegrees(45)),
+        new SwerveModuleState(speeds.rearRightMetersPerSecond, Rotation2d.fromDegrees(-45)));
     drive.setSpeeds(speeds);
   }
 

@@ -127,7 +127,7 @@ public class SwerveDrivetrain implements Drivetrain {
     states[3] =
         SwerveModuleState.optimize(
             states[3], getPositions()[3].angle.plus(Rotation2d.fromRotations(1.0)));
-    Logger.getInstance().recordOutput("Drive/CmdStates", states);
+    Logger.recordOutput("Drive/CmdStates", states);
     fl.setCmdState(states[0]);
     fr.setCmdState(states[1]);
     bl.setCmdState(states[2]);
