@@ -4,6 +4,7 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkMaxPIDController;
+import edu.wpi.first.math.kinematics.MecanumDriveWheelPositions;
 import edu.wpi.first.math.kinematics.MecanumDriveWheelSpeeds;
 import frc.robot.utils.LoggedTunableNumber;
 import org.littletonrobotics.junction.Logger;
@@ -116,14 +117,18 @@ public class MecanumIOSpark implements MecanumIO {
     inputs.frTemp = fr.getMotorTemperature();
     inputs.blTemp = bl.getMotorTemperature();
     inputs.brTemp = br.getMotorTemperature();
-    inputs.flPos = flEncoder.getPosition() * EFFECTIVE_WHEEL_DIAMETER;
-    inputs.flVel = flEncoder.getVelocity() * EFFECTIVE_WHEEL_DIAMETER / 60.0;
-    inputs.frPos = frEncoder.getPosition() * EFFECTIVE_WHEEL_DIAMETER;
-    inputs.frVel = frEncoder.getVelocity() * EFFECTIVE_WHEEL_DIAMETER / 60.0;
-    inputs.blPos = blEncoder.getPosition() * EFFECTIVE_WHEEL_DIAMETER;
-    inputs.blVel = blEncoder.getVelocity() * EFFECTIVE_WHEEL_DIAMETER / 60.0;
-    inputs.brPos = brEncoder.getPosition() * EFFECTIVE_WHEEL_DIAMETER;
-    inputs.brVel = brEncoder.getVelocity() * EFFECTIVE_WHEEL_DIAMETER / 60.0;
+    inputs.pos =
+        new MecanumDriveWheelPositions(
+            flEncoder.getPosition() * EFFECTIVE_WHEEL_DIAMETER,
+            frEncoder.getPosition() * EFFECTIVE_WHEEL_DIAMETER,
+            blEncoder.getPosition() * EFFECTIVE_WHEEL_DIAMETER,
+            brEncoder.getPosition() * EFFECTIVE_WHEEL_DIAMETER);
+    inputs.vel =
+        new MecanumDriveWheelSpeeds(
+            flEncoder.getVelocity() * EFFECTIVE_WHEEL_DIAMETER / 60.0,
+            frEncoder.getVelocity() * EFFECTIVE_WHEEL_DIAMETER / 60.0,
+            blEncoder.getVelocity() * EFFECTIVE_WHEEL_DIAMETER / 60.0,
+            brEncoder.getVelocity() * EFFECTIVE_WHEEL_DIAMETER / 60.0);
     inputs.flOut = fl.getAppliedOutput();
     inputs.frOut = fr.getAppliedOutput();
     inputs.blOut = bl.getAppliedOutput();
