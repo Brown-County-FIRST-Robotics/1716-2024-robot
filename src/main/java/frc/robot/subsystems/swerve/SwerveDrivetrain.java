@@ -100,7 +100,7 @@ public class SwerveDrivetrain implements Drivetrain {
   }
 
   private Rotation2d getNavxRotation() {
-    return Rotation2d.fromDegrees(imuInputs.yaw);
+    return imuInputs.rotation.toRotation2d();
   }
 
   private void setModuleStates(SwerveModuleState[] states) {
@@ -209,7 +209,7 @@ public class SwerveDrivetrain implements Drivetrain {
 
   @Override
   public Rotation3d getGyro() {
-    return new Rotation3d(imuInputs.roll, imuInputs.pitch, imuInputs.yaw);
+    return imuInputs.rotation;
   }
 
   @Override

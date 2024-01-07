@@ -46,10 +46,7 @@ public class MecanumDrivetrain implements Drivetrain {
     Logger.processInputs("Drive/IMU", imuInputs);
     poseEstimator =
         new MecanumDrivePoseEstimator(
-            KINEMATICS,
-            Rotation2d.fromDegrees(imuInputs.yaw),
-            driveInputs.pos,
-            Constants.INIT_POSE);
+            KINEMATICS, imuInputs.rotation.toRotation2d(), driveInputs.pos, Constants.INIT_POSE);
   }
 
   @Override
@@ -68,7 +65,7 @@ public class MecanumDrivetrain implements Drivetrain {
         new SwerveModuleState(driveInputs.vel.rearLeftMetersPerSecond, Rotation2d.fromDegrees(45)),
         new SwerveModuleState(
             driveInputs.vel.rearRightMetersPerSecond, Rotation2d.fromDegrees(-45)));
-    poseEstimator.update(Rotation2d.fromDegrees(imuInputs.yaw), driveInputs.pos);
+    poseEstimator.update(imuInputs.rotation.toRotation2d(), driveInputs.pos);
   }
 
   @Override
@@ -78,7 +75,7 @@ public class MecanumDrivetrain implements Drivetrain {
 
   @Override
   public void setPosition(Pose2d newPose) {
-    poseEstimator.resetPosition(Rotation2d.fromDegrees(imuInputs.yaw), driveInputs.pos, newPose);
+    poseEstimator.resetPosition(imuInputs.rotation.toRotation2d(), driveInputs.pos, newPose);
   }
 
   @Override
@@ -163,7 +160,7 @@ public class MecanumDrivetrain implements Drivetrain {
 
   @Override
   public Rotation3d getGyro() {
-    return new Rotation3d(imuInputs.roll, imuInputs.pitch, imuInputs.yaw);
+    return imuInputs.rotation;
   }
 
   @Override

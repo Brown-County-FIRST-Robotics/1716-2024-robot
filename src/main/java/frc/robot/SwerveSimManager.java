@@ -2,6 +2,7 @@ package frc.robot;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
@@ -93,8 +94,8 @@ public class SwerveSimManager {
    *
    * @return The yaw value
    */
-  public Rotation2d getIMUOutput() {
-    return realPose.getRotation();
+  public Rotation3d getIMUOutput() {
+    return new Rotation3d(0, 0, realPose.getRotation().getRadians());
   }
 
   /**

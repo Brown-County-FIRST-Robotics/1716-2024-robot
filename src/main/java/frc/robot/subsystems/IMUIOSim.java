@@ -8,6 +8,6 @@ public class IMUIOSim implements IMUIO {
 
   @Override
   public void updateInputs(IMUIOInputs inputs) {
-    inputs.yaw = SwerveSimManager.getInstance().getIMUOutput().getDegrees();
+    inputs.rotation = SwerveSimManager.getInstance().getIMUOutput();
   }
 }

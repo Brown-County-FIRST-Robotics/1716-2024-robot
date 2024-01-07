@@ -1,6 +1,8 @@
 package frc.robot.subsystems;
 
 import com.kauailabs.navx.frc.AHRS;
+import edu.wpi.first.math.geometry.Quaternion;
+import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.wpilibj.SPI;
 import org.littletonrobotics.junction.Logger;
 
@@ -20,9 +22,13 @@ public class IMUIONavx implements IMUIO {
   @Override
   public void updateInputs(IMUIOInputs inputs) {
     inputs.tempC = imu.getTempC();
-    inputs.pitch = imu.getPitch();
-    inputs.yaw = -imu.getYaw();
-    inputs.roll = imu.getRoll();
+    inputs.rotation =
+        new Rotation3d(
+            new Quaternion(
+                imu.getQuaternionW(),
+                imu.getQuaternionX(),
+                imu.getQuaternionY(),
+                imu.getQuaternionZ()));
     inputs.xAccelMPS = imu.getRawAccelX() * 9.8065;
     inputs.yAccelMPS = imu.getRawAccelY() * 9.8065;
     inputs.zAccelMPS = imu.getRawAccelZ() * 9.8065;
