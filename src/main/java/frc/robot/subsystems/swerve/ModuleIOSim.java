@@ -13,10 +13,8 @@ public class ModuleIOSim implements ModuleIO {
 
   @Override
   public void updateInputs(ModuleIOInputs inputs) {
-    SwerveModulePosition pos = SwerveSimManager.getInstance().getModPos(id);
-    inputs.steerPos = pos.angle.getRotations();
-    inputs.thrustPos = pos.distanceMeters;
-    inputs.thrustVel = SwerveSimManager.getInstance().getModState(id).speedMetersPerSecond;
+    inputs.pos = SwerveSimManager.getInstance().getModPos(id);
+    inputs.vel = SwerveSimManager.getInstance().getModState(id);
   }
 
   @Override

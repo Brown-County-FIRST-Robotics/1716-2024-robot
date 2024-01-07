@@ -52,12 +52,7 @@ public class SwerveDrivetrain implements Drivetrain {
   Field2d field;
 
   private SwerveModulePosition[] getPositions() {
-    return new SwerveModulePosition[] {
-      new SwerveModulePosition(flInputs.thrustPos, Rotation2d.fromRotations(flInputs.steerPos)),
-      new SwerveModulePosition(frInputs.thrustPos, Rotation2d.fromRotations(frInputs.steerPos)),
-      new SwerveModulePosition(blInputs.thrustPos, Rotation2d.fromRotations(blInputs.steerPos)),
-      new SwerveModulePosition(brInputs.thrustPos, Rotation2d.fromRotations(brInputs.steerPos))
-    };
+    return new SwerveModulePosition[] {flInputs.pos, frInputs.pos, blInputs.pos, brInputs.pos};
   }
 
   public SwerveDrivetrain(ModuleIO fl, ModuleIO fr, ModuleIO bl, ModuleIO br, IMUIO imu) {
@@ -96,12 +91,7 @@ public class SwerveDrivetrain implements Drivetrain {
   }
 
   private SwerveModuleState[] getWheelSpeeds() {
-    return new SwerveModuleState[] {
-      new SwerveModuleState(flInputs.thrustVel, getPositions()[0].angle),
-      new SwerveModuleState(frInputs.thrustVel, getPositions()[1].angle),
-      new SwerveModuleState(blInputs.thrustVel, getPositions()[2].angle),
-      new SwerveModuleState(brInputs.thrustVel, getPositions()[3].angle)
-    };
+    return new SwerveModuleState[] {flInputs.vel, frInputs.vel, blInputs.vel, brInputs.vel};
   }
 
   @Override
