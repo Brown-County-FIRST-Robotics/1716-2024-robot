@@ -6,7 +6,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj.GenericHID;
-import edu.wpi.first.wpilibj2.command.CommandBase;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Constants;
 import frc.robot.subsystems.Drivetrain;
@@ -14,7 +14,7 @@ import frc.robot.utils.DualRateLimiter;
 import frc.robot.utils.LoggedTunableNumber;
 import org.littletonrobotics.junction.Logger;
 
-public class TeleopDrive extends CommandBase {
+public class TeleopDrive extends Command {
   private final Drivetrain drivetrain;
   private final CommandXboxController controller;
   private final Rotation2d lockBand = Rotation2d.fromDegrees(20);

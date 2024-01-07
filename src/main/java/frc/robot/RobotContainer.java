@@ -69,7 +69,7 @@ public class RobotContainer {
   /** Updates the pose estimator to use the correct initial pose */
   public void useAlliance() {
     driveSys.setPosition(
-        DriverStation.getAlliance() == DriverStation.Alliance.Blue
+        DriverStation.getAlliance().get() == DriverStation.Alliance.Blue
             ? Constants.BLUE_INIT_POSE
             : Constants.RED_INIT_POSE);
   }

@@ -14,13 +14,13 @@ import edu.wpi.first.math.trajectory.TrajectoryGenerator;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.DeferredCommand;
 import edu.wpi.first.wpilibj2.command.MecanumControllerCommand;
+import edu.wpi.first.wpilibj2.command.Subsystem;
 import frc.robot.Constants;
-import frc.robot.SuppliedCommand;
-import frc.robot.subsystems.Drivetrain;
-import frc.robot.subsystems.IMUIO;
-import frc.robot.subsystems.IMUIOInputsAutoLogged;
+import frc.robot.subsystems.*;
 import java.util.List;
+import java.util.Set;
 import org.littletonrobotics.junction.Logger;
 
 public class MecanumDrivetrain implements Drivetrain {
@@ -94,7 +94,7 @@ public class MecanumDrivetrain implements Drivetrain {
 
   @Override
   public Command getDriveToPointCmd(Pose2d pose, double endVelX, double endVelY) {
-    return new SuppliedCommand(
+    return new DeferredCommand(
         () -> {
           TrajectoryConfig conf =
               new TrajectoryConfig(Constants.Auto.MAX_VELOCITY, Constants.Auto.MAX_ACCELERATION)
@@ -104,7 +104,7 @@ public class MecanumDrivetrain implements Drivetrain {
               TrajectoryGenerator.generateTrajectory(getPosition(), List.of(), pose, conf);
           return makeTrajectoryCommand(trajectory);
         },
-        this);
+        (Set<Subsystem>) this);
   }
 
   @Override
@@ -144,7 +144,7 @@ public class MecanumDrivetrain implements Drivetrain {
             -cmd.vxMetersPerSecond, -cmd.vyMetersPerSecond, -cmd.omegaRadiansPerSecond);
     if (foc) {
       Rotation2d rot =
-          DriverStation.getAlliance() == DriverStation.Alliance.Red
+          DriverStation.getAlliance().get() == DriverStation.Alliance.Red
               ? getPosition().getRotation()
               : getPosition().getRotation().rotateBy(Rotation2d.fromRotations(0.5));
       sp =
