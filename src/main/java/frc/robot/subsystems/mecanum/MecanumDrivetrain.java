@@ -187,4 +187,9 @@ public class MecanumDrivetrain implements Drivetrain {
   public ChassisSpeeds getVelocity() {
     return KINEMATICS.toChassisSpeeds(getWheelSpeeds());
   }
+
+  @Override
+  public void addVisionUpdate(Pose2d newPose, double timestamp) {
+    poseEstimator.addVisionMeasurement(newPose, timestamp);
+  }
 }

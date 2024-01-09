@@ -23,6 +23,8 @@ public interface Drivetrain extends Subsystem {
    */
   void setPosition(Pose2d newPose);
 
+  void addVisionUpdate(Pose2d newPose, double timestamp);
+
   Command getDriveToPointCmd(Pose2d pose);
 
   Command getDriveToPointCmd(Pose2d pose, double endVelX, double endVelY);
