@@ -10,20 +10,23 @@ public class VisionIOSecondSight implements VisionIO {
   DoubleSubscriber errorSub;
 
   public VisionIOSecondSight(String name) {
-    NetworkTable table = NetworkTableInstance.getDefault().getTable(name);
+    NetworkTable table = NetworkTableInstance.getDefault().getTable("SS_LAPTOP").getSubTable("0");
     isRecordingSub = table.getBooleanTopic("isRecording").subscribe(false);
     recordingPathSub = table.getStringTopic("recordingPath").subscribe("");
-    idsSub = table.getStringArrayTopic("IDs").subscribe(new String[] {});
-    posesSub = table.getDoubleArrayTopic("Pose").subscribe(new double[] {});
-    errorSub = table.getDoubleTopic("RMSError").subscribe(-1);
+    idsSub = table.getStringArrayTopic("IDs").subscribe(new String[] {},PubSubOption.keepDuplicates(true), PubSubOption.sendAll(true));
+    posesSub = table.getDoubleArrayTopic("Pose").subscribe(new double[] {},PubSubOption.keepDuplicates(true), PubSubOption.sendAll(true));
+    errorSub = table.getDoubleTopic("RMSError").subscribe(-1,PubSubOption.keepDuplicates(true), PubSubOption.sendAll(true));
   }
 
   @Override
   public void updateInputs(VisionIOInputs inputs) {
     inputs.isRecording = isRecordingSub.get();
     inputs.recordingPath = recordingPathSub.get();
-    TimestampedStringArray[] ids = idsSub.readQueue();
+    var k=idsSub.get();
     double[][] poses = posesSub.readQueueValues();
+    var lll=idsSub.getAtomic(new String[]{"78"});
+    TimestampedStringArray[] ids = idsSub.readQueue();
+    double[][] po2ses = posesSub.readQueueValues();
     inputs.timestamps = new double[ids.length];
     inputs.ids = new String[ids.length][];
     inputs.poses = poses.clone();
