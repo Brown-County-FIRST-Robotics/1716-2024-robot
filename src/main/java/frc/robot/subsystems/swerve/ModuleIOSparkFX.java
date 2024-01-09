@@ -85,7 +85,16 @@ public class ModuleIOSparkFX implements ModuleIO {
     inputs.steerTempC = steer.getMotorTemperature();
     inputs.thrustErr = thrust.getClosedLoopError();
     inputs.thrustTempC = thrust.getTemperature();
-    inputs.offset = thrust.configGetCustomParam(0) / 1000.0;
+//    inputs.offset = thrust.configGetCustomParam(0) / 1000.0;
+    if(name=="FL"){
+      inputs.offset=0.825;
+    }else if(name=="FR"){
+      inputs.offset=0.005;
+    }else if(name=="BL"){
+      inputs.offset=0.982;
+    }else if(name=="BR"){
+      inputs.offset=0.456;
+    }
   }
 
   @Override
