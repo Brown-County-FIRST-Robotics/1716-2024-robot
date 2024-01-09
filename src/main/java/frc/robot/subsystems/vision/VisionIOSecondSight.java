@@ -7,13 +7,15 @@ public class VisionIOSecondSight implements VisionIO{
   StringSubscriber recordingPathSub;
   StringArraySubscriber idsSub;
   DoubleArraySubscriber posesSub;
+  DoubleSubscriber errorSub;
 
   public VisionIOSecondSight(String name){
     NetworkTable table=NetworkTableInstance.getDefault().getTable(name);
     isRecordingSub=table.getBooleanTopic("isRecording").subscribe(false);
     recordingPathSub=table.getStringTopic("recordingPath").subscribe("");
-    idsSub=table.getStringArrayTopic("ids").subscribe(new String[]{});
-    posesSub=table.getDoubleArrayTopic("poses").subscribe(new double[]{});
+    idsSub=table.getStringArrayTopic("IDs").subscribe(new String[]{});
+    posesSub=table.getDoubleArrayTopic("Pose").subscribe(new double[]{});
+    errorSub=table.getDoubleTopic("RMSError").subscribe(-1);
   }
   @Override
   public void updateInputs(VisionIOInputs inputs) {
@@ -28,5 +30,6 @@ public class VisionIOSecondSight implements VisionIO{
       inputs.timestamps[i]=ids[i].timestamp/1000000.0;
       inputs.ids[i]=ids[i].value;
     }
+    inputs.errors= errorSub.readQueueValues();
   }
 }

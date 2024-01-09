@@ -11,6 +11,7 @@ public interface VisionIO {
     public double[][] poses = {};
     public double[] timestamps = {};
     public String[][] ids = {};
+    public double[] errors = {};
     public boolean isRecording = false;
     public String recordingPath = "";
 
@@ -19,6 +20,7 @@ public interface VisionIO {
       table.put("Timestamps", timestamps);
       table.put("RecordingPath", recordingPath);
       table.put("IsRecording", isRecording);
+      table.put("Errors", errors);
       table.put("NumLoops", ids.length);
       for (int i = 0; i < ids.length; i++) {
         table.put("IDs/" + i, ids[i]);
@@ -31,6 +33,7 @@ public interface VisionIO {
       timestamps = table.getDoubleArray("Timestamps", new double[] {});
       recordingPath = table.getString("RecordingPath", "");
       isRecording = table.getBoolean("IsRecording", false);
+      errors=table.getDoubleArray("Errors",new double[]{})
       int nmLoops = (int) table.getInteger("NumLoops", 0);
       ids = new String[nmLoops][];
       poses = new double[nmLoops][];
