@@ -157,6 +157,11 @@ public class SwerveDrivetrain implements Drivetrain {
   }
 
   @Override
+  public void addVisionUpdate(Pose2d newPose, double timestamp) {
+    poseEstimator.addVisionMeasurement(newPose, timestamp);
+  }
+
+  @Override
   public Command getDriveToPointCmd(Pose2d pose) {
     return getDriveToPointCmd(pose, 0, 0);
   }
