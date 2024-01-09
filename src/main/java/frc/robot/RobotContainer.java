@@ -52,10 +52,10 @@ public class RobotContainer {
       case SWERVEBASE:
         driveSys =
             new SwerveDrivetrain(
-                new ModuleIOSparkFX(20, 10, "FL", Rotation2d.fromDegrees(-90)),
-                new ModuleIOSparkFX(21, 11, "FR", Rotation2d.fromDegrees(0)),
-                new ModuleIOSparkFX(22, 12, "BL", Rotation2d.fromDegrees(180)),
-                new ModuleIOSparkFX(23, 13, "BR", Rotation2d.fromDegrees(90)),
+                new ModuleIOSparkFX(20, 10, "FL"),
+                new ModuleIOSparkFX(21, 11, "FR"),
+                new ModuleIOSparkFX(22, 12, "BL"),
+                new ModuleIOSparkFX(23, 13, "BR"),
                 new IMUIONavx());
         break;
       default:

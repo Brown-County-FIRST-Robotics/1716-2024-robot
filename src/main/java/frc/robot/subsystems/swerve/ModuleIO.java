@@ -16,6 +16,7 @@ public interface ModuleIO {
     public double steerTempC = 0.0;
     public double thrustTempC = 0.0;
     public double thrustErr = 0.0;
+    public double offset = 0.0;
   }
 
   public default void updateInputs(ModuleIOInputs inputs) {}
