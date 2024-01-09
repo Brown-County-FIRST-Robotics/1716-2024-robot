@@ -3,9 +3,7 @@ package frc.robot.subsystems.vision;
 import org.littletonrobotics.junction.LogTable;
 import org.littletonrobotics.junction.inputs.LoggableInputs;
 
-/**
- * The IO interface for one camera
- */
+/** The IO interface for one camera */
 public interface VisionIO {
   public static class VisionIOInputs implements LoggableInputs {
     public double[][] poses = {};
@@ -33,7 +31,7 @@ public interface VisionIO {
       timestamps = table.getDoubleArray("Timestamps", new double[] {});
       recordingPath = table.getString("RecordingPath", "");
       isRecording = table.getBoolean("IsRecording", false);
-      errors=table.getDoubleArray("Errors",new double[]{})
+      errors = table.getDoubleArray("Errors", new double[] {});
       int nmLoops = (int) table.getInteger("NumLoops", 0);
       ids = new String[nmLoops][];
       poses = new double[nmLoops][];
