@@ -60,6 +60,13 @@ public class MecanumDrivetrain implements Drivetrain {
     Logger.getInstance().processInputs("Drive/MecanumInputs", driveInputs);
     Logger.getInstance().processInputs("Drive/IMU", imuInputs);
     Logger.getInstance().recordOutput("Drive/Pose", getPosition());
+    Logger.getInstance()
+        .recordOutput(
+            "Drive/RealSpeeds",
+            new SwerveModuleState(driveInputs.flVel, Rotation2d.fromDegrees(-45)),
+            new SwerveModuleState(driveInputs.frVel, Rotation2d.fromDegrees(45)),
+            new SwerveModuleState(driveInputs.blVel, Rotation2d.fromDegrees(45)),
+            new SwerveModuleState(driveInputs.brVel, Rotation2d.fromDegrees(-45)));
     poseEstimator.update(
         Rotation2d.fromDegrees(imuInputs.yaw),
         new MecanumDriveWheelPositions(
@@ -153,7 +160,7 @@ public class MecanumDrivetrain implements Drivetrain {
   private void setWheelSpeeds(MecanumDriveWheelSpeeds speeds) {
     Logger.getInstance()
         .recordOutput(
-            "Drive/WheelSpeeds",
+            "Drive/CmdSpeeds",
             new SwerveModuleState(speeds.frontLeftMetersPerSecond, Rotation2d.fromDegrees(-45)),
             new SwerveModuleState(speeds.frontRightMetersPerSecond, Rotation2d.fromDegrees(45)),
             new SwerveModuleState(speeds.rearLeftMetersPerSecond, Rotation2d.fromDegrees(45)),
@@ -169,5 +176,15 @@ public class MecanumDrivetrain implements Drivetrain {
   @Override
   public double[] getAcceleration() {
     return new double[] {imuInputs.xAccelMPS, imuInputs.yAccelMPS, imuInputs.zAccelMPS};
+  }
+
+  private MecanumDriveWheelSpeeds getWheelSpeeds() {
+    return new MecanumDriveWheelSpeeds(
+        driveInputs.flVel, driveInputs.frVel, driveInputs.blVel, driveInputs.brVel);
+  }
+
+  @Override
+  public ChassisSpeeds getVelocity() {
+    return KINEMATICS.toChassisSpeeds(getWheelSpeeds());
   }
 }

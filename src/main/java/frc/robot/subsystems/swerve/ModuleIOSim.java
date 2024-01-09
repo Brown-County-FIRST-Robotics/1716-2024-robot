@@ -16,6 +16,7 @@ public class ModuleIOSim implements ModuleIO {
     SwerveModulePosition pos = SwerveSimManager.getInstance().getModPos(id);
     inputs.steerPos = pos.angle.getRotations();
     inputs.thrustPos = pos.distanceMeters;
+    inputs.thrustVel = SwerveSimManager.getInstance().getModState(id).speedMetersPerSecond;
   }
 
   @Override

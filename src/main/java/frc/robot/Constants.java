@@ -18,6 +18,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
  */
 public final class Constants {
   public static class OperatorConstants {
+    /** The port the driver controller is on */
     public static final int DRIVER_CONTROLLER_PORT = 0;
   }
 

@@ -37,19 +37,15 @@ public class TeleopDrive extends CommandBase {
     this.drivetrain = drivetrain;
     this.controller = controller;
     addRequirements(this.drivetrain);
-    ppc.setP(p.get());
-    ppc.setI(i.get());
-    ppc.setD(d.get());
+    p.attach(ppc::setP);
+    i.attach(ppc::setI);
+    d.attach(ppc::setD);
   }
 
   /** The initial subroutine of a command. Called once when the command is initially scheduled. */
   @Override
   public void initialize() {}
 
-  /**
-   * The main body of a command. Called repeatedly while the command is scheduled. (That is, it is
-   * called repeatedly until {@link #isFinished()} returns true.)
-   */
   static boolean deadband(double x) {
     return Math.abs(x) < 0.1;
   }
@@ -94,15 +90,6 @@ public class TeleopDrive extends CommandBase {
     }
     locked = controller.getHID().getXButtonPressed() || locked;
     foc = controller.getHID().getStartButtonPressed() != foc;
-    if (p.hasChanged()) {
-      ppc.setP(p.get());
-    }
-    if (i.hasChanged()) {
-      ppc.setI(i.get());
-    }
-    if (d.hasChanged()) {
-      ppc.setD(d.get());
-    }
     if (locked) {
       drivetrain.lockWheels();
     }

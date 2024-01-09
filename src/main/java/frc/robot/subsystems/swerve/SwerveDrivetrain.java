@@ -28,14 +28,14 @@ import java.util.List;
 import org.littletonrobotics.junction.Logger;
 
 public class SwerveDrivetrain implements Drivetrain {
-  public static final double D = 21.125 * 0.0254; // TODO: Rename this
-  public static final SwerveDriveKinematics KINEMATICS =
+  private static final double D = 21.125 * 0.0254; // TODO: Rename this
+  private static final SwerveDriveKinematics KINEMATICS =
       new SwerveDriveKinematics(
           new Translation2d(D / 2, D / 2),
           new Translation2d(D / 2, -D / 2),
           new Translation2d(-D / 2, D / 2),
           new Translation2d(-D / 2, -D / 2));
-  public static final double MAX_WHEEL_SPEED = 5.0;
+  private static final double MAX_WHEEL_SPEED = 5.0;
   ModuleIO fl;
   ModuleIO fr;
   ModuleIO bl;
@@ -51,7 +51,7 @@ public class SwerveDrivetrain implements Drivetrain {
   SwerveDrivePoseEstimator poseEstimator;
   Field2d field;
 
-  public SwerveModulePosition[] getPositions() {
+  private SwerveModulePosition[] getPositions() {
     return new SwerveModulePosition[] {
       new SwerveModulePosition(flInputs.thrustPos, Rotation2d.fromRotations(flInputs.steerPos)),
       new SwerveModulePosition(frInputs.thrustPos, Rotation2d.fromRotations(frInputs.steerPos)),
@@ -89,20 +89,31 @@ public class SwerveDrivetrain implements Drivetrain {
     Logger.getInstance().processInputs("Drive/BL", blInputs);
     Logger.getInstance().processInputs("Drive/BR", brInputs);
 
+    Logger.getInstance().recordOutput("Drive/RealStates", getWheelSpeeds());
     poseEstimator.update(getNavxRotation(), getPositions());
     Logger.getInstance().recordOutput("Drive/Pose", getPosition());
     field.setRobotPose(getPosition());
   }
 
+  private SwerveModuleState[] getWheelSpeeds() {
+    return new SwerveModuleState[] {
+      new SwerveModuleState(flInputs.thrustVel, getPositions()[0].angle),
+      new SwerveModuleState(frInputs.thrustVel, getPositions()[1].angle),
+      new SwerveModuleState(blInputs.thrustVel, getPositions()[2].angle),
+      new SwerveModuleState(brInputs.thrustVel, getPositions()[3].angle)
+    };
+  }
+
+  @Override
   public Pose2d getPosition() {
     return poseEstimator.getEstimatedPosition();
   }
 
-  public Rotation2d getNavxRotation() {
+  private Rotation2d getNavxRotation() {
     return Rotation2d.fromDegrees(imuInputs.yaw);
   }
 
-  public void setModuleStates(SwerveModuleState[] states) {
+  private void setModuleStates(SwerveModuleState[] states) {
     SwerveDriveKinematics.desaturateWheelSpeeds(states, MAX_WHEEL_SPEED);
     states[0] =
         SwerveModuleState.optimize(
@@ -123,7 +134,7 @@ public class SwerveDrivetrain implements Drivetrain {
     br.setCmdState(states[3]);
   }
 
-  public Command makeTrajectoryCommand(Trajectory trajectory) {
+  private Command makeTrajectoryCommand(Trajectory trajectory) {
     return new SwerveControllerCommand(
         trajectory,
         this::getPosition,
@@ -140,6 +151,7 @@ public class SwerveDrivetrain implements Drivetrain {
         this);
   }
 
+  @Override
   public void setPosition(Pose2d pos) {
     poseEstimator.resetPosition(getNavxRotation(), getPositions(), pos);
   }
@@ -224,5 +236,10 @@ public class SwerveDrivetrain implements Drivetrain {
           new SwerveModuleState(0, Rotation2d.fromDegrees(-45)),
           new SwerveModuleState(0, Rotation2d.fromDegrees(45))
         });
+  }
+
+  @Override
+  public ChassisSpeeds getVelocity() {
+    return KINEMATICS.toChassisSpeeds(getWheelSpeeds());
   }
 }

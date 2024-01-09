@@ -9,8 +9,18 @@ import edu.wpi.first.wpilibj2.command.Subsystem;
 import java.util.List;
 
 public interface Drivetrain extends Subsystem {
+  /**
+   * Gets the position from the pose estimator
+   *
+   * @return The position from the pose estimator
+   */
   Pose2d getPosition();
 
+  /**
+   * Sets the position of the pose estimator
+   *
+   * @param newPose The new pose to use
+   */
   void setPosition(Pose2d newPose);
 
   Command getDriveToPointCmd(Pose2d pose);
@@ -24,6 +34,11 @@ public interface Drivetrain extends Subsystem {
 
   void humanDrive(ChassisSpeeds cmd, boolean foc);
 
+  /**
+   * Gets the current orientation according to the gyro
+   *
+   * @return The value from the gyro
+   */
   Rotation3d getGyro();
   /**
    * Gets the acceleration values from the IMU
@@ -32,6 +47,13 @@ public interface Drivetrain extends Subsystem {
    */
   double[] getAcceleration();
 
+  /** Locks the wheels. In mecanum, this does nothing. */
   default void lockWheels() {}
-  ;
+
+  /**
+   * Gets the velocity according to the wheels (includes slip error)
+   *
+   * @return The velocity
+   */
+  ChassisSpeeds getVelocity();
 }

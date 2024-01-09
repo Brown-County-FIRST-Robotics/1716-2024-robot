@@ -24,6 +24,11 @@ public class SwerveSimManager {
           new Translation2d(-D / 2, -D / 2));
   static SwerveSimManager single = new SwerveSimManager();
 
+  /**
+   * Gets the global instance of SwerveSim
+   *
+   * @return The global instance
+   */
   public static SwerveSimManager getInstance() {
     return single;
   }
@@ -70,6 +75,17 @@ public class SwerveSimManager {
   public SwerveModulePosition getModPos(int mnum) {
     return new SwerveModulePosition(
         thrustPos[mnum], Rotation2d.fromRotations(steerStates[mnum].position));
+  }
+
+  /**
+   * Gets the state of the swerve module
+   *
+   * @param mnum The index of the module
+   * @return The state of the module
+   */
+  public SwerveModuleState getModState(int mnum) {
+    return new SwerveModuleState(
+        thrustVel[mnum], Rotation2d.fromRotations(steerStates[mnum].position));
   }
 
   /**

@@ -15,6 +15,7 @@ import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.TeleopDrive;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.IMUIONavx;
+import frc.robot.subsystems.IMUIOPigeon;
 import frc.robot.subsystems.IMUIOSim;
 import frc.robot.subsystems.mecanum.MecanumDrivetrain;
 import frc.robot.subsystems.mecanum.MecanumIOSpark;
@@ -29,9 +30,6 @@ import frc.robot.subsystems.swerve.SwerveDrivetrain;
  * subsystems, commands, and trigger mappings) should be declared here.
  */
 public class RobotContainer {
-  // The robot's subsystems and commands are defined here...
-
-  // Replace with CommandPS4Controller or CommandJoystick if needed
   private final CommandXboxController driverController =
       new CommandXboxController(OperatorConstants.DRIVER_CONTROLLER_PORT);
   private final Drivetrain driveSys;
@@ -40,7 +38,7 @@ public class RobotContainer {
   public RobotContainer() {
     switch (WhoAmI.bot) {
       case MECHBASE:
-        driveSys = new MecanumDrivetrain(new MecanumIOSpark(1, 2, 3, 4), new IMUIONavx());
+        driveSys = new MecanumDrivetrain(new MecanumIOSpark(1, 2, 3, 4), new IMUIOPigeon(20));
         break;
       case SIMSWERVEBASE:
         driveSys =
@@ -65,11 +63,10 @@ public class RobotContainer {
     }
     useAlliance();
     driveSys.setDefaultCommand(new TeleopDrive(driveSys, driverController));
-
-    // Configure the trigger bindings
     configureBindings();
   }
 
+  /** Updates the pose estimator to use the correct initial pose */
   public void useAlliance() {
     driveSys.setPosition(
         DriverStation.getAlliance() == DriverStation.Alliance.Blue
@@ -86,9 +83,7 @@ public class RobotContainer {
    * PS4} controllers or {@link edu.wpi.first.wpilibj2.command.button.CommandJoystick Flight
    * joysticks}.
    */
-  private void configureBindings() {
-    // Schedule `ExampleCommand` when `exampleCondition` changes to `true`
-  }
+  private void configureBindings() {}
 
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.

@@ -14,6 +14,7 @@
           <option value="spotlessApply" />
           <option value="compileJava" />
           <option value="test" />
+          <option value="javadoc" />
         </list>
       </option>
       <option name="vmOptions" />

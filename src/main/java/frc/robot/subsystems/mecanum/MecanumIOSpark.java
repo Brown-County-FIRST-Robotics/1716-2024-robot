@@ -54,7 +54,36 @@ public class MecanumIOSpark implements MecanumIO {
     blPID.setOutputRange(-1, 1);
     brPID.setFeedbackDevice(brEncoder);
     brPID.setOutputRange(-1, 1);
-    reconfigure();
+
+    ffTuner.attach(
+        (Double v) -> {
+          flPID.setFF(v);
+          frPID.setFF(v);
+          blPID.setFF(v);
+          brPID.setFF(v);
+        });
+    pTuner.attach(
+        (Double v) -> {
+          flPID.setP(v);
+          frPID.setP(v);
+          blPID.setP(v);
+          brPID.setP(v);
+        });
+    iTuner.attach(
+        (Double v) -> {
+          flPID.setI(v);
+          frPID.setI(v);
+          blPID.setI(v);
+          brPID.setI(v);
+        });
+    dTuner.attach(
+        (Double v) -> {
+          flPID.setD(v);
+          frPID.setD(v);
+          blPID.setD(v);
+          brPID.setD(v);
+        });
+
     fl.burnFlash();
     fr.burnFlash();
     bl.burnFlash();
@@ -82,43 +111,19 @@ public class MecanumIOSpark implements MecanumIO {
   }
 
   @Override
-  public void reconfigure() {
-    if (ffTuner.hasChanged()) {
-      flPID.setFF(ffTuner.get());
-      frPID.setFF(ffTuner.get());
-      blPID.setFF(ffTuner.get());
-      brPID.setFF(ffTuner.get());
-    }
-    if (pTuner.hasChanged()) {
-      flPID.setP(pTuner.get());
-      frPID.setP(pTuner.get());
-      blPID.setP(pTuner.get());
-      brPID.setP(pTuner.get());
-    }
-    if (iTuner.hasChanged()) {
-      flPID.setI(iTuner.get());
-      frPID.setI(iTuner.get());
-      blPID.setI(iTuner.get());
-      brPID.setI(iTuner.get());
-    }
-    if (dTuner.hasChanged()) {
-      flPID.setD(dTuner.get());
-      frPID.setD(dTuner.get());
-      blPID.setD(dTuner.get());
-      brPID.setD(dTuner.get());
-    }
-  }
-
-  @Override
   public void updateInputs(MecanumIOInputs inputs) {
     inputs.flTemp = fl.getMotorTemperature();
     inputs.frTemp = fr.getMotorTemperature();
     inputs.blTemp = bl.getMotorTemperature();
     inputs.brTemp = br.getMotorTemperature();
     inputs.flPos = flEncoder.getPosition() * EFFECTIVE_WHEEL_DIAMETER;
+    inputs.flVel = flEncoder.getVelocity() * EFFECTIVE_WHEEL_DIAMETER / 60.0;
     inputs.frPos = frEncoder.getPosition() * EFFECTIVE_WHEEL_DIAMETER;
+    inputs.frVel = frEncoder.getVelocity() * EFFECTIVE_WHEEL_DIAMETER / 60.0;
     inputs.blPos = blEncoder.getPosition() * EFFECTIVE_WHEEL_DIAMETER;
+    inputs.blVel = blEncoder.getVelocity() * EFFECTIVE_WHEEL_DIAMETER / 60.0;
     inputs.brPos = brEncoder.getPosition() * EFFECTIVE_WHEEL_DIAMETER;
+    inputs.brVel = brEncoder.getVelocity() * EFFECTIVE_WHEEL_DIAMETER / 60.0;
     inputs.flOut = fl.getAppliedOutput();
     inputs.frOut = fr.getAppliedOutput();
     inputs.blOut = bl.getAppliedOutput();

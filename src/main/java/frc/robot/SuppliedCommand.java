@@ -5,11 +5,18 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import java.util.function.Supplier;
 
+/** A simple command to retrieve the desired command at runtime */
 public class SuppliedCommand extends CommandBase {
 
   private final Supplier<Command> supplier;
   private Command cmd;
 
+  /**
+   * Constructs a new SuppliedCommand
+   *
+   * @param supplier The command supplier to use
+   * @param requirements The subsystem requirements
+   */
   public SuppliedCommand(Supplier<Command> supplier, Subsystem... requirements) {
     addRequirements(requirements);
     this.supplier = supplier;
