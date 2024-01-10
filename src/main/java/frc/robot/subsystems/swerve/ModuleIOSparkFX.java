@@ -1,13 +1,11 @@
 package frc.robot.subsystems.swerve;
 
-import com.ctre.phoenix.motorcontrol.NeutralMode;
-import com.ctre.phoenix.motorcontrol.TalonFXControlMode;
-import com.ctre.phoenix.motorcontrol.TalonFXFeedbackDevice;
-import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
-import com.revrobotics.CANSparkMax;
-import com.revrobotics.CANSparkMaxLowLevel;
-import com.revrobotics.SparkMaxAnalogSensor;
-import com.revrobotics.SparkMaxPIDController;
+import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.controls.VelocityVoltage;
+import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
+import com.ctre.phoenix6.signals.NeutralModeValue;
+import com.revrobotics.*;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
@@ -17,9 +15,9 @@ import org.littletonrobotics.junction.Logger;
 public class ModuleIOSparkFX implements ModuleIO {
   private final double THRUST_DISTANCE_PER_TICK = .0254 * 4.0 * Math.PI / (2048.0 * 6.75);
   private final CANSparkMax steer;
-  private final SparkMaxAnalogSensor encoder;
-  private final SparkMaxPIDController pid;
-  private final WPI_TalonFX thrust;
+  private final SparkAnalogSensor encoder;
+  private final SparkPIDController pid;
+  private final TalonFX thrust;
   String name;
   LoggedTunableNumber thrustP = new LoggedTunableNumber("Thrust P", 0);
   LoggedTunableNumber thrustI = new LoggedTunableNumber("Thrust I", 0);
@@ -33,19 +31,17 @@ public class ModuleIOSparkFX implements ModuleIO {
 
   public ModuleIOSparkFX(int thrustID, int steerID, String name) {
     this.name = name;
-    thrust = new WPI_TalonFX(thrustID);
-    thrust.configFactoryDefault(200);
-    thrust.setNeutralMode(NeutralMode.Coast);
-    thrust.configSelectedFeedbackSensor(TalonFXFeedbackDevice.IntegratedSensor, 0, 200);
-    thrust.configNominalOutputForward(0, 200);
-    thrust.configNominalOutputReverse(0, 200);
-    thrust.configPeakOutputForward(1, 200);
-    thrust.configPeakOutputReverse(-1, 200);
-
-    steer = new CANSparkMax(steerID, CANSparkMaxLowLevel.MotorType.kBrushless);
+    thrust = new TalonFX(thrustID);
+    TalonFXConfiguration config = new TalonFXConfiguration();
+    config.Slot0.kV = 1023.0 * 600.0 / (6380.0 * 2048.0);
+    config.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RotorSensor;
+    config.MotorOutput.NeutralMode = NeutralModeValue.Coast;
+    thrust.getConfigurator().apply(config);
+    thrust.optimizeBusUtilization();
+    steer = new CANSparkMax(steerID, CANSparkLowLevel.MotorType.kBrushless);
     steer.restoreFactoryDefaults();
     pid = steer.getPIDController();
-    encoder = steer.getAnalog(SparkMaxAnalogSensor.Mode.kAbsolute);
+    encoder = steer.getAnalog(SparkAnalogSensor.Mode.kAbsolute);
 
     encoder.setPositionConversionFactor(1 / 3.3);
     encoder.setInverted(true);
@@ -65,14 +61,9 @@ public class ModuleIOSparkFX implements ModuleIO {
     steerP.attach(pid::setP);
     steerI.attach(pid::setI);
     steerD.attach(pid::setD);
-    thrustKV.attach((Double v) -> thrust.config_kF(0, v, 200));
-    thrustP.attach((Double v) -> thrust.config_kP(0, v, 20));
-    thrustI.attach((Double v) -> thrust.config_kI(0, v, 20));
-    thrustD.attach((Double v) -> thrust.config_kD(0, v, 20));
 
     steer.burnFlash();
     Logger.recordOutput(name + "_Steer_FW", steer.getFirmwareString());
-    Logger.recordOutput(name + "_Thrust_FW", String.valueOf(thrust.getFirmwareVersion()));
     Logger.recordOutput(name + "_Thrust_Name", thrust.getDescription());
   }
 
@@ -81,11 +72,11 @@ public class ModuleIOSparkFX implements ModuleIO {
     inputs.pos = getModulePosition();
     inputs.vel =
         new SwerveModuleState(
-            thrust.getSelectedSensorVelocity() * THRUST_DISTANCE_PER_TICK * 10,
+            thrust.getRotorVelocity().getValue() * THRUST_DISTANCE_PER_TICK * 10,
             getModulePosition().angle);
     inputs.steerTempC = steer.getMotorTemperature();
-    inputs.thrustErr = thrust.getClosedLoopError();
-    inputs.thrustTempC = thrust.getTemperature();
+    inputs.thrustErr = thrust.getClosedLoopError().getValue();
+    inputs.thrustTempC = thrust.getDeviceTemp().getValue();
     //    inputs.offset = thrust.configGetCustomParam(0) / 1000.0;
     if (name == "FL") {
       inputs.offset = 0.825;
@@ -101,15 +92,15 @@ public class ModuleIOSparkFX implements ModuleIO {
   @Override
   public void setCmdState(SwerveModuleState state) {
     double cmd_ang = state.angle.getRotations();
-    thrust.set(
-        TalonFXControlMode.Velocity, 0.1 * state.speedMetersPerSecond / THRUST_DISTANCE_PER_TICK);
+    thrust.setControl(
+        new VelocityVoltage(0.1 * state.speedMetersPerSecond / THRUST_DISTANCE_PER_TICK));
 
     pid.setReference(((cmd_ang % 1.0) + 1.0) % 1.0, CANSparkMax.ControlType.kSmartMotion);
   }
 
   private SwerveModulePosition getModulePosition() {
     return new SwerveModulePosition(
-        thrust.getSelectedSensorPosition() * THRUST_DISTANCE_PER_TICK,
+        thrust.getRotorPosition().getValue() * THRUST_DISTANCE_PER_TICK,
         Rotation2d.fromRotations(encoder.getPosition()));
   }
 }

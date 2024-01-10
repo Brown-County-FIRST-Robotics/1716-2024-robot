@@ -1,9 +1,6 @@
 package frc.robot.subsystems.mecanum;
 
-import com.revrobotics.CANSparkMax;
-import com.revrobotics.CANSparkMaxLowLevel;
-import com.revrobotics.RelativeEncoder;
-import com.revrobotics.SparkMaxPIDController;
+import com.revrobotics.*;
 import edu.wpi.first.math.kinematics.MecanumDriveWheelPositions;
 import edu.wpi.first.math.kinematics.MecanumDriveWheelSpeeds;
 import frc.robot.utils.LoggedTunableNumber;
@@ -19,26 +16,26 @@ public class MecanumIOSpark implements MecanumIO {
   RelativeEncoder frEncoder;
   RelativeEncoder blEncoder;
   RelativeEncoder brEncoder;
-  SparkMaxPIDController flPID;
-  SparkMaxPIDController frPID;
-  SparkMaxPIDController blPID;
-  SparkMaxPIDController brPID;
+  SparkPIDController flPID;
+  SparkPIDController frPID;
+  SparkPIDController blPID;
+  SparkPIDController brPID;
   LoggedTunableNumber ffTuner = new LoggedTunableNumber("Mecanum FF", 1.0 / 6500);
   LoggedTunableNumber pTuner = new LoggedTunableNumber("Mecanum P", 0);
   LoggedTunableNumber iTuner = new LoggedTunableNumber("Mecanum I", 0);
   LoggedTunableNumber dTuner = new LoggedTunableNumber("Mecanum D", 0);
 
   public MecanumIOSpark(int flID, int frID, int blID, int brID) {
-    fl = new CANSparkMax(flID, CANSparkMaxLowLevel.MotorType.kBrushless);
+    fl = new CANSparkMax(flID, CANSparkLowLevel.MotorType.kBrushless);
     flEncoder = fl.getEncoder();
     flPID = fl.getPIDController();
-    fr = new CANSparkMax(frID, CANSparkMaxLowLevel.MotorType.kBrushless);
+    fr = new CANSparkMax(frID, CANSparkLowLevel.MotorType.kBrushless);
     frEncoder = fr.getEncoder();
     frPID = fr.getPIDController();
-    bl = new CANSparkMax(blID, CANSparkMaxLowLevel.MotorType.kBrushless);
+    bl = new CANSparkMax(blID, CANSparkLowLevel.MotorType.kBrushless);
     blEncoder = bl.getEncoder();
     blPID = bl.getPIDController();
-    br = new CANSparkMax(brID, CANSparkMaxLowLevel.MotorType.kBrushless);
+    br = new CANSparkMax(brID, CANSparkLowLevel.MotorType.kBrushless);
     brEncoder = br.getEncoder();
     brPID = br.getPIDController();
 
