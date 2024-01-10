@@ -64,7 +64,7 @@ public class Robot extends LoggedRobot {
     // Running on a real robot, log to a USB stick
     switch (WhoAmI.mode) {
       case REAL:
-        Logger.getInstance().addDataReceiver(new WPILOGWriter("/home/lvuser/"));
+        Logger.getInstance().addDataReceiver(new WPILOGWriter("/media/sda1/"));
         break;
       case SIM:
         Logger.getInstance().addDataReceiver(new WPILOGWriter("SimLogs/"));
