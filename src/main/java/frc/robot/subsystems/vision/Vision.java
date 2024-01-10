@@ -68,7 +68,7 @@ public class Vision extends PeriodicRunnable {
             } catch (IOException e) {
               throw new RuntimeException(e);
             }
-          } else if (outs[i].ids[j].length >= 1) {
+          } else if (outs[i].ids[j].length > 1) {
             outPose =
                 new Pose3d(
                     outs[i].poses[j][0],
