@@ -64,11 +64,11 @@ public class Vision extends PeriodicRunnable {
                       .loadAprilTagLayoutField()
                       .getTagPose(Integer.parseInt(outs[i].ids[j][0]))
                       .orElse(new Pose3d());
-              outPose = tagpose.plus(as.inverse());
+              outPose = tagpose.plus(as);
             } catch (IOException e) {
               throw new RuntimeException(e);
             }
-          } else if (outs[i].ids[j].length >= 1) {
+          } else if (outs[i].ids[j].length > 1) {
             outPose =
                 new Pose3d(
                     outs[i].poses[j][0],
