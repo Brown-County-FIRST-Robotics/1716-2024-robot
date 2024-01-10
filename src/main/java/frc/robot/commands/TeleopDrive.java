@@ -3,6 +3,7 @@ package frc.robot.commands;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj.GenericHID;
@@ -58,6 +59,10 @@ public class TeleopDrive extends CommandBase {
         && !controller.getHID().getRightStickButton()) {
       ext += ppc.calculate(drivetrain.getPosition().getRotation().minus(lockRot).getRotations(), 0);
     }
+        if (controller.getHID().getAButton()) {
+          ext= ppc.calculate(drivetrain.getPosition().getRotation().minus(drivetrain.getPosition().getTranslation().minus(new Translation2d(15,6)).getAngle()).getRotations(),0);
+    }
+
     controller.getHID().setRumble(GenericHID.RumbleType.kRightRumble, Math.abs(ext / 3.0));
     Logger.getInstance().recordOutput("TeleopDrive/ext", ext);
 
