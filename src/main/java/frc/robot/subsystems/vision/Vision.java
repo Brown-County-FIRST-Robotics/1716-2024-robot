@@ -36,7 +36,7 @@ public class Vision extends PeriodicRunnable {
       for (int j = 0; j < outs[i].ids.length; j++) {
         if (outs[i].ids[j].length > 0) {
           Pose3d outPose = new Pose3d();
-          if (outs[i].ids[j].length == 1) {
+          if (outs[i].ids[j].length == -1) {
             try {
               Rotation3d r1 =
                   new Rotation3d(
@@ -68,7 +68,7 @@ public class Vision extends PeriodicRunnable {
             } catch (IOException e) {
               throw new RuntimeException(e);
             }
-          } else if (outs[i].ids[j].length >= 1) {
+          } else if (outs[i].ids[j].length > 1) {
             outPose =
                 new Pose3d(
                     outs[i].poses[j][0],
