@@ -22,7 +22,7 @@ public class Vision extends PeriodicRunnable {
     for (int i = 0; i < ios.length; i++) {
       outs[i] = new VisionIOInputs();
       ios[i].updateInputs(outs[i]);
-      Logger.getInstance().processInputs("Vision/" + i, outs[i]);
+      Logger.processInputs("Vision/" + i, outs[i]);
     }
     this.drivetrain = drivetrain;
   }
@@ -31,7 +31,7 @@ public class Vision extends PeriodicRunnable {
   public void periodic() {
     for (int i = 0; i < ios.length; i++) {
       ios[i].updateInputs(outs[i]);
-      Logger.getInstance().processInputs("Vision/" + i, outs[i]);
+      Logger.processInputs("Vision/" + i, outs[i]);
       for (int j = 0; j < outs[i].ids.length; j++) {
         if (outs[i].ids[j].length > 0) {
           Pose3d outPose = new Pose3d();
@@ -77,7 +77,7 @@ public class Vision extends PeriodicRunnable {
                             outs[i].poses[j][6])));
           }
           Pose3d poseOfBot = outPose.plus(camPoses[i].inverse());
-          Logger.getInstance().recordOutput("Vision/EstPose_" + i + "_" + j, poseOfBot);
+          Logger.recordOutput("Vision/EstPose_" + i + "_" + j, poseOfBot);
           drivetrain.addVisionUpdate(poseOfBot.toPose2d(), outs[i].timestamps[j]);
         }
       }

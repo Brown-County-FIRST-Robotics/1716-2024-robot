@@ -28,16 +28,16 @@ public interface VisionIO {
 
     @Override
     public void fromLog(LogTable table) {
-      timestamps = table.getDoubleArray("Timestamps", new double[] {});
-      recordingPath = table.getString("RecordingPath", "");
-      isRecording = table.getBoolean("IsRecording", false);
-      errors = table.getDoubleArray("Errors", new double[] {});
-      int nmLoops = (int) table.getInteger("NumLoops", 0);
+      timestamps = table.get("Timestamps", new double[] {});
+      recordingPath = table.get("RecordingPath", "");
+      isRecording = table.get("IsRecording", false);
+      errors = table.get("Errors", new double[] {});
+      int nmLoops = (int) table.get("NumLoops", 0);
       ids = new String[nmLoops][];
       poses = new double[nmLoops][];
       for (int i = 0; i < nmLoops; i++) {
-        ids[i] = table.getStringArray("IDs/" + i, new String[] {});
-        poses[i] = table.getDoubleArray("Poses/" + i, new double[] {});
+        ids[i] = table.get("IDs/" + i, new String[] {});
+        poses[i] = table.get("Poses/" + i, new double[] {});
       }
     }
   }
