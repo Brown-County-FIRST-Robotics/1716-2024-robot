@@ -30,19 +30,17 @@ public class ModuleIOSparkFX implements ModuleIO {
   LoggedTunableNumber steerI = new LoggedTunableNumber("Steer I", 0);
   LoggedTunableNumber steerD = new LoggedTunableNumber("Steer D", 0);
   LoggedTunableNumber steerKV = new LoggedTunableNumber("Steer KV", 1.0 / 300.0);
-  Rotation2d steerOffset;
-  Rotation2d chasisOffset;
 
-  public ModuleIOSparkFX(int thrustID, int steerID, String name, Rotation2d chasisOffset) {
+  public ModuleIOSparkFX(int thrustID, int steerID, String name) {
     this.name = name;
-    this.chasisOffset = chasisOffset;
     thrust = new WPI_TalonFX(thrustID);
+    thrust.configFactoryDefault(200);
     thrust.setNeutralMode(NeutralMode.Coast);
-    thrust.configSelectedFeedbackSensor(TalonFXFeedbackDevice.IntegratedSensor, 0, 20);
-    thrust.configNominalOutputForward(0, 20);
-    thrust.configNominalOutputReverse(0, 20);
-    thrust.configPeakOutputForward(1, 20);
-    thrust.configPeakOutputReverse(-1, 20);
+    thrust.configSelectedFeedbackSensor(TalonFXFeedbackDevice.IntegratedSensor, 0, 200);
+    thrust.configNominalOutputForward(0, 200);
+    thrust.configNominalOutputReverse(0, 200);
+    thrust.configPeakOutputForward(1, 200);
+    thrust.configPeakOutputReverse(-1, 200);
 
     steer = new CANSparkMax(steerID, CANSparkMaxLowLevel.MotorType.kBrushless);
     steer.restoreFactoryDefaults();
@@ -67,35 +65,42 @@ public class ModuleIOSparkFX implements ModuleIO {
     steerP.attach(pid::setP);
     steerI.attach(pid::setI);
     steerD.attach(pid::setD);
-
-    thrustKV.attach((Double v) -> thrust.config_kF(0, v, 20));
+    thrustKV.attach((Double v) -> thrust.config_kF(0, v, 200));
     thrustP.attach((Double v) -> thrust.config_kP(0, v, 20));
     thrustI.attach((Double v) -> thrust.config_kI(0, v, 20));
     thrustD.attach((Double v) -> thrust.config_kD(0, v, 20));
 
     steer.burnFlash();
-    Logger.recordMetadata(name + "_Steer_FW", steer.getFirmwareString());
-    Logger.recordMetadata(name + "_Thrust_FW", String.valueOf(thrust.getFirmwareVersion()));
-    Logger.recordMetadata(name + "_Thrust_Name", thrust.getDescription());
-    steerOffset = Rotation2d.fromRotations(thrust.configGetCustomParam(0) / 1000.0);
+    Logger.recordOutput(name + "_Steer_FW", steer.getFirmwareString());
+    Logger.recordOutput(name + "_Thrust_FW", String.valueOf(thrust.getFirmwareVersion()));
+    Logger.recordOutput(name + "_Thrust_Name", thrust.getDescription());
   }
 
   @Override
   public void updateInputs(ModuleIOInputs inputs) {
-    Rotation2d rot = getModulePosition().angle.minus(chasisOffset);
-    inputs.pos = new SwerveModulePosition(getModulePosition().distanceMeters, rot);
+    inputs.pos = getModulePosition();
     inputs.vel =
         new SwerveModuleState(
-            thrust.getSelectedSensorVelocity() * THRUST_DISTANCE_PER_TICK * 10, rot);
+            thrust.getSelectedSensorVelocity() * THRUST_DISTANCE_PER_TICK * 10,
+            getModulePosition().angle);
     inputs.steerTempC = steer.getMotorTemperature();
     inputs.thrustErr = thrust.getClosedLoopError();
     inputs.thrustTempC = thrust.getTemperature();
+    //    inputs.offset = thrust.configGetCustomParam(0) / 1000.0;
+    if (name == "FL") {
+      inputs.offset = 0.825;
+    } else if (name == "FR") {
+      inputs.offset = 0.005;
+    } else if (name == "BL") {
+      inputs.offset = 0.982;
+    } else if (name == "BR") {
+      inputs.offset = 0.456;
+    }
   }
 
   @Override
   public void setCmdState(SwerveModuleState state) {
-    state.speedMetersPerSecond *= getModulePosition().angle.minus(state.angle).getCos();
-    double cmd_ang = state.angle.plus(chasisOffset).unaryMinus().plus(steerOffset).getRotations();
+    double cmd_ang = state.angle.getRotations();
     thrust.set(
         TalonFXControlMode.Velocity, 0.1 * state.speedMetersPerSecond / THRUST_DISTANCE_PER_TICK);
 
@@ -105,6 +110,6 @@ public class ModuleIOSparkFX implements ModuleIO {
   private SwerveModulePosition getModulePosition() {
     return new SwerveModulePosition(
         thrust.getSelectedSensorPosition() * THRUST_DISTANCE_PER_TICK,
-        Rotation2d.fromRotations(encoder.getPosition()).minus(steerOffset).unaryMinus());
+        Rotation2d.fromRotations(encoder.getPosition()));
   }
 }

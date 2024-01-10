@@ -52,7 +52,41 @@ public class SwerveDrivetrain implements Drivetrain {
   Field2d field;
 
   private SwerveModulePosition[] getPositions() {
-    return new SwerveModulePosition[] {flInputs.pos, frInputs.pos, blInputs.pos, brInputs.pos};
+
+    return new SwerveModulePosition[] {
+      new SwerveModulePosition(
+          flInputs.pos.distanceMeters,
+          flInputs
+              .pos
+              .angle
+              .minus(Rotation2d.fromRotations(flInputs.offset))
+              .unaryMinus()
+              .minus(Rotation2d.fromDegrees(-90))),
+      new SwerveModulePosition(
+          frInputs.pos.distanceMeters,
+          frInputs
+              .pos
+              .angle
+              .minus(Rotation2d.fromRotations(frInputs.offset))
+              .unaryMinus()
+              .minus(Rotation2d.fromDegrees(0))),
+      new SwerveModulePosition(
+          blInputs.pos.distanceMeters,
+          blInputs
+              .pos
+              .angle
+              .minus(Rotation2d.fromRotations(blInputs.offset))
+              .unaryMinus()
+              .minus(Rotation2d.fromDegrees(180))),
+      new SwerveModulePosition(
+          brInputs.pos.distanceMeters,
+          brInputs
+              .pos
+              .angle
+              .minus(Rotation2d.fromRotations(brInputs.offset))
+              .unaryMinus()
+              .minus(Rotation2d.fromDegrees(90)))
+    };
   }
 
   public SwerveDrivetrain(ModuleIO fl, ModuleIO fr, ModuleIO bl, ModuleIO br, IMUIO imu) {
@@ -118,10 +152,38 @@ public class SwerveDrivetrain implements Drivetrain {
         SwerveModuleState.optimize(
             states[3], getPositions()[3].angle.plus(Rotation2d.fromRotations(1.0)));
     Logger.recordOutput("Drive/CmdStates", states);
-    fl.setCmdState(states[0]);
-    fr.setCmdState(states[1]);
-    bl.setCmdState(states[2]);
-    br.setCmdState(states[3]);
+    fl.setCmdState(
+        new SwerveModuleState(
+            states[0].speedMetersPerSecond,
+            states[0]
+                .angle
+                .plus(Rotation2d.fromDegrees(-90))
+                .unaryMinus()
+                .plus(Rotation2d.fromRotations(flInputs.offset))));
+    fr.setCmdState(
+        new SwerveModuleState(
+            states[1].speedMetersPerSecond,
+            states[1]
+                .angle
+                .plus(Rotation2d.fromDegrees(0))
+                .unaryMinus()
+                .plus(Rotation2d.fromRotations(frInputs.offset))));
+    bl.setCmdState(
+        new SwerveModuleState(
+            states[2].speedMetersPerSecond,
+            states[2]
+                .angle
+                .plus(Rotation2d.fromDegrees(180))
+                .unaryMinus()
+                .plus(Rotation2d.fromRotations(blInputs.offset))));
+    br.setCmdState(
+        new SwerveModuleState(
+            states[3].speedMetersPerSecond,
+            states[3]
+                .angle
+                .plus(Rotation2d.fromDegrees(90))
+                .unaryMinus()
+                .plus(Rotation2d.fromRotations(brInputs.offset))));
   }
 
   private Command makeTrajectoryCommand(Trajectory trajectory) {
@@ -144,6 +206,11 @@ public class SwerveDrivetrain implements Drivetrain {
   @Override
   public void setPosition(Pose2d pos) {
     poseEstimator.resetPosition(getNavxRotation(), getPositions(), pos);
+  }
+
+  @Override
+  public void addVisionUpdate(Pose2d newPose, double timestamp) {
+    poseEstimator.addVisionMeasurement(newPose, timestamp);
   }
 
   @Override

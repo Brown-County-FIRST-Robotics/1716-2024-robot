@@ -5,8 +5,7 @@
 
 package frc.robot;
 
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.*;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -22,6 +21,9 @@ import frc.robot.subsystems.mecanum.MecanumIOSpark;
 import frc.robot.subsystems.swerve.ModuleIOSim;
 import frc.robot.subsystems.swerve.ModuleIOSparkFX;
 import frc.robot.subsystems.swerve.SwerveDrivetrain;
+import frc.robot.subsystems.vision.Vision;
+import frc.robot.subsystems.vision.VisionIO;
+import frc.robot.subsystems.vision.VisionIOSecondSight;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -52,11 +54,12 @@ public class RobotContainer {
       case SWERVEBASE:
         driveSys =
             new SwerveDrivetrain(
-                new ModuleIOSparkFX(20, 10, "FL", Rotation2d.fromDegrees(-90)),
-                new ModuleIOSparkFX(21, 11, "FR", Rotation2d.fromDegrees(0)),
-                new ModuleIOSparkFX(22, 12, "BL", Rotation2d.fromDegrees(180)),
-                new ModuleIOSparkFX(23, 13, "BR", Rotation2d.fromDegrees(90)),
+                new ModuleIOSparkFX(20, 10, "FL"),
+                new ModuleIOSparkFX(21, 11, "FR"),
+                new ModuleIOSparkFX(22, 12, "BL"),
+                new ModuleIOSparkFX(23, 13, "BR"),
                 new IMUIONavx());
+        var aaa=new Vision(driveSys, new Transform3d[]{new Transform3d(new Translation3d(-0.1,0,0),new Rotation3d())},new VisionIO[]{new VisionIOSecondSight("SS_LAPTOP/0")});
         break;
       default:
         driveSys = new MecanumDrivetrain(new MecanumIOSpark(1, 2, 3, 4), new IMUIONavx());
