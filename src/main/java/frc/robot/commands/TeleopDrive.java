@@ -54,13 +54,27 @@ public class TeleopDrive extends Command {
   @Override
   public void execute() {
     double ext = 0;
-//    if ((drivetrain.getPosition().getRotation().minus(minRot).getRotations() + 1.0) % 1.0
-//            < lockBand.getRotations()
-//        && !controller.getHID().getRightStickButton()) {
-//      ext += ppc.calculate(drivetrain.getPosition().getRotation().minus(lockRot).getRotations(), 0);
-//    }
-        if (controller.getHID().getRightStickButton()) {
-          ext= ppc.calculate(drivetrain.getPosition().getRotation().plus(Rotation2d.fromDegrees(180)).minus(drivetrain.getPosition().getTranslation().minus(new Translation2d(15,6)).getAngle()).getRotations(),0);
+    //    if ((drivetrain.getPosition().getRotation().minus(minRot).getRotations() + 1.0) % 1.0
+    //            < lockBand.getRotations()
+    //        && !controller.getHID().getRightStickButton()) {
+    //      ext +=
+    // ppc.calculate(drivetrain.getPosition().getRotation().minus(lockRot).getRotations(), 0);
+    //    }
+    if (controller.getHID().getRightStickButton()) {
+      ext =
+          ppc.calculate(
+              drivetrain
+                  .getPosition()
+                  .getRotation()
+                  .plus(Rotation2d.fromDegrees(180))
+                  .minus(
+                      drivetrain
+                          .getPosition()
+                          .getTranslation()
+                          .minus(new Translation2d(15, 6))
+                          .getAngle())
+                  .getRotations(),
+              0);
     }
 
     controller.getHID().setRumble(GenericHID.RumbleType.kRightRumble, Math.abs(ext / 3.0));

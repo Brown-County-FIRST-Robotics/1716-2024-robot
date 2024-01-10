@@ -5,7 +5,6 @@ import edu.wpi.first.math.geometry.*;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.vision.VisionIO.VisionIOInputs;
 import frc.robot.utils.PeriodicRunnable;
-import java.io.IOException;
 import org.littletonrobotics.junction.Logger;
 
 public class Vision extends PeriodicRunnable {
@@ -37,37 +36,33 @@ public class Vision extends PeriodicRunnable {
         if (outs[i].ids[j].length > 0) {
           Pose3d outPose = new Pose3d();
           if (outs[i].ids[j].length != 1) {
-            try {
-              Rotation3d r1 =
-                  new Rotation3d(
-                      new Quaternion(
-                          outs[i].poses[j][3],
-                          outs[i].poses[j][4],
-                          outs[i].poses[j][5],
-                          outs[i].poses[j][6]));
-              Rotation3d rot =
-                  new Rotation3d(
-                      r1.getX(),
-                      r1.getY(),
-                      drivetrain
-                          .getPosition()
-                          .getRotation()
-                          .interpolate(r1.toRotation2d(), 0)
-                          .getRadians());
-              Transform3d as =
-                  new Transform3d(
-                      new Translation3d(
-                          outs[i].poses[j][0], outs[i].poses[j][1], outs[i].poses[j][2]),
-                      rot);
-              Pose3d tagpose =
-                  AprilTagFields.k2023ChargedUp
-                      .loadAprilTagLayoutField()
-                      .getTagPose(Integer.parseInt(outs[i].ids[j][0]))
-                      .orElse(new Pose3d());
-              outPose = tagpose.plus(as);
-            } catch (IOException e) {
-              throw new RuntimeException(e);
-            }
+            Rotation3d r1 =
+                new Rotation3d(
+                    new Quaternion(
+                        outs[i].poses[j][3],
+                        outs[i].poses[j][4],
+                        outs[i].poses[j][5],
+                        outs[i].poses[j][6]));
+            Rotation3d rot =
+                new Rotation3d(
+                    r1.getX(),
+                    r1.getY(),
+                    drivetrain
+                        .getPosition()
+                        .getRotation()
+                        .interpolate(r1.toRotation2d(), 0)
+                        .getRadians());
+            Transform3d as =
+                new Transform3d(
+                    new Translation3d(
+                        outs[i].poses[j][0], outs[i].poses[j][1], outs[i].poses[j][2]),
+                    rot);
+            Pose3d tagpose =
+                AprilTagFields.k2023ChargedUp
+                    .loadAprilTagLayoutField()
+                    .getTagPose(Integer.parseInt(outs[i].ids[j][0]))
+                    .orElse(new Pose3d());
+            outPose = tagpose.plus(as);
           } else if (outs[i].ids[j].length >= 1) {
             outPose =
                 new Pose3d(

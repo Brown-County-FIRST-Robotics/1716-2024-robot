@@ -59,7 +59,13 @@ public class RobotContainer {
                 new ModuleIOSparkFX(22, 12, "BL"),
                 new ModuleIOSparkFX(23, 13, "BR"),
                 new IMUIONavx());
-        var aaa=new Vision(driveSys, new Transform3d[]{new Transform3d(new Translation3d(-0.1,0,0),new Rotation3d())},new VisionIO[]{new VisionIOSecondSight("SS_LAPTOP/0")});
+        var vision =
+            new Vision(
+                driveSys,
+                new Transform3d[] {
+                  new Transform3d(new Translation3d(-0.1, 0, 0), new Rotation3d())
+                },
+                new VisionIO[] {new VisionIOSecondSight("SS_LAPTOP/0")});
         break;
       default:
         driveSys = new MecanumDrivetrain(new MecanumIOSpark(1, 2, 3, 4), new IMUIONavx());
