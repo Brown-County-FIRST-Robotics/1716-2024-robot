@@ -36,7 +36,7 @@ public class Vision extends PeriodicRunnable {
       for (int j = 0; j < outs[i].ids.length; j++) {
         if (outs[i].ids[j].length > 0) {
           Pose3d outPose = new Pose3d();
-          if (outs[i].ids[j].length == 1) {
+          if (outs[i].ids[j].length != 1) {
             try {
               Rotation3d r1 =
                   new Rotation3d(
@@ -52,7 +52,7 @@ public class Vision extends PeriodicRunnable {
                       drivetrain
                           .getPosition()
                           .getRotation()
-                          .interpolate(r1.toRotation2d(), 0.5)
+                          .interpolate(r1.toRotation2d(), 0)
                           .getRadians());
               Transform3d as =
                   new Transform3d(
@@ -64,7 +64,7 @@ public class Vision extends PeriodicRunnable {
                       .loadAprilTagLayoutField()
                       .getTagPose(Integer.parseInt(outs[i].ids[j][0]))
                       .orElse(new Pose3d());
-              outPose = tagpose.plus(as.inverse());
+              outPose = tagpose.plus(as);
             } catch (IOException e) {
               throw new RuntimeException(e);
             }
