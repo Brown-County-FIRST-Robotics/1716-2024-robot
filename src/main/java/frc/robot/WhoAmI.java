@@ -5,7 +5,7 @@ public final class WhoAmI {
   /** The mode of the robot */
   public static final Mode mode = Mode.REAL;
   /** The robot */
-  public static final RobotType bot = RobotType.MECHBASE;
+  public static final RobotType bot = RobotType.SWERVEBASE;
   /** The appendages to the robot */
   final Appendages[] appendages = {};
 
