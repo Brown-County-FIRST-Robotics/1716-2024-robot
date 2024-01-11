@@ -8,6 +8,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import java.util.List;
 
+/** This interface represents a holonomic drivetrain */
 public interface Drivetrain extends Subsystem {
   /**
    * Gets the position from the pose estimator
