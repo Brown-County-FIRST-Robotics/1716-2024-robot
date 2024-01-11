@@ -151,10 +151,13 @@ def writeGitData =tasks.create("writeGitData") {
         }
         def tagname="zzzz_"+userstdout.toString().trim()+"_"+iso8601+"_deploy"
         exec {
+            commandLine "git", "commit", "--allow-empty", "-m", "Staged changes during deploy at "+iso8601
+        }
+        exec {
             commandLine "git", "add", "."
         }
         exec {
-            commandLine "git", "commit", "--allow-empty", "-m", "Deploy at "+iso8601
+            commandLine "git", "commit", "--allow-empty", "-m", "Unstaged changes during deploy at "+iso8601
         }
         exec {
             commandLine "git", "tag", tagname
@@ -164,6 +167,9 @@ def writeGitData =tasks.create("writeGitData") {
         }
         exec {
             commandLine "git", "restore", "--staged", "."
+        }
+        exec {
+            commandLine "git", "reset", "--soft", "HEAD^1"
         }
         // Create a new file
         new File(
