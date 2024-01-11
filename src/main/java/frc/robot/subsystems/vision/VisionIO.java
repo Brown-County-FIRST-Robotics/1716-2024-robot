@@ -20,6 +20,7 @@ public interface VisionIO {
       table.put("IsRecording", isRecording);
       table.put("Errors", errors);
       table.put("NumLoops", ids.length);
+      assert ids.length == poses.length;
       for (int i = 0; i < ids.length; i++) {
         table.put("IDs/" + i, ids[i]);
         table.put("Poses/" + i, poses[i]);
