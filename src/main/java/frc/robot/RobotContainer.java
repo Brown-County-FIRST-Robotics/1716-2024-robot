@@ -63,7 +63,7 @@ public class RobotContainer {
             new Vision(
                 driveSys,
                 new Transform3d[] {
-                  new Transform3d(new Translation3d(-0.1, 0, 0), new Rotation3d())
+                  new Transform3d(new Translation3d(-0.1, 0, 0), new Rotation3d(0,0,0))
                 },
                 new VisionIO[] {new VisionIOSecondSight("SS_LAPTOP/0")});
         break;
@@ -78,7 +78,8 @@ public class RobotContainer {
   /** Updates the pose estimator to use the correct initial pose */
   public void useAlliance() {
     driveSys.setPosition(
-        DriverStation.getAlliance().get() == DriverStation.Alliance.Blue
+        DriverStation.getAlliance().orElse(DriverStation.Alliance.Blue)
+                == DriverStation.Alliance.Blue
             ? Constants.BLUE_INIT_POSE
             : Constants.RED_INIT_POSE);
   }
