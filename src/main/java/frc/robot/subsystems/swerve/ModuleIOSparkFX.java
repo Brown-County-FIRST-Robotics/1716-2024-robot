@@ -13,7 +13,7 @@ import frc.robot.utils.LoggedTunableNumber;
 import org.littletonrobotics.junction.Logger;
 
 public class ModuleIOSparkFX implements ModuleIO {
-  private final double THRUST_DISTANCE_PER_TICK = .0254 * 4.0 * Math.PI / (2048.0 * 6.75);
+  private final double THRUST_DISTANCE_PER_TICK = .0254 * 4.0 * Math.PI / 6.75;
   private final CANSparkMax steer;
   private final SparkAnalogSensor encoder;
   private final SparkPIDController pid;
@@ -22,8 +22,7 @@ public class ModuleIOSparkFX implements ModuleIO {
   LoggedTunableNumber thrustP = new LoggedTunableNumber("Thrust P", 0);
   LoggedTunableNumber thrustI = new LoggedTunableNumber("Thrust I", 0);
   LoggedTunableNumber thrustD = new LoggedTunableNumber("Thrust D", 0);
-  LoggedTunableNumber thrustKV =
-      new LoggedTunableNumber("Thrust KV", 1023.0 * 600.0 / (6380.0 * 2048.0));
+  LoggedTunableNumber thrustKV = new LoggedTunableNumber("Thrust KV", 60.0 / 6380.0);
   LoggedTunableNumber steerP = new LoggedTunableNumber("Steer P", 0);
   LoggedTunableNumber steerI = new LoggedTunableNumber("Steer I", 0);
   LoggedTunableNumber steerD = new LoggedTunableNumber("Steer D", 0);
@@ -33,7 +32,16 @@ public class ModuleIOSparkFX implements ModuleIO {
     this.name = name;
     thrust = new TalonFX(thrustID);
     TalonFXConfiguration config = new TalonFXConfiguration();
-    config.Slot0.kV = 1023.0 * 600.0 / (6380.0 * 2048.0);
+    config.Slot0.kV = thrustKV.get();
+    if (name == "FL") {
+      config.CustomParams.CustomParam0 = 825;
+    } else if (name == "FR") {
+      config.CustomParams.CustomParam0 = 5;
+    } else if (name == "BL") {
+      config.CustomParams.CustomParam0 = 982;
+    } else if (name == "BR") {
+      config.CustomParams.CustomParam0 = 456;
+    }
     config.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RotorSensor;
     config.MotorOutput.NeutralMode = NeutralModeValue.Coast;
     thrust.getConfigurator().apply(config);
@@ -72,7 +80,7 @@ public class ModuleIOSparkFX implements ModuleIO {
     inputs.pos = getModulePosition();
     inputs.vel =
         new SwerveModuleState(
-            thrust.getRotorVelocity().getValue() * THRUST_DISTANCE_PER_TICK * 10,
+            thrust.getRotorVelocity().getValue() * THRUST_DISTANCE_PER_TICK,
             getModulePosition().angle);
     inputs.steerTempC = steer.getMotorTemperature();
     inputs.thrustErr = thrust.getClosedLoopError().getValue();
@@ -92,8 +100,7 @@ public class ModuleIOSparkFX implements ModuleIO {
   @Override
   public void setCmdState(SwerveModuleState state) {
     double cmd_ang = state.angle.getRotations();
-    thrust.setControl(
-        new VelocityVoltage(0.1 * state.speedMetersPerSecond / THRUST_DISTANCE_PER_TICK));
+    thrust.setControl(new VelocityVoltage(state.speedMetersPerSecond / THRUST_DISTANCE_PER_TICK));
 
     pid.setReference(((cmd_ang % 1.0) + 1.0) % 1.0, CANSparkMax.ControlType.kSmartMotion);
   }
