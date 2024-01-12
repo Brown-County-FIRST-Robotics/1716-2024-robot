@@ -19,7 +19,17 @@ public interface MecanumIO {
     MecanumDriveWheelPositions pos = new MecanumDriveWheelPositions();
   }
 
+  /**
+   * Command a speed to the motors
+   *
+   * @param cmd The commanded speeds
+   */
   public default void setSpeeds(MecanumDriveWheelSpeeds cmd) {}
 
+  /**
+   * Updates the inputs
+   *
+   * @param inputs A reference to the inputs
+   */
   public default void updateInputs(MecanumIOInputs inputs) {}
 }

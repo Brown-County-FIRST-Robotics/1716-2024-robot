@@ -3,6 +3,7 @@ package frc.robot.subsystems.vision;
 import edu.wpi.first.networktables.*;
 import edu.wpi.first.wpilibj.Timer;
 
+/** The IO layer for one SecondSight camera */
 public class VisionIOSecondSight implements VisionIO {
   BooleanSubscriber isRecordingSub;
   StringSubscriber recordingPathSub;

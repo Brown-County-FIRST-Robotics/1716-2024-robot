@@ -3,7 +3,7 @@ package frc.robot.subsystems;
 import edu.wpi.first.math.geometry.Rotation3d;
 import org.littletonrobotics.junction.AutoLog;
 
-/** The abstraction layer for the IMU */
+/** The IO layer for an IMU */
 public interface IMUIO {
   @AutoLog
   public static class IMUIOInputs {
