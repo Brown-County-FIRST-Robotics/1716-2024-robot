@@ -3,7 +3,7 @@ package frc.robot.subsystems.vision;
 import org.littletonrobotics.junction.LogTable;
 import org.littletonrobotics.junction.inputs.LoggableInputs;
 
-/** The IO interface for one camera */
+/** The IO layer for one camera */
 public interface VisionIO {
   public static class VisionIOInputs implements LoggableInputs {
     public double[][] poses = {};
@@ -43,5 +43,10 @@ public interface VisionIO {
     }
   }
 
+  /**
+   * Updates the inputs
+   *
+   * @param inputs A reference to the inputs
+   */
   default void updateInputs(VisionIOInputs inputs) {}
 }

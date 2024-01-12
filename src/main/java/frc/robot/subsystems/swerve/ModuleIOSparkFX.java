@@ -12,6 +12,7 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import frc.robot.utils.LoggedTunableNumber;
 import org.littletonrobotics.junction.Logger;
 
+/** IO layer for a SDS MK4i L2 swerve module using a Falcon 500 as thrust, and a Neo as steering */
 public class ModuleIOSparkFX implements ModuleIO {
   private final double THRUST_DISTANCE_PER_TICK = .0254 * 4.0 * Math.PI / 6.75;
   private final CANSparkMax steer;
@@ -28,6 +29,13 @@ public class ModuleIOSparkFX implements ModuleIO {
   LoggedTunableNumber steerD = new LoggedTunableNumber("Steer D", 0);
   LoggedTunableNumber steerKV = new LoggedTunableNumber("Steer KV", 1.0 / 300.0);
 
+  /**
+   * Makes a new instance using CAN IDs
+   *
+   * @param thrustID Thrust motor CAN ID
+   * @param steerID Steer motor controller CAN ID
+   * @param name The name of the module (eg. "FL", "BR")
+   */
   public ModuleIOSparkFX(int thrustID, int steerID, String name) {
     this.name = name;
     thrust = new TalonFX(thrustID);
