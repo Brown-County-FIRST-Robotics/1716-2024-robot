@@ -52,13 +52,13 @@
     - Commands are generally bound to triggers in the `configureButtonBindings()` method of `RobotContainer`
     - Alternatively, you can make [arbitrary triggers](https://docs.wpilib.org/en/stable/docs/software/commandbased/binding-commands-to-triggers.html#arbitrary-triggers), which, rather than being a button input, take a boolean lambda that you provide
         - Example: `new Trigger(() -> { return controller.getA(); });`
-
-    //I GOT HERE!!!
     - There are different [bindings](https://docs.wpilib.org/en/stable/docs/software/commandbased/binding-commands-to-triggers.html#trigger-bindings) available, which allow for different logical connections between triggers and commands
-        - First, you make a trigger (such as a button), then call a binding on it, then place your command in the form of a `CommandPtr` as the argument for the binding
-    - Triggers can be [composed](https://docs.wpilib.org/en/stable/docs/software/commandbased/binding-commands-to-triggers.html#composing-triggers) so that `&&`, `||`, or `!` can be applied to them
-    - Bindings return the original trigger, so you can [chain together bindings](https://docs.wpilib.org/en/stable/docs/software/commandbased/binding-commands-to-triggers.html#chaining-calls)
+        - First, you make a trigger (such as a button), then call a binding on it and pass in a new instance of your command
+    - Triggers can be [composed](https://docs.wpilib.org/en/stable/docs/software/commandbased/binding-commands-to-triggers.html#composing-triggers), allowing you to apply logical operators to trigger using the `and()`, `or()`, and `negate()` methods
+    - Bindings return the original trigger, so you can [chain together binding calls](https://docs.wpilib.org/en/stable/docs/software/commandbased/binding-commands-to-triggers.html#chaining-calls)
     - [DOCS](https://docs.wpilib.org/en/stable/docs/software/commandbased/binding-commands-to-triggers.html)
+
+Here is an example of a possible structure for your project to show how these concepts work together:
 
 ```mermaid
 flowchart BT
@@ -78,6 +78,135 @@ flowchart BT
     C2 --> T3(Trigger3)
     C2 --> C4(Composite1)
     C3 --> C4
-    C4 --> T5(Trigger5)
     C3 --> T4(Trigger4)
+    C4 --> T5(Trigger5)
 ```
+
+## How to make a...
+
+The following section covers how to write a new subsytem and command, and how to bind a command to a trigger. All file paths are in the `src > main > java > frc > robot` directory.
+
+### Subsystem:
+
+1. Create a file for your subsystem in `subsystems/SubsystemName.java` (from now on, `SubsystemName` represents the name of your subsystem)
+
+2. In `SubsystemName.java`, define methods and components:
+```java
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import com.ctre.phoenix.motorcontrol.can.TalonFX;
+import com.revrobotics.CANSparkMax;
+import com.revrobotics.CANSparkLowLevel.MotorType;
+
+public class SubsystemName extends SubsystemBase {
+    //subsystem components such as motors:
+    private final TalonFX exampleTalonFX = new TalonFX(0);
+    private final CANSparkMax exampleSparkMax = new CANSparkMax(1, CANSparkLowLevel.MotorType.kBrushless);
+
+    //Constructor
+    public SubsytemName() {}
+
+    //Custom methods go here:
+    public void ExampleMethod1() {
+        exampleTalonFX.Set(0.5);
+    }
+
+    public void ExampleMethod2(double exampleParameter) {
+        exampleSparkMax.Set(exampleParameter);
+    }
+}
+```
+
+3. In `RobotContainer.java`, declare your subsystem:
+```java
+import frc.robot.subsystems.SubsystemName; //import your subsystem
+
+public class RobotContainer {
+    //create an instance of you subsystem at the top of the class (above the RobotContainer constructor)
+    private final SubsytemName subsytemName = new SubsytemName();
+}
+```
+
+### Command:
+
+1. Create a file for your command in `commands/CommandName.java` (from now on, `CommandName` represents the name of your command)
+
+2. In `CommandName.java`, declare the constructor and methods you plan to use:
+```java
+import edu.wpi.first.wpilibj2.command.CommandBase;
+
+import frc.robot.subsystems.SubsytemName.java; //Subsystem requirement
+
+public class CommandName extends CommandBase {
+    SubsytemName subsytemName;
+	
+	//constructor, it must take all required subsystems as parameters
+    public CommandName(SubsytemName subsystem)  {
+		subsytemName = subsystem;
+
+		addRequirements(subsystem); //subsystems must be added to the command's requirements
+	}
+
+	//you must override initialize(), execute(), end(), and isFinished()
+	//Called once at the beginning
+	@Override
+    public void initialize() {
+		subsystemName.ExampleMethod1();
+		subsystemName.ExampleMethod2(0.5);
+	}
+
+	//Called every frame that the command is scheduled
+  	@Override
+    public void execute() {
+		subsytemName.ExampleMethod1();
+	}
+
+	//Called once at the end, `interrupted` parameter tells whether the commmand was ended due to an interruption
+	@Override
+    public void end(boolean interrupted) {
+		subsytemName.ExampleMethod2(0);
+	}
+  
+	//return true when the command has completed, run once per frame that the command is scheduled, defaults to false (no end until interrupted)
+	@Override
+    public boolean isFinished() {
+		return false;
+	}
+
+}
+```
+
+### Button Binding:
+
+1. Create a private `CommandXboxController` in `RobotContainer.java` (import `edu.wpi.first.wpilibj2.command.button.CommandXboxController`)
+
+2. In the `private void configureButtonBindings()` method in `RobotContainer.java`, bind your buttons; read the [docs](https://docs.wpilib.org/en/stable/docs/software/commandbased/binding-commands-to-triggers.html#trigger-bindings) to find the correct binding for the functionality you want to achieve
+```java
+import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+
+import frc.robot.subsystems.SubsystemName;
+import frc.robot.commands.CommandName;
+import frc.robot.commands.Command2Name;
+
+public class RobotContainer {
+	private final SubsytemName subsytemName = new SubsytemName();
+	private final CommandXboxController controller = new CommandXboxController(0);
+
+	public RobotContainer() {
+		configureButtonBindings();
+	}
+
+	private void configureButtonBindings() {
+		//create a trigger by calling the method named for the button you want on the controller, then call a binding on that (such as `whileTrue()`, which schedules the command when you hit the button and deschedules it when you release it). The binding takes your command, which you can declare inline using your subsystem.
+		controller.a().whileTrue(CommandName(subsystemName));
+
+		//bindings return the original trigger, so bindings can be chained together
+		controller.b()
+			.onTrue(CommandName(subsystemName))
+			.whileTrue(Command2Name(subsystemName));
+
+		//trigger composition, which allows for the use of logical operators with triggers. Here, if neither are pressed, the command `CommandName` will be scheduled.
+		controller.x().or(controller.y()).whileFalse(CommandName(subsystemName));
+	}
+}
+```
+
