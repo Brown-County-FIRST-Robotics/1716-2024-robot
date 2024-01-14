@@ -65,6 +65,6 @@ Another feature of WPILib is NetworkTables, which can be used to communicate val
 
 ## Solenoids
 
-Solenoids are the controllers for air-powered devices, generally pistons. We use double solenoids, which can both push a piston out and suck it back in. These have three settings: Forward, Reverse, and Off. A double solenoid should never be in Forward or Reverse for longer than a fraction of a second (about 3 ms), just long enough to move the piston. It must then be set to Off again in order to avoid damaging the piston. There is a sample subsystem and command available for them [here](command_based#generalized-solenoid-subsystem-and-command).
+Solenoids are the controllers for air-powered devices, generally pistons. We use double solenoids, which can both push a piston out and suck it back in. These have three settings: Forward, Reverse, and Off. A double solenoid should never be in Forward or Reverse for longer than a fraction of a second (about 3 ms), just long enough to move the piston. It must then be set to Off again in order to avoid damaging the piston. There is a sample subsystem and command available for them [here](command_based#example-solenoid-subsystem-and-command).
 
 [**DOCS**](https://docs.wpilib.org/en/stable/docs/software/hardware-apis/pneumatics/pneumatics.html)
