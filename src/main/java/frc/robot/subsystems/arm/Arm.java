@@ -7,6 +7,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.utils.LoggedTunableNumber;
 import org.littletonrobotics.junction.Logger;
 
+/** The Arm subsystem */
 public class Arm extends SubsystemBase {
   Mechanism2d realStates = new Mechanism2d(100, 100);
   MechanismLigament2d realArmStates = new MechanismLigament2d("Arm", 40, 0);
@@ -17,6 +18,11 @@ public class Arm extends SubsystemBase {
   Rotation2d cmdAng = new Rotation2d();
   LoggedTunableNumber gravFF = new LoggedTunableNumber("Arm Gravity FF", 0.0);
 
+  /**
+   * Constructs the subsystem from an IO object
+   *
+   * @param io The IO interface to use
+   */
   public Arm(ArmIO io) {
     realStates.getRoot("Root", 50, 50).append(realArmStates);
     cmdStates.getRoot("Root", 50, 50).append(cmdArmStates);
@@ -27,6 +33,11 @@ public class Arm extends SubsystemBase {
     Logger.processInputs("Arm/Inputs", inputs);
   }
 
+  /**
+   * Commands an angle
+   *
+   * @param rot The angle set point
+   */
   public void setAngle(Rotation2d rot) {
     cmdArmStates.setAngle(rot);
     Logger.recordOutput("Arm/cmdState", cmdStates);
@@ -38,12 +49,23 @@ public class Arm extends SubsystemBase {
     io.setAngle(cmdAng, cmdAng.getCos() * gravFF.get());
   }
 
+  /**
+   * Gets the angle of the arm
+   *
+   * @return The angle of the arm
+   */
   public Rotation2d getAngle() {
     return inputs.angle;
   }
 
-  public void commandIncrement(Rotation2d inc) {
-    setAngle(getAngle().plus(inc));
+  /**
+   * Increments the angle of the arm. This commands an angle based on the current angle of the arm,
+   * to prevent windup.
+   *
+   * @param increment The amount to increment
+   */
+  public void commandIncrement(Rotation2d increment) {
+    setAngle(getAngle().plus(increment));
   }
 
   @Override
