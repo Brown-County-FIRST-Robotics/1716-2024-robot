@@ -3,7 +3,7 @@ package frc.robot.commands;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj.GenericHID;
@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Constants;
 import frc.robot.subsystems.Drivetrain;
+import frc.robot.subsystems.arm.Arm;
 import frc.robot.utils.DualRateLimiter;
 import frc.robot.utils.LoggedTunableNumber;
 import org.littletonrobotics.junction.Logger;
@@ -25,6 +26,7 @@ public class TeleopDrive extends Command {
   private final Rotation2d maxRot = lockRot.rotateBy(lockBand.times(0.5));
   private final ProfiledPIDController ppc =
       new ProfiledPIDController(0, 0, 0, new TrapezoidProfile.Constraints(3, 3));
+  private final Arm arm;
   LoggedTunableNumber p = new LoggedTunableNumber("drP", -100);
   LoggedTunableNumber i = new LoggedTunableNumber("drI", 0);
   LoggedTunableNumber d = new LoggedTunableNumber("drD", 0);
@@ -34,10 +36,11 @@ public class TeleopDrive extends Command {
   DualRateLimiter yVelLimiter = new DualRateLimiter(4, 100);
   DualRateLimiter omegaLimiter = new DualRateLimiter(6, 100);
 
-  public TeleopDrive(Drivetrain drivetrain, CommandXboxController controller) {
+  public TeleopDrive(Drivetrain drivetrain, Arm arm, CommandXboxController controller) {
     this.drivetrain = drivetrain;
     this.controller = controller;
-    addRequirements(this.drivetrain);
+    this.arm = arm;
+    addRequirements(this.drivetrain, this.arm);
     p.attach(ppc::setP);
     i.attach(ppc::setI);
     d.attach(ppc::setD);
@@ -60,6 +63,7 @@ public class TeleopDrive extends Command {
     //      ext +=
     // ppc.calculate(drivetrain.getPosition().getRotation().minus(lockRot).getRotations(), 0);
     //    }
+    var target = new Translation3d(0.458597, 5.544566, 2.1105114);
     if (controller.getHID().getRightStickButton()) {
       ext =
           ppc.calculate(
@@ -71,10 +75,21 @@ public class TeleopDrive extends Command {
                       drivetrain
                           .getPosition()
                           .getTranslation()
-                          .minus(new Translation2d(15, 6))
+                          .minus(target.toTranslation2d())
                           .getAngle())
                   .getRotations(),
               0);
+    }
+    Logger.recordOutput(
+        "TeleopDrive/dist",
+        drivetrain.getPosition().getTranslation().minus(target.toTranslation2d()).getNorm());
+    if (drivetrain.getPosition().getTranslation().minus(target.toTranslation2d()).getNorm() < 5) {
+      arm.setAngle(
+          new Rotation2d(
+              drivetrain.getPosition().getTranslation().minus(target.toTranslation2d()).getNorm(),
+              target.getZ()));
+    } else {
+      arm.setAngle(Rotation2d.fromRotations(0.4));
     }
 
     controller.getHID().setRumble(GenericHID.RumbleType.kRightRumble, Math.abs(ext / 3.0));
@@ -90,7 +105,7 @@ public class TeleopDrive extends Command {
           new ChassisSpeeds(
               controller.getLeftY() * Constants.Driver.MAX_X_SPEED,
               controller.getLeftX() * Constants.Driver.MAX_Y_SPEED,
-              controller.getRightX() * Constants.Driver.MAX_THETA_SPEED + ext),
+              ext == 0 ? ext : controller.getRightX() * Constants.Driver.MAX_THETA_SPEED),
           foc);
     }
     if (controller.getHID().getBackButtonPressed()) {

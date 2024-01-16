@@ -16,6 +16,8 @@ import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.IMUIONavx;
 import frc.robot.subsystems.IMUIOPigeon;
 import frc.robot.subsystems.IMUIOSim;
+import frc.robot.subsystems.arm.Arm;
+import frc.robot.subsystems.arm.ArmIOSim;
 import frc.robot.subsystems.mecanum.MecanumDrivetrain;
 import frc.robot.subsystems.mecanum.MecanumIOSpark;
 import frc.robot.subsystems.swerve.ModuleIOSim;
@@ -70,8 +72,10 @@ public class RobotContainer {
       default:
         driveSys = new MecanumDrivetrain(new MecanumIOSpark(1, 2, 3, 4), new IMUIONavx());
     }
+
     useAlliance();
-    driveSys.setDefaultCommand(new TeleopDrive(driveSys, driverController));
+    driveSys.setDefaultCommand(
+        new TeleopDrive(driveSys, new Arm(new ArmIOSim()), driverController));
     configureBindings();
   }
 
