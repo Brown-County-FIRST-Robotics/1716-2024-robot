@@ -261,7 +261,7 @@ public class SwerveDrivetrain implements Drivetrain {
             -cmd.vxMetersPerSecond, -cmd.vyMetersPerSecond, -cmd.omegaRadiansPerSecond);
     if (foc) {
       Rotation2d rot =
-          DriverStation.getAlliance().orElse(DriverStation.Alliance.Red)
+          DriverStation.getAlliance().orElse(DriverStation.Alliance.Blue)
                   == DriverStation.Alliance.Red
               ? getPosition().getRotation()
               : getPosition().getRotation().rotateBy(Rotation2d.fromRotations(0.5));

@@ -64,33 +64,33 @@ public class TeleopDrive extends Command {
     //      ext +=
     // ppc.calculate(drivetrain.getPosition().getRotation().minus(lockRot).getRotations(), 0);
     //    }
-    var target = new Translation3d(0.458597, 5.544566, 2.1105114);
-    if (controller.getHID().getRightStickButton()) {
-      ext =
-          ppc.calculate(
-              drivetrain
-                  .getPosition()
-                  .getRotation()
-                  .plus(Rotation2d.fromDegrees(180))
-                  .minus(
-                      drivetrain
-                          .getPosition()
-                          .getTranslation()
-                          .minus(target.toTranslation2d())
-                          .getAngle())
-                  .getRotations(),
-              0);
-    }
+
     Logger.recordOutput(
         "TeleopDrive/dist",
-        drivetrain.getPosition().getTranslation().minus(target.toTranslation2d()).getNorm());
-    if (drivetrain.getPosition().getTranslation().minus(target.toTranslation2d()).getNorm() < 5) {
+        drivetrain.getPosition().getTranslation().minus(FieldConstants.getSpeaker().toTranslation2d()).getNorm());
+    if (controller.getHID().getRightTriggerAxis()>0.2) {
+      if (deadband(controller.getRightX())){
+        ext =
+                ppc.calculate(
+                        drivetrain
+                                .getPosition()
+                                .getRotation()
+                                .plus(Rotation2d.fromDegrees(180))
+                                .minus(
+                                        drivetrain
+                                                .getPosition()
+                                                .getTranslation()
+                                                .minus(FieldConstants.getSpeaker().toTranslation2d())
+                                                .getAngle().rotateBy(Rotation2d.fromDegrees(180)))
+                                .getRotations(),
+                        0);
+      }
       arm.setAngle(
           new Rotation2d(
-              drivetrain.getPosition().getTranslation().minus(target.toTranslation2d()).getNorm(),
-              target.getZ()));
+              drivetrain.getPosition().getTranslation().minus(FieldConstants.getSpeaker().toTranslation2d()).getNorm(),
+              FieldConstants.getSpeaker().getZ()));
     } else {
-      arm.setAngle(Rotation2d.fromRotations(0.4));
+      arm.setAngle(Rotation2d.fromRotations(0.7));
     }
 
     controller.getHID().setRumble(GenericHID.RumbleType.kRightRumble, Math.abs(ext / 3.0));
@@ -106,7 +106,7 @@ public class TeleopDrive extends Command {
           new ChassisSpeeds(
               controller.getLeftY() * Constants.Driver.MAX_X_SPEED,
               controller.getLeftX() * Constants.Driver.MAX_Y_SPEED,
-              ext == 0 ? ext : controller.getRightX() * Constants.Driver.MAX_THETA_SPEED),
+              ext+controller.getRightX() * Constants.Driver.MAX_THETA_SPEED),
           foc);
     }
     if (controller.getHID().getBackButtonPressed()) {
