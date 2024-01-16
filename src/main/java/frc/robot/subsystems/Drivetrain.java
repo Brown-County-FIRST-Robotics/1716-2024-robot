@@ -35,7 +35,7 @@ public interface Drivetrain extends Subsystem {
   Command getFollowWaypointsCmd(
       List<Translation2d> waypoints, Pose2d pose, double endVelX, double endVelY);
 
-  void humanDrive(ChassisSpeeds cmd, boolean foc);
+  void humanDrive(ChassisSpeeds cmd);
 
   /**
    * Gets the current orientation according to the gyro
