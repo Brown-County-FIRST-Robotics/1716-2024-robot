@@ -12,7 +12,6 @@ import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import edu.wpi.first.math.trajectory.TrajectoryGenerator;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.DeferredCommand;
 import edu.wpi.first.wpilibj2.command.MecanumControllerCommand;
@@ -129,22 +128,8 @@ public class MecanumDrivetrain implements Drivetrain {
   }
 
   @Override
-  public void humanDrive(ChassisSpeeds cmd, boolean foc) {
-    ChassisSpeeds sp =
-        new ChassisSpeeds(
-            -cmd.vxMetersPerSecond, -cmd.vyMetersPerSecond, -cmd.omegaRadiansPerSecond);
-    if (foc) {
-      Rotation2d rot =
-          DriverStation.getAlliance().get() == DriverStation.Alliance.Red
-              ? getPosition().getRotation()
-              : getPosition().getRotation().rotateBy(Rotation2d.fromRotations(0.5));
-      sp =
-          ChassisSpeeds.fromFieldRelativeSpeeds(
-              new ChassisSpeeds(
-                  cmd.vxMetersPerSecond, cmd.vyMetersPerSecond, -cmd.omegaRadiansPerSecond),
-              rot);
-    }
-    MecanumDriveWheelSpeeds speeds = KINEMATICS.toWheelSpeeds(sp);
+  public void humanDrive(ChassisSpeeds cmd) {
+    MecanumDriveWheelSpeeds speeds = KINEMATICS.toWheelSpeeds(cmd);
     setWheelSpeeds(speeds);
   }
 
