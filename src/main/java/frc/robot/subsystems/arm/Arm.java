@@ -77,9 +77,20 @@ public class Arm extends SubsystemBase {
     realArmStates.setAngle(getAngle());
     Logger.recordOutput("Arm/realState", realStates);
     Logger.recordOutput("Arm/cmdState", cmdStates);
-    var bp=new Pose3d(-0.3,0.33,0.65,new Rotation3d());
-    Logger.recordOutput("Arm/CmdMech3d",bp.plus(new Transform3d(new Translation3d(0,0,0),new Rotation3d(0,-Math.PI/2,Math.PI/2).rotateBy(new Rotation3d(0,cmdAng.getRadians(),0)))));
-    Logger.recordOutput("Arm/RealMech3d",bp.plus(new Transform3d(new Translation3d(0,0,0),new Rotation3d(0,-Math.PI/2,Math.PI/2).rotateBy(new Rotation3d(0,getAngle().getRadians(),0)))));
-
+    var bp = new Pose3d(-0.3, 0.33, 0.65, new Rotation3d());
+    Logger.recordOutput(
+        "Arm/CmdMech3d",
+        bp.plus(
+            new Transform3d(
+                new Translation3d(0, 0, 0),
+                new Rotation3d(0, -Math.PI / 2, Math.PI / 2)
+                    .rotateBy(new Rotation3d(0, cmdAng.getRadians(), 0)))));
+    Logger.recordOutput(
+        "Arm/RealMech3d",
+        bp.plus(
+            new Transform3d(
+                new Translation3d(0, 0, 0),
+                new Rotation3d(0, -Math.PI / 2, Math.PI / 2)
+                    .rotateBy(new Rotation3d(0, getAngle().getRadians(), 0)))));
   }
 }
