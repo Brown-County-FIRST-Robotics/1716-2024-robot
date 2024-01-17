@@ -11,6 +11,11 @@ public class VisionIOSecondSight implements VisionIO {
   DoubleArraySubscriber posesSub;
   DoubleSubscriber errorSub;
 
+  /**
+   * Constructs a new <code>VisionIOSecondSight</code> from a NT path
+   *
+   * @param name The NT path of the camera
+   */
   public VisionIOSecondSight(String name) {
     NetworkTable table = NetworkTableInstance.getDefault().getTable("SS_LAPTOP").getSubTable("0");
     isRecordingSub = table.getBooleanTopic("isRecording").subscribe(false);
