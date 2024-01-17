@@ -3,7 +3,6 @@ package frc.robot.commands;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj.GenericHID;
@@ -67,27 +66,36 @@ public class TeleopDrive extends Command {
 
     Logger.recordOutput(
         "TeleopDrive/dist",
-        drivetrain.getPosition().getTranslation().minus(FieldConstants.getSpeaker().toTranslation2d()).getNorm());
-    if (controller.getHID().getRightTriggerAxis()>0.2) {
-      if (deadband(controller.getRightX())){
+        drivetrain
+            .getPosition()
+            .getTranslation()
+            .minus(FieldConstants.getSpeaker().toTranslation2d())
+            .getNorm());
+    if (controller.getHID().getRightTriggerAxis() > 0.2) {
+      if (deadband(controller.getRightX())) {
         ext =
-                ppc.calculate(
+            ppc.calculate(
+                drivetrain
+                    .getPosition()
+                    .getRotation()
+                    .plus(Rotation2d.fromDegrees(180))
+                    .minus(
                         drivetrain
-                                .getPosition()
-                                .getRotation()
-                                .plus(Rotation2d.fromDegrees(180))
-                                .minus(
-                                        drivetrain
-                                                .getPosition()
-                                                .getTranslation()
-                                                .minus(FieldConstants.getSpeaker().toTranslation2d())
-                                                .getAngle().rotateBy(Rotation2d.fromDegrees(180)))
-                                .getRotations(),
-                        0);
+                            .getPosition()
+                            .getTranslation()
+                            .minus(FieldConstants.getSpeaker().toTranslation2d())
+                            .getAngle()
+                            .rotateBy(Rotation2d.fromDegrees(180)))
+                    .getRotations(),
+                0);
       }
       arm.setAngle(
           new Rotation2d(
-              drivetrain.getPosition().getTranslation().minus(FieldConstants.getSpeaker().toTranslation2d()).getNorm(),
+              drivetrain
+                  .getPosition()
+                  .getTranslation()
+                  .minus(FieldConstants.getSpeaker().toTranslation2d())
+                  .getNorm(),
               FieldConstants.getSpeaker().getZ()));
     } else {
       arm.setAngle(Rotation2d.fromRotations(0.7));
@@ -106,7 +114,7 @@ public class TeleopDrive extends Command {
           new ChassisSpeeds(
               controller.getLeftY() * Constants.Driver.MAX_X_SPEED,
               controller.getLeftX() * Constants.Driver.MAX_Y_SPEED,
-              ext+controller.getRightX() * Constants.Driver.MAX_THETA_SPEED),
+              ext + controller.getRightX() * Constants.Driver.MAX_THETA_SPEED),
           foc);
     }
     if (controller.getHID().getBackButtonPressed()) {
