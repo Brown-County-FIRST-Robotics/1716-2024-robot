@@ -5,9 +5,9 @@ public final class WhoAmI {
   /** The mode of the robot */
   public static final Mode mode = Mode.REAL;
   /** The robot */
-  public static final RobotType bot = RobotType.MECHBASE;
+  public static final RobotType bot = RobotType.SWERVEBASE;
   /** The appendages to the robot */
-  final Appendages[] appendages = {};
+  public static final Appendages[] appendages = {};
 
   /** The robot types */
   public static enum RobotType {
@@ -20,7 +20,16 @@ public final class WhoAmI {
   }
 
   /** The appendages to the robot */
-  public static enum Appendages {}
+  public static enum Appendages {
+    ARM,
+    SIM_ARM,
+    SHOOTER,
+    SIM_SHOOTER,
+    CLIMBER,
+    SIM_CLIMBER,
+    INTAKE,
+    SIM_INTAKE
+  }
 
   /** The code execution mode */
   public static enum Mode {

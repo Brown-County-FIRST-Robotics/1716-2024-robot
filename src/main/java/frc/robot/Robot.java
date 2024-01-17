@@ -8,6 +8,7 @@ import frc.robot.utils.PeriodicRunnable;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.Scanner;
 import org.littletonrobotics.junction.LogFileUtil;
@@ -59,9 +60,9 @@ public class Robot extends LoggedRobot {
     Logger.recordMetadata("Tag Name", tagName);
     Logger.recordMetadata("Deployer", deployer);
     Logger.recordMetadata("Bot", String.valueOf(WhoAmI.bot));
+    Logger.recordMetadata("Appendages", Arrays.toString(WhoAmI.appendages));
     Logger.recordMetadata("SN", HALUtil.getSerialNumber());
 
-    // Running on a real robot, log to a USB stick
     switch (WhoAmI.mode) {
       case REAL:
         Logger.addDataReceiver(new WPILOGWriter("/U"));
