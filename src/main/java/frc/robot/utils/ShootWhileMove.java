@@ -9,6 +9,14 @@ public class ShootWhileMove {
     Translation3d getPose(ShootingCommand cmd, Translation2d botPose);
   }
 
+  public interface SystemPredictor {
+    double getTimeToState(ShootingCommand cmd);
+
+    Translation2d getPoseAfterTime(double t);
+
+    Translation2d getBotVelAfterTime(double t);
+  }
+
   public static class ShootingCommand {
     public Rotation2d botAngle;
     public Rotation2d shooterAngle;
@@ -57,6 +65,28 @@ public class ShootWhileMove {
       lastCommand = canidateCmd;
     }
     System.out.println("calcCommandWithKinematics did not converge");
+    return lastCommand;
+  }
+
+  public static ShootingCommand calcCommandWithPrediction(
+      SystemPredictor predictor, ShooterKinematics kinematics, Translation3d target) {
+    double lastT = 0;
+    ShootingCommand lastCommand = new ShootingCommand(new Rotation2d(), new Rotation2d(), 0);
+    for (int i = 0; i < 100; i++) {
+      var canidateCmd =
+          calcCommandWithKinematics(
+              predictor.getPoseAfterTime(lastT),
+              target,
+              predictor.getBotVelAfterTime(lastT),
+              kinematics);
+      if (converged(canidateCmd, lastCommand)) {
+        System.out.println("calcCommandWithPrediction converged in " + i + " iterations");
+        return canidateCmd;
+      }
+      lastCommand = canidateCmd;
+      lastT = predictor.getTimeToState(lastCommand);
+    }
+    System.out.println("calcCommandWithPrediction did not converge");
     return lastCommand;
   }
 }
