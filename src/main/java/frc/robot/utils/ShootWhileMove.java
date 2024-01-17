@@ -5,6 +5,10 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
 
 public class ShootWhileMove {
+  public interface ShooterKinematics {
+    Translation3d getPose(ShootingCommand cmd, Translation2d botPose);
+  }
+
   public static class ShootingCommand {
     public Rotation2d botAngle;
     public Rotation2d shooterAngle;
@@ -29,5 +33,18 @@ public class ShootWhileMove {
     double shooterVel = Math.sqrt(dot(tmpB, tmpB) - g * botPose.getZ());
     return new ShootingCommand(
         tmpB.getAngle(), Rotation2d.fromRadians(Math.asin(tmpA / shooterVel)), shooterVel);
+  }
+
+  public static ShootingCommand calcCommandWithKinematics(
+      Translation2d botPose,
+      Translation3d target,
+      Translation2d botVelocity,
+      ShooterKinematics kinematics) {
+    ShootingCommand lastCommand = new ShootingCommand(new Rotation2d(), new Rotation2d(), 0);
+    for (int i = 0; i < 100; i++) {
+      Translation3d poseOfBot = kinematics.getPose(lastCommand, botPose);
+      lastCommand = calcSimpleCommand(poseOfBot.minus(target), botVelocity);
+    }
+    return lastCommand;
   }
 }
