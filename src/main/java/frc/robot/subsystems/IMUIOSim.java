@@ -4,6 +4,7 @@ import frc.robot.SwerveSimManager;
 
 /** A simulated IMU */
 public class IMUIOSim implements IMUIO {
+  /** Constructs a new IMUIOSim */
   public IMUIOSim() {}
 
   @Override
