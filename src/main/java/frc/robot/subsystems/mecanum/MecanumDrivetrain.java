@@ -22,9 +22,10 @@ import java.util.List;
 import java.util.Set;
 import org.littletonrobotics.junction.Logger;
 
+/** The mecanum drivetrain subsystem */
 public class MecanumDrivetrain implements Drivetrain {
-  public static final double MAX_WHEEL_SPEED = 5.85;
-  public static final MecanumDriveKinematics KINEMATICS =
+  static final double MAX_WHEEL_SPEED = 5.85;
+  static final MecanumDriveKinematics KINEMATICS =
       new MecanumDriveKinematics(
           new Translation2d(25.75 * 0.0254 / 2, 18.75 * 0.0254 / 2),
           new Translation2d(25.75 * 0.0254 / 2, -18.75 * 0.0254 / 2),
@@ -36,6 +37,12 @@ public class MecanumDrivetrain implements Drivetrain {
   IMUIOInputsAutoLogged imuInputs = new IMUIOInputsAutoLogged();
   MecanumDrivePoseEstimator poseEstimator;
 
+  /**
+   * Constructs a <code>MecanumDrivetrain</code> from IO
+   *
+   * @param drive Drive IO
+   * @param imu Imu IO
+   */
   public MecanumDrivetrain(MecanumIO drive, IMUIO imu) {
     this.drive = drive;
     this.imu = imu;
@@ -108,7 +115,7 @@ public class MecanumDrivetrain implements Drivetrain {
     return null;
   }
 
-  public Command makeTrajectoryCommand(Trajectory trajectory) {
+  Command makeTrajectoryCommand(Trajectory trajectory) {
     Logger.recordOutput("Drive/CurrentTraj", trajectory);
     return new MecanumControllerCommand(
         trajectory,

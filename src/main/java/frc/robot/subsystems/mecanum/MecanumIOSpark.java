@@ -6,8 +6,9 @@ import edu.wpi.first.math.kinematics.MecanumDriveWheelSpeeds;
 import frc.robot.utils.LoggedTunableNumber;
 import org.littletonrobotics.junction.Logger;
 
+/** The mecanum IO implementation for 4 SPARKMAX motor controllers */
 public class MecanumIOSpark implements MecanumIO {
-  public static final double EFFECTIVE_WHEEL_DIAMETER = 0.05411255411255412;
+  static final double EFFECTIVE_WHEEL_DIAMETER = 0.05411255411255412;
   CANSparkMax fl;
   CANSparkMax fr;
   CANSparkMax bl;
@@ -25,6 +26,14 @@ public class MecanumIOSpark implements MecanumIO {
   LoggedTunableNumber iTuner = new LoggedTunableNumber("Mecanum I", 0);
   LoggedTunableNumber dTuner = new LoggedTunableNumber("Mecanum D", 0);
 
+  /**
+   * Constructs a <code>MecanumIOSpark</code> from CAN IDs
+   *
+   * @param flID Front left CAN ID
+   * @param frID Front right CAN ID
+   * @param blID Back left CAN ID
+   * @param brID Back right CAN ID
+   */
   public MecanumIOSpark(int flID, int frID, int blID, int brID) {
     fl = new CANSparkMax(flID, CANSparkLowLevel.MotorType.kBrushless);
     flEncoder = fl.getEncoder();
