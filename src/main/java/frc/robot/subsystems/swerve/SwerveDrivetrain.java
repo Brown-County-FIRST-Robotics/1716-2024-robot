@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Set;
 import org.littletonrobotics.junction.Logger;
 
+/** The swerve drivetrain subsystem */
 public class SwerveDrivetrain implements Drivetrain {
   private static final double D = 21.125 * 0.0254; // TODO: Rename this
   private static final SwerveDriveKinematics KINEMATICS =
@@ -86,6 +87,15 @@ public class SwerveDrivetrain implements Drivetrain {
     };
   }
 
+  /**
+   * Creates a SwerveDrivetrain from IO
+   *
+   * @param fl Front left module IO
+   * @param fr Front right module IO
+   * @param bl Back left module IO
+   * @param br Back right module IO
+   * @param imu IMU IO
+   */
   public SwerveDrivetrain(ModuleIO fl, ModuleIO fr, ModuleIO bl, ModuleIO br, IMUIO imu) {
     this.imu = imu;
     this.fl = fl;
