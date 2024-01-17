@@ -40,4 +40,15 @@ public final class WhoAmI {
     /** Simulated */
     SIM
   }
+
+  public static void main(String... args) {
+    if (mode != Mode.REAL) {
+      throw new IllegalArgumentException("Cannot deploy code in Sim mode to the robot");
+    }
+    boolean override = false; // Make true to override deploy checking
+    if (bot == RobotType.SIMSWERVEBASE && !override) {
+      throw new IllegalArgumentException(
+          "You are currently deploying code meant for the simulator to a real robot. ONLY DO THIS IF YOU ABSOLUTELY KNOW WHAT YOU ARE DOING. ");
+    }
+  }
 }
