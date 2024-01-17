@@ -16,6 +16,7 @@ import frc.robot.utils.DualRateLimiter;
 import frc.robot.utils.LoggedTunableNumber;
 import org.littletonrobotics.junction.Logger;
 
+/** A command for manual control */
 public class TeleopDrive extends Command {
   private final Drivetrain drivetrain;
   private final CommandXboxController controller;
@@ -35,6 +36,12 @@ public class TeleopDrive extends Command {
   DualRateLimiter yVelLimiter = new DualRateLimiter(4, 100);
   DualRateLimiter omegaLimiter = new DualRateLimiter(6, 100);
 
+  /**
+   * Constructs a new command with a given controller and drivetrain
+   *
+   * @param drivetrain The drivetrain subsystem
+   * @param controller The driver conroller
+   */
   public TeleopDrive(Drivetrain drivetrain, CommandXboxController controller) {
     this.drivetrain = drivetrain;
     this.controller = controller;
