@@ -25,6 +25,12 @@ public class ShootWhileMove {
     return a.getX() * b.getX() + a.getY() * b.getY();
   }
 
+  private static boolean converged(ShootingCommand a, ShootingCommand b) {
+    return Math.abs(a.shooterSpeedMPS - b.shooterSpeedMPS) < 0.01
+        && Math.abs(a.botAngle.minus(b.botAngle).getRotations()) < 0.01
+        && Math.abs(a.shooterAngle.minus(b.shooterAngle).getRotations()) < 0.01;
+  }
+
   public static ShootingCommand calcSimpleCommand(
       Translation3d botPose, Translation2d botVelocity) {
     double g = 9.8065;
@@ -43,8 +49,14 @@ public class ShootWhileMove {
     ShootingCommand lastCommand = new ShootingCommand(new Rotation2d(), new Rotation2d(), 0);
     for (int i = 0; i < 100; i++) {
       Translation3d poseOfBot = kinematics.getPose(lastCommand, botPose);
-      lastCommand = calcSimpleCommand(poseOfBot.minus(target), botVelocity);
+      var canidateCmd = calcSimpleCommand(poseOfBot.minus(target), botVelocity);
+      if (converged(canidateCmd, lastCommand)) {
+        System.out.println("calcCommandWithKinematics converged in " + i + " iterations");
+        return canidateCmd;
+      }
+      lastCommand = canidateCmd;
     }
+    System.out.println("calcCommandWithKinematics did not converge");
     return lastCommand;
   }
 }
