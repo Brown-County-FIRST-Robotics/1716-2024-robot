@@ -19,11 +19,6 @@ import org.littletonrobotics.junction.Logger;
 public class TeleopDrive extends Command {
   private final Drivetrain drivetrain;
   private final CommandXboxController controller;
-  private final Rotation2d lockBand = Rotation2d.fromDegrees(20);
-  private final Rotation2d lockRot = Rotation2d.fromDegrees(180);
-
-  private final Rotation2d minRot = lockRot.rotateBy(lockBand.times(-0.5));
-  private final Rotation2d maxRot = lockRot.rotateBy(lockBand.times(0.5));
   private final ProfiledPIDController ppc =
       new ProfiledPIDController(0, 0, 0, new TrapezoidProfile.Constraints(3, 3));
   private final Arm arm;
@@ -57,20 +52,6 @@ public class TeleopDrive extends Command {
   @Override
   public void execute() {
     double ext = 0;
-    //    if ((drivetrain.getPosition().getRotation().minus(minRot).getRotations() + 1.0) % 1.0
-    //            < lockBand.getRotations()
-    //        && !controller.getHID().getRightStickButton()) {
-    //      ext +=
-    // ppc.calculate(drivetrain.getPosition().getRotation().minus(lockRot).getRotations(), 0);
-    //    }
-
-    Logger.recordOutput(
-        "TeleopDrive/dist",
-        drivetrain
-            .getPosition()
-            .getTranslation()
-            .minus(FieldConstants.getSpeaker().toTranslation2d())
-            .getNorm());
     if (controller.getHID().getRightTriggerAxis() > 0.2) {
       if (deadband(controller.getRightX())) {
         ext =
@@ -78,14 +59,12 @@ public class TeleopDrive extends Command {
                 drivetrain
                     .getPosition()
                     .getRotation()
-                    .plus(Rotation2d.fromDegrees(180))
                     .minus(
                         drivetrain
                             .getPosition()
                             .getTranslation()
                             .minus(FieldConstants.getSpeaker().toTranslation2d())
-                            .getAngle()
-                            .rotateBy(Rotation2d.fromDegrees(180)))
+                            .getAngle())
                     .getRotations(),
                 0);
       }
