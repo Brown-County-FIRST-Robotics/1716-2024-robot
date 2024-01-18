@@ -1,4 +1,4 @@
-# Command Base Teaching Document
+# Command Based Teaching Document
 
 ## Table of Contents:
 
@@ -7,12 +7,11 @@
     1. [Subsystem](#subsystem)
     2. [Command](#command)
     3. [Button Binding](#button-binding)
-3. [Adding Additional Functionality at Binding with Decorators]()
-4. [Logical Operators for Bindings](#logical-operators-for-bindings)
-5. [Lambda use for Live Updating of Input]()
-6. [Default Commands for Subsystems](#default-commands-for-subsystems)
-7. [Autonomous](#autonomous)
-8. [Example Solenoid Subsystem and Command](#example-solenoid-subsystem-and-command)
+3. [Command Composition](#command-composition)
+4. [Live Updating of Input Using Lambdas](#live-updating-of-input-using-lambdas)
+5. [Default Commands for Subsystems](#default-commands-for-subsystems)
+6. [Autonomous](#autonomous)
+7. [Example Solenoid Subsystem and Command](#example-solenoid-subsystem-and-command)
 
 ## Command Concepts Overview:
 
@@ -48,9 +47,9 @@
 - A **trigger** is an input that interacts with the command scheduler to control when commands are scheduled and descheduled
     - The most common type of trigger is a button input
         - These can be formed by declaring a `CommandXboxController` and calling a button method (`a()`, `b()`, `y()`) to declare which input to use, then a binding (`OnTrue()`, `WhileTrue()`) to declare what logic to use
-        - Ex: `myCommandXboxController.a().onTrue([CommandPtrToBind]))`
+        - Ex: `myCommandXboxController.a().onTrue(new CommandToBind())`
     - Commands are generally bound to triggers in the `configureButtonBindings()` method of `RobotContainer`
-    - Alternatively, you can make [arbitrary triggers](https://docs.wpilib.org/en/stable/docs/software/commandbased/binding-commands-to-triggers.html#arbitrary-triggers), which, rather than being a button input, take a boolean lambda that you provide
+    - Alternatively, you can make [arbitrary triggers](https://docs.wpilib.org/en/stable/docs/software/commandbased/binding-commands-to-triggers.html#arbitrary-triggers), which, rather than being a button input, take a boolean [lambda](#live-updating-of-input-using-lambdas) that you provide
         - Example: `new Trigger(() -> { return controller.getA(); });`
     - There are different [bindings](https://docs.wpilib.org/en/stable/docs/software/commandbased/binding-commands-to-triggers.html#trigger-bindings) available, which allow for different logical connections between triggers and commands
         - First, you make a trigger (such as a button), then call a binding on it and pass in a new instance of your command
@@ -197,16 +196,217 @@ public class RobotContainer {
 
 	private void configureButtonBindings() {
 		//create a trigger by calling the method named for the button you want on the controller, then call a binding on that (such as `whileTrue()`, which schedules the command when you hit the button and deschedules it when you release it). The binding takes your command, which you can declare inline using your subsystem.
-		controller.a().whileTrue(CommandName(subsystemName));
+		controller.a().whileTrue(new CommandName(subsystemName));
 
 		//bindings return the original trigger, so bindings can be chained together
 		controller.b()
-			.onTrue(CommandName(subsystemName))
-			.whileTrue(Command2Name(subsystemName));
+			.onTrue(new CommandName(subsystemName))
+			.whileTrue(new Command2Name(subsystemName));
 
 		//trigger composition, which allows for the use of logical operators with triggers. Here, if neither are pressed, the command `CommandName` will be scheduled.
-		controller.x().or(controller.y()).whileFalse(CommandName(subsystemName));
+		controller.x().or(controller.y()).whileFalse(new CommandName(subsystemName));
 	}
 }
 ```
 
+## Command Composition:
+
+Commands can be modified at binding using command composition. Compositions allow you to easily do things like have a command run immediately after another one ends, or have a command end after a certain amount of time has passed. To use compositions, you call a method on your command inside of the binding method:
+
+```java
+controller.y().whileTrue(new ToggleSolenoid(solenoidSubsystem).withTimeout(3));
+```
+
+There is a wide variety of compositions available for different functionality. Read [the official WPILib documentation](https://docs.wpilib.org/en/stable/docs/software/commandbased/command-compositions.html#composition-typesl) for more details.
+
+## Live Updating of Input Using Lambdas:
+
+A useful technique in command based is using lambda functions to easily and quickly get live input from the controller or some other variable. Lambdas are functions declared inline, allowing you easily to pass them into commands. This way, you can send your command the current value of the joystick rather than the value the command was called with. The syntax for a lambda function in java looks like `() -> { return x; }`; you put the function's parameters in the parentheses and the function's body in the curly braces, returning whatever value you need. To use them for a command:
+
+1. Add a new parameter to your command's constructor of type `RETURNTYPESupplier`, where `RETURNTYPE` is whatever type your lambda will return.
+    - You will need to import the supplier from `java.util.function.RETURNTYPESupplier`
+    - For example, a joystick axis has the type `double`, so your parameter would be of type `DoubleSupplier` and you would import `java.util.function.DoubleSupplier`
+2. Make a variable of that same type at the top of your command's class so that the supplier is accessible after the constructor (`DoubleSupplier x;`)
+    - Remember to set your member variable equal to your parameter in the constructor
+3. When you bind your command, you can use the following format to define your lambda:
+    ```java
+    controller.y().whileTrue(new Shoot(shooter, 
+    () -> { return controller.getLeftY(); }));
+    ```
+    - In this example, `Shoot` would would look something like this:
+        ```java
+        import java.util.function.DoubleSupplier;
+        import edu.wpi.first.wpilibj2.command.CommandBase;
+        import frc.robot.subsystems.Shooter;
+
+        public class Shoot extends CommandBase {
+            Shooter shooter;
+            DoubleSupplier leftY;
+
+            public Shoot(Shooter shooter_p, 
+                DoubleSupplier leftY_p)
+            {
+                shooter = shooter_p;
+                leftY = leftY_p;
+
+                addRequirements(drivetrain_p);
+            }
+
+            //functionality down here
+        }
+        ```
+
+## Default Commands for Subsystems:
+
+Each subsystem can have a default command that is run if no other command is currently using it. This feature is often especially useful in combination with [lambda functions](#live-updating-of-input-using-lambdas) because they allow the input to the command to change without it being rescheduled. Driving is almost always the default command for the drivetrain, and shooting may also be one; both generally require [lambdas](#live-updating-of-input-using-lambdas). You can set the default command of a subsystem in the `RobotContainer.java` constructor like so:
+```java
+drivetrain.setDefaultCommand(new DriveCommand(drivetrain,
+    () -> { return controller.getLeftY(); },
+    () -> { return controller.getLeftX(); }));
+```
+//I GOT HERE
+## Autonomous:
+
+This guide is based off of [this one](https://docs.wpilib.org/en/stable/docs/software/dashboards/smartdashboard/choosing-an-autonomous-program-from-smartdashboard.html#command-based) from the smartdashboard docs.  
+> ***Note:** Decorators and inline commands are not supported for autonomous because the sendable chooser does not take CommandPtrs, define commands you need for autonomous in their own files (including compositions)*
+1. In `RobotContainer.h`, include `<frc/smartdashboard/SendableChooser.h>`and declare a private `SendableChooser` object, which is able to be sent to the smartdashboard as a list of options:
+    ```C++
+    frc::SendableChooser<frc2::Command*> autonomousChooser;
+    ```
+2. Declare a private object for each command you would like to be available as an autonomous routine (subsystem object must already be declared): 
+    ```C++
+    Command1Name command1Name{&subsystemName};
+    ```
+3. Declare a public method to be accessed by `robot.cpp` that returns the currently selected autonomous command:
+    ```C++
+    frc2::Command* GetAutonomousCommand();
+    ```
+4. In `RobotContainer.cpp`, in the constructor, set your default command and add the others:
+	- For the first command, call `SetDefaultOption()`:
+        ```C++
+        autonomousChooser.SetDefaultOption("Display Name", &command1Name);
+        ```
+	- For all other commands, call `AddOption()`:
+        ```C++
+        autonomousChooser.AddOption("Display Name", &commandName2);
+        ```
+5. Define `GetAutonomousCommand()` to return the currently selected autonomous command at the end of `RobotContainer.cpp`:
+    ```C++
+    frc2::Command* RobotContainer::GetAutonomousCommand() {
+        return autonomousChooser.GetSelected();
+    }
+    ```
+6. In `Robot.h`, publicly override `AutonomousInit()` and `TeleopInit()`:
+    ```C++
+    void AutonomousInit() override;
+    void TeleopInit() override;
+    ```
+7. In `Robot.cpp`, schedule the command if there is one selected in `AutonomousInit()`:
+    ```C++
+    void Robot::AutonomousInit() {
+        autonomousCommand = robotContainer.GetAutonomousCommand();
+
+        if (autonomousCommand != nullptr) {
+            autonomousCommand->Schedule();
+        }
+    }
+    ```
+8. Cancel the autonomous command when teleoperated mode begins in `TeleopInit()`:
+    ```C++
+    void Robot::TeleopInit() {
+        if (autonomousCommand != nullptr) {
+            autonomousCommand->Cancel();
+            autonomousCommand = nullptr;
+        }
+    }
+    ```
+
+## Example Solenoid Subsystem and Command
+
+Most double solenoids should be able to function using basically the same subsystem and command, though you may need to add the solenoid to another subsystem in some cases. Below is a general use command and subsystem for toggling a solenoid.  
+> **IMPORTANT: The below command must be bound with the `WithTimeout(3_ms)` decorator. Failure to do so may result in damage to the solenoid.**
+
+`SolenoidSubsystem.h`:
+```C++
+#pragma once
+
+#include <frc2/command/SubsystemBase.h>
+#include <frc/DoubleSolenoid.h>
+#include <frc/PneumaticHub.h>
+
+class SolenoidSubsystem : public frc2::SubsystemBase {
+public:
+	SolenoidSubsystem();
+
+	void SetPosition(frc::DoubleSolenoid::Value position);
+	frc::DoubleSolenoid::Value GetPosition();
+
+private:
+	frc::PneumaticHub hub{0};
+ 	frc::DoubleSolenoid solenoid = hub.MakeDoubleSolenoid(0, 1);
+};
+```
+
+`SolenoidSubsystem.cpp`:
+```C++
+#include "subsystems/SolenoidSubsystem.h"
+
+SolenoidSubsystem::SolenoidSubsystem() {
+    hub.EnableCompressorDigital();
+}
+
+void SolenoidSubsystem::SetPosition(frc::DoubleSolenoid::Value position) {
+	solenoid.Set(position);
+}
+
+frc::DoubleSolenoid::Value SolenoidSubsystem::GetPosition() {
+	return solenoid.Get();
+}
+```
+
+`ToggleSolenoid.h`:
+```C++
+#pragma once
+
+#include <frc2/command/CommandBase.h>
+#include <frc2/command/CommandHelper.h>
+
+#include "subsystems/SolenoidSubsystem.h"
+
+class ToggleSolenoid : public frc2::CommandHelper<frc2::CommandBase, ToggleSolenoid> {
+public:
+	explicit ToggleSolenoid(SolenoidSubsystem* subsystem);
+
+	void Initialize() override;
+	void End(bool interrupted) override;
+
+private:
+	SolenoidSubsystem* solenoidSubsystem;
+	frc::DoubleSolenoid::Value currentPosition;
+};
+```
+
+`ToggleSolenoid.cpp`:
+```C++
+#include "commands/ToggleSolenoid.h"
+
+ToggleSolenoid::ToggleSolenoid(SolenoidSubsystem* subsystem) : solenoidSubsystem(subsystem) {
+	AddRequirements(subsystem);
+	currentPosition = solenoidSubsystem->GetPosition(); //set the initial position to whatever the solenoid is currently at
+}
+
+void ToggleSolenoid::Initialize() {
+	if (currentPosition == frc::DoubleSolenoid::Value::kReverse) { //if reverse, set to forward
+		SolenoidSubsystem->SetPosition(frc::DoubleSolenoid::Value::kForward);
+		currentPosition = frc::DoubleSolenoid::Value::kForward;
+	}
+	else { //if not reverse, set to reverse
+		SolenoidSubsystem->SetPosition(frc::DoubleSolenoid::Value::kReverse);
+		currentPosition = frc::DoubleSolenoid::Value::kReverse;
+	}
+}
+
+void ToggleSolenoid::End(bool interrupted) { //should be called 3 ms after `Initialize()` using `WithTimeout()` decorator
+	SolenoidSubsystem->SetPosition(frc::DoubleSolenoid::Value::kOff); //set the solenoid to off, the piston will remain where it was last set to
+}
+```
