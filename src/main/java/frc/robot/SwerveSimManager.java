@@ -54,6 +54,7 @@ public class SwerveSimManager {
   };
   private double[] cmdSteerPos = {0, 0, 0, 0};
 
+  /** Constructs a new SwerveSimManager */
   public SwerveSimManager() {}
 
   /**

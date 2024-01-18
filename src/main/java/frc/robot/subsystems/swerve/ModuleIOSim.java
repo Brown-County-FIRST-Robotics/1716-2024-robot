@@ -5,8 +5,9 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import frc.robot.SwerveSimManager;
 
+/** A simulated swerve module */
 public class ModuleIOSim implements ModuleIO {
-  private int id;
+  private final int index;
   private static final Rotation2d[] chassisOffsets =
       new Rotation2d[] {
         Rotation2d.fromDegrees(-90),
@@ -15,28 +16,36 @@ public class ModuleIOSim implements ModuleIO {
         Rotation2d.fromDegrees(90)
       };
 
-  public ModuleIOSim(int id) {
-    this.id = id;
+  /**
+   * Constructs a ModuleIOSim given an index (fl:0,fr:1,bl:2,br:3)
+   *
+   * @param index The index of the module
+   */
+  public ModuleIOSim(int index) {
+    this.index = index;
   }
 
   @Override
   public void updateInputs(ModuleIOInputs inputs) {
-
     var realAng =
-        SwerveSimManager.getInstance().getModPos(id).angle.plus(chassisOffsets[id]).unaryMinus();
+        SwerveSimManager.getInstance()
+            .getModPos(index)
+            .angle
+            .plus(chassisOffsets[index])
+            .unaryMinus();
     inputs.pos =
         new SwerveModulePosition(
-            SwerveSimManager.getInstance().getModPos(id).distanceMeters, realAng);
+            SwerveSimManager.getInstance().getModPos(index).distanceMeters, realAng);
     inputs.vel =
         new SwerveModuleState(
-            SwerveSimManager.getInstance().getModState(id).speedMetersPerSecond, realAng);
+            SwerveSimManager.getInstance().getModState(index).speedMetersPerSecond, realAng);
     inputs.offset = 0;
   }
 
   @Override
   public void setCmdState(SwerveModuleState state) {
-    var realRot = state.angle.unaryMinus().minus(chassisOffsets[id]);
+    var realRot = state.angle.unaryMinus().minus(chassisOffsets[index]);
     SwerveSimManager.getInstance()
-        .commandState(id, new SwerveModuleState(state.speedMetersPerSecond, realRot));
+        .commandState(index, new SwerveModuleState(state.speedMetersPerSecond, realRot));
   }
 }

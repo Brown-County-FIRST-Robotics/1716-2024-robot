@@ -3,14 +3,21 @@ package frc.robot.subsystems.vision;
 import org.littletonrobotics.junction.LogTable;
 import org.littletonrobotics.junction.inputs.LoggableInputs;
 
-/** The IO interface for one camera */
+/** The IO layer for one camera */
 public interface VisionIO {
+  /** The inputs from a camera */
   public static class VisionIOInputs implements LoggableInputs {
+    /** The pose from the camera */
     public double[][] poses = {};
+    /** The timestamp of the frame */
     public double[] timestamps = {};
+    /** The IDs of the apriltags detected */
     public String[][] ids = {};
+    /** The RMS error of the detection */
     public double[] errors = {};
+    /** If the camera is recording */
     public boolean isRecording = false;
+    /** The current path of the video file */
     public String recordingPath = "";
 
     @Override
@@ -43,5 +50,10 @@ public interface VisionIO {
     }
   }
 
+  /**
+   * Updates the inputs
+   *
+   * @param inputs A reference to the inputs
+   */
   default void updateInputs(VisionIOInputs inputs) {}
 }

@@ -15,8 +15,6 @@ import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import edu.wpi.first.math.trajectory.TrajectoryGenerator;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.DeferredCommand;
 import edu.wpi.first.wpilibj2.command.Subsystem;
@@ -27,6 +25,7 @@ import java.util.List;
 import java.util.Set;
 import org.littletonrobotics.junction.Logger;
 
+/** The swerve drivetrain subsystem */
 public class SwerveDrivetrain implements Drivetrain {
   private static final double D = 21.125 * 0.0254; // TODO: Rename this
   private static final SwerveDriveKinematics KINEMATICS =
@@ -49,7 +48,6 @@ public class SwerveDrivetrain implements Drivetrain {
   IMUIOInputsAutoLogged imuInputs = new IMUIOInputsAutoLogged();
 
   SwerveDrivePoseEstimator poseEstimator;
-  Field2d field;
 
   private SwerveModulePosition[] getPositions() {
 
@@ -89,20 +87,28 @@ public class SwerveDrivetrain implements Drivetrain {
     };
   }
 
+  /**
+   * Creates a SwerveDrivetrain from IO
+   *
+   * @param fl Front left module IO
+   * @param fr Front right module IO
+   * @param bl Back left module IO
+   * @param br Back right module IO
+   * @param imu IMU IO
+   */
   public SwerveDrivetrain(ModuleIO fl, ModuleIO fr, ModuleIO bl, ModuleIO br, IMUIO imu) {
     this.imu = imu;
     this.fl = fl;
     this.fr = fr;
     this.bl = bl;
     this.br = br;
-    field = new Field2d();
     fl.updateInputs(flInputs);
     fr.updateInputs(frInputs);
     bl.updateInputs(blInputs);
     br.updateInputs(brInputs);
     poseEstimator =
         new SwerveDrivePoseEstimator(
-            KINEMATICS, getNavxRotation(), getPositions(), Constants.INIT_POSE);
+            KINEMATICS, getGyro().toRotation2d(), getPositions(), Constants.INIT_POSE);
   }
 
   @Override
@@ -119,9 +125,8 @@ public class SwerveDrivetrain implements Drivetrain {
     Logger.processInputs("Drive/BR", brInputs);
 
     Logger.recordOutput("Drive/RealStates", getWheelSpeeds());
-    poseEstimator.update(getNavxRotation(), getPositions());
+    poseEstimator.update(getGyro().toRotation2d(), getPositions());
     Logger.recordOutput("Drive/Pose", getPosition());
-    field.setRobotPose(getPosition());
   }
 
   private SwerveModuleState[] getWheelSpeeds() {
@@ -131,10 +136,6 @@ public class SwerveDrivetrain implements Drivetrain {
   @Override
   public Pose2d getPosition() {
     return poseEstimator.getEstimatedPosition();
-  }
-
-  private Rotation2d getNavxRotation() {
-    return imuInputs.rotation.toRotation2d();
   }
 
   private void setModuleStates(SwerveModuleState[] states) {
@@ -205,7 +206,7 @@ public class SwerveDrivetrain implements Drivetrain {
 
   @Override
   public void setPosition(Pose2d pos) {
-    poseEstimator.resetPosition(getNavxRotation(), getPositions(), pos);
+    poseEstimator.resetPosition(getGyro().toRotation2d(), getPositions(), pos);
   }
 
   @Override
@@ -255,23 +256,8 @@ public class SwerveDrivetrain implements Drivetrain {
   }
 
   @Override
-  public void humanDrive(ChassisSpeeds cmd, boolean foc) {
-    ChassisSpeeds sp =
-        new ChassisSpeeds(
-            -cmd.vxMetersPerSecond, -cmd.vyMetersPerSecond, -cmd.omegaRadiansPerSecond);
-    if (foc) {
-      Rotation2d rot =
-          DriverStation.getAlliance().orElse(DriverStation.Alliance.Blue)
-                  == DriverStation.Alliance.Red
-              ? getPosition().getRotation()
-              : getPosition().getRotation().rotateBy(Rotation2d.fromRotations(0.5));
-      sp =
-          ChassisSpeeds.fromFieldRelativeSpeeds(
-              new ChassisSpeeds(
-                  cmd.vxMetersPerSecond, cmd.vyMetersPerSecond, -cmd.omegaRadiansPerSecond),
-              rot);
-    }
-    SwerveModuleState[] states = KINEMATICS.toSwerveModuleStates(sp);
+  public void humanDrive(ChassisSpeeds cmd) {
+    SwerveModuleState[] states = KINEMATICS.toSwerveModuleStates(cmd);
     setModuleStates(states);
   }
 

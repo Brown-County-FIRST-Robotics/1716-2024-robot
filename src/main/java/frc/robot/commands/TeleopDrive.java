@@ -5,6 +5,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -16,6 +17,7 @@ import frc.robot.utils.DualRateLimiter;
 import frc.robot.utils.LoggedTunableNumber;
 import org.littletonrobotics.junction.Logger;
 
+/** A command for manual control */
 public class TeleopDrive extends Command {
   private final Drivetrain drivetrain;
   private final CommandXboxController controller;
@@ -31,6 +33,12 @@ public class TeleopDrive extends Command {
   DualRateLimiter yVelLimiter = new DualRateLimiter(4, 100);
   DualRateLimiter omegaLimiter = new DualRateLimiter(6, 100);
 
+  /**
+   * Constructs a new command with a given controller and drivetrain
+   *
+   * @param drivetrain The drivetrain subsystem
+   * @param controller The driver conroller
+   */
   public TeleopDrive(Drivetrain drivetrain, Arm arm, CommandXboxController controller) {
     this.drivetrain = drivetrain;
     this.controller = controller;
@@ -86,15 +94,32 @@ public class TeleopDrive extends Command {
     if (deadband(controller.getLeftY())
         && deadband(controller.getLeftX())
         && deadband(controller.getRightX())) {
-      drivetrain.humanDrive(new ChassisSpeeds(0, 0, ext), false);
+      drivetrain.humanDrive(new ChassisSpeeds(0, 0, ext));
     } else {
       locked = false;
-      drivetrain.humanDrive(
+      ChassisSpeeds cmd =
           new ChassisSpeeds(
               controller.getLeftY() * Constants.Driver.MAX_X_SPEED,
               controller.getLeftX() * Constants.Driver.MAX_Y_SPEED,
-              ext + controller.getRightX() * Constants.Driver.MAX_THETA_SPEED),
-          foc);
+              controller.getRightX() * Constants.Driver.MAX_THETA_SPEED + ext);
+
+      ChassisSpeeds sp =
+          new ChassisSpeeds(
+              -cmd.vxMetersPerSecond, -cmd.vyMetersPerSecond, -cmd.omegaRadiansPerSecond);
+      if (foc) {
+        Rotation2d rot =
+            DriverStation.getAlliance().orElse(DriverStation.Alliance.Red)
+                    == DriverStation.Alliance.Red
+                ? drivetrain.getPosition().getRotation()
+                : drivetrain.getPosition().getRotation().rotateBy(Rotation2d.fromRotations(0.5));
+        sp =
+            ChassisSpeeds.fromFieldRelativeSpeeds(
+                new ChassisSpeeds(
+                    cmd.vxMetersPerSecond, cmd.vyMetersPerSecond, -cmd.omegaRadiansPerSecond),
+                rot);
+      }
+
+      drivetrain.humanDrive(sp);
     }
     if (controller.getHID().getBackButtonPressed()) {
       drivetrain.setPosition(
@@ -138,6 +163,6 @@ public class TeleopDrive extends Command {
    */
   @Override
   public void end(boolean interrupted) {
-    drivetrain.humanDrive(new ChassisSpeeds(), false);
+    drivetrain.humanDrive(new ChassisSpeeds());
   }
 }

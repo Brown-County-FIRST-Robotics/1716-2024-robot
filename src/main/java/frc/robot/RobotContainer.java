@@ -10,16 +10,18 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.TeleopDrive;
 import frc.robot.subsystems.Drivetrain;
+import frc.robot.subsystems.IMUIO;
 import frc.robot.subsystems.IMUIONavx;
 import frc.robot.subsystems.IMUIOPigeon;
 import frc.robot.subsystems.IMUIOSim;
 import frc.robot.subsystems.arm.Arm;
 import frc.robot.subsystems.arm.ArmIOSim;
 import frc.robot.subsystems.mecanum.MecanumDrivetrain;
+import frc.robot.subsystems.mecanum.MecanumIO;
 import frc.robot.subsystems.mecanum.MecanumIOSpark;
+import frc.robot.subsystems.swerve.ModuleIO;
 import frc.robot.subsystems.swerve.ModuleIOSim;
 import frc.robot.subsystems.swerve.ModuleIOSparkFX;
 import frc.robot.subsystems.swerve.SwerveDrivetrain;
@@ -35,42 +37,74 @@ import frc.robot.subsystems.vision.VisionIOSecondSight;
  */
 public class RobotContainer {
   private final CommandXboxController driverController =
-      new CommandXboxController(OperatorConstants.DRIVER_CONTROLLER_PORT);
+      new CommandXboxController(Constants.Driver.DRIVER_CONTROLLER_PORT);
   private final Drivetrain driveSys;
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
-    switch (WhoAmI.bot) {
-      case MECHBASE:
-        driveSys = new MecanumDrivetrain(new MecanumIOSpark(1, 2, 3, 4), new IMUIOPigeon(20));
-        break;
-      case SIMSWERVEBASE:
-        driveSys =
-            new SwerveDrivetrain(
-                new ModuleIOSim(0),
-                new ModuleIOSim(1),
-                new ModuleIOSim(2),
-                new ModuleIOSim(3),
-                new IMUIOSim());
-        break;
-      case SWERVEBASE:
-        driveSys =
-            new SwerveDrivetrain(
-                new ModuleIOSparkFX(20, 10, "FL"),
-                new ModuleIOSparkFX(21, 11, "FR"),
-                new ModuleIOSparkFX(22, 12, "BL"),
-                new ModuleIOSparkFX(23, 13, "BR"),
-                new IMUIONavx());
-        var vision =
-            new Vision(
-                driveSys,
-                new Transform3d[] {
-                  new Transform3d(new Translation3d(-0.1, 0, 0), new Rotation3d(0, 0, 0))
-                },
-                new VisionIO[] {new VisionIOSecondSight("SS_LAPTOP/0")});
-        break;
-      default:
-        driveSys = new MecanumDrivetrain(new MecanumIOSpark(1, 2, 3, 4), new IMUIONavx());
+    if (WhoAmI.mode != WhoAmI.Mode.REPLAY) {
+      switch (WhoAmI.bot) {
+        case MECHBASE:
+          driveSys = new MecanumDrivetrain(new MecanumIOSpark(1, 2, 3, 4), new IMUIOPigeon(20));
+          break;
+        case SIMSWERVEBASE:
+          driveSys =
+              new SwerveDrivetrain(
+                  new ModuleIOSim(0),
+                  new ModuleIOSim(1),
+                  new ModuleIOSim(2),
+                  new ModuleIOSim(3),
+                  new IMUIOSim());
+          break;
+        case SWERVEBASE:
+          driveSys =
+              new SwerveDrivetrain(
+                  new ModuleIOSparkFX(20, 10, "FL"),
+                  new ModuleIOSparkFX(21, 11, "FR"),
+                  new ModuleIOSparkFX(22, 12, "BL"),
+                  new ModuleIOSparkFX(23, 13, "BR"),
+                  new IMUIONavx());
+          var vision =
+              new Vision(
+                  driveSys,
+                  new Transform3d[] {
+                    new Transform3d(new Translation3d(-0.1, 0, 0), new Rotation3d(0, 0, 0))
+                  },
+                  new VisionIO[] {new VisionIOSecondSight("SS_LAPTOP/0")});
+          break;
+        default:
+          driveSys = new MecanumDrivetrain(new MecanumIOSpark(1, 2, 3, 4), new IMUIONavx());
+      }
+    } else {
+      switch (WhoAmI.bot) {
+        case SIMSWERVEBASE:
+          driveSys =
+              new SwerveDrivetrain(
+                  new ModuleIO() {},
+                  new ModuleIO() {},
+                  new ModuleIO() {},
+                  new ModuleIO() {},
+                  new IMUIO() {});
+          break;
+        case SWERVEBASE:
+          driveSys =
+              new SwerveDrivetrain(
+                  new ModuleIO() {},
+                  new ModuleIO() {},
+                  new ModuleIO() {},
+                  new ModuleIO() {},
+                  new IMUIO() {});
+          var vision =
+              new Vision(
+                  driveSys,
+                  new Transform3d[] {
+                    new Transform3d(new Translation3d(-0.1, 0, 0), new Rotation3d(0, 0, 0))
+                  },
+                  new VisionIO[] {new VisionIO() {}});
+          break;
+        default:
+          driveSys = new MecanumDrivetrain(new MecanumIO() {}, new IMUIO() {});
+      }
     }
 
     useAlliance();
