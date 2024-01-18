@@ -17,6 +17,7 @@ import frc.robot.subsystems.IMUIONavx;
 import frc.robot.subsystems.IMUIOPigeon;
 import frc.robot.subsystems.IMUIOSim;
 import frc.robot.subsystems.arm.Arm;
+import frc.robot.subsystems.arm.ArmIO;
 import frc.robot.subsystems.arm.ArmIOSim;
 import frc.robot.subsystems.mecanum.MecanumDrivetrain;
 import frc.robot.subsystems.mecanum.MecanumIO;
@@ -39,6 +40,7 @@ public class RobotContainer {
   private final CommandXboxController driverController =
       new CommandXboxController(Constants.Driver.DRIVER_CONTROLLER_PORT);
   private final Drivetrain driveSys;
+  private Arm arm;
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
@@ -75,6 +77,13 @@ public class RobotContainer {
         default:
           driveSys = new MecanumDrivetrain(new MecanumIOSpark(1, 2, 3, 4), new IMUIONavx());
       }
+      for (var appendage : WhoAmI.appendages) {
+        switch (appendage) {
+          case SIM_ARM:
+            arm = new Arm(new ArmIOSim());
+            break;
+        }
+      }
     } else {
       switch (WhoAmI.bot) {
         case SIMSWERVEBASE:
@@ -106,10 +115,12 @@ public class RobotContainer {
           driveSys = new MecanumDrivetrain(new MecanumIO() {}, new IMUIO() {});
       }
     }
+    if (arm == null) {
+      arm = new Arm(new ArmIO() {});
+    }
 
     useAlliance();
-    driveSys.setDefaultCommand(
-        new TeleopDrive(driveSys, new Arm(new ArmIOSim()), driverController));
+    driveSys.setDefaultCommand(new TeleopDrive(driveSys, arm, driverController));
     configureBindings();
   }
 
