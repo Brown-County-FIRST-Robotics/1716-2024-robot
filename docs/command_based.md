@@ -264,149 +264,73 @@ drivetrain.setDefaultCommand(new DriveCommand(drivetrain,
     () -> { return controller.getLeftY(); },
     () -> { return controller.getLeftX(); }));
 ```
-//I GOT HERE
+
 ## Autonomous:
 
-This guide is based off of [this one](https://docs.wpilib.org/en/stable/docs/software/dashboards/smartdashboard/choosing-an-autonomous-program-from-smartdashboard.html#command-based) from the smartdashboard docs.  
-> ***Note:** Decorators and inline commands are not supported for autonomous because the sendable chooser does not take CommandPtrs, define commands you need for autonomous in their own files (including compositions)*
-1. In `RobotContainer.h`, include `<frc/smartdashboard/SendableChooser.h>`and declare a private `SendableChooser` object, which is able to be sent to the smartdashboard as a list of options:
-    ```C++
-    frc::SendableChooser<frc2::Command*> autonomousChooser;
-    ```
-2. Declare a private object for each command you would like to be available as an autonomous routine (subsystem object must already be declared): 
-    ```C++
-    Command1Name command1Name{&subsystemName};
-    ```
-3. Declare a public method to be accessed by `robot.cpp` that returns the currently selected autonomous command:
-    ```C++
-    frc2::Command* GetAutonomousCommand();
-    ```
-4. In `RobotContainer.cpp`, in the constructor, set your default command and add the others:
-	- For the first command, call `SetDefaultOption()`:
-        ```C++
-        autonomousChooser.SetDefaultOption("Display Name", &command1Name);
-        ```
-	- For all other commands, call `AddOption()`:
-        ```C++
-        autonomousChooser.AddOption("Display Name", &commandName2);
-        ```
-5. Define `GetAutonomousCommand()` to return the currently selected autonomous command at the end of `RobotContainer.cpp`:
-    ```C++
-    frc2::Command* RobotContainer::GetAutonomousCommand() {
-        return autonomousChooser.GetSelected();
-    }
-    ```
-6. In `Robot.h`, publicly override `AutonomousInit()` and `TeleopInit()`:
-    ```C++
-    void AutonomousInit() override;
-    void TeleopInit() override;
-    ```
-7. In `Robot.cpp`, schedule the command if there is one selected in `AutonomousInit()`:
-    ```C++
-    void Robot::AutonomousInit() {
-        autonomousCommand = robotContainer.GetAutonomousCommand();
+To add a button to smartdashboard allowing you to choose between various commands to run during autonomous (including compositions), follow [this guide](https://docs.wpilib.org/en/stable/docs/software/dashboards/smartdashboard/choosing-an-autonomous-program-from-smartdashboard.html#command-based) from the official smartdashboard docs.
 
-        if (autonomousCommand != nullptr) {
-            autonomousCommand->Schedule();
+## Example Solenoid Subsystem and Command  
+
+Most double solenoids should be able to function using basically the same subsystem and command, though you may need to add the solenoid to another subsystem in some cases. Below is a general use command and subsystem for toggling a solenoid, which also serves as a full example of what subsytems and commands look like.
+> **IMPORTANT:** The below command must be bound with the `withTimeout(0.003)` [composition](#command-composition). Failure to do so may result in damage to the piston.
+
+`SolenoidSubsystem.java`:
+```java
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj.DoubleSolenoid;
+import edu.wpi.first.wpilibj.PneumaticsModuleType;
+
+public class SolenoidSubsystem extends SubsystemBase {
+    //DoubleSolenoid takes the type of Pnuematics Module and two ids
+    private final DoubleSolenoid solenoid = new DoubleSolenoid(PneumaticsModuleType.CTREPCM, 0, 1);
+
+    public SolenoidSubsystem() {}
+
+    public void setPosition(DoubleSolenoid.Value position) {
+        solenoid.set(position);
+    }
+
+    public DoubleSolenoid.Value getPosition() {
+        return solenoid.get();
+    }
+}
+```
+
+`ToggleSolenoid.java`
+```java
+import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.subsystems.SolenoidSubsystem;
+
+public class ToggleSolenoid extends CommandBase {
+    SolenoidSubsystem solenoidSubsystem;
+    DoubleSolenoid.Value currentPosition;
+
+    public ToggleSolenoid(SolenoidSubsystem subsystem) {
+        solenoidSubsystem = subsystem;
+        currentPosition = solenoidSubsystem.getPosition();  //set the initial position to whatever the solenoid is currently at
+
+        addRequirements(subsystem)
+    }
+
+    @Override
+    public void initialize() {
+        //if reverse, set to forward
+        if (currentPosition == DoubleSolenoid.Value.kReverse) {
+            solenoidSubsystem.setPosition(DoubleSolenoid.Value.kForward);
+            currentPosition = DoubleSolenoid.Value.kForward;
+        }
+        //if not reverse, set to reverse
+        else {
+            solenoidSubsystem.setPosition(DoubleSolenoid.Value.kReverse);
+            currentPosition = DoubleSolenoid.Value.kReverse;
         }
     }
-    ```
-8. Cancel the autonomous command when teleoperated mode begins in `TeleopInit()`:
-    ```C++
-    void Robot::TeleopInit() {
-        if (autonomousCommand != nullptr) {
-            autonomousCommand->Cancel();
-            autonomousCommand = nullptr;
-        }
+
+    //should be called 3 ms after `initialize()` using `withTimeout()` decorator
+    @Override
+    public void end(boolean interrupted) {
+        //set the solenoid to off, the piston will remain where it was last set to
+        solenoidSubsystem.setPosition(DoubleSolenoid.Value.kOff);
     }
-    ```
-
-## Example Solenoid Subsystem and Command
-
-Most double solenoids should be able to function using basically the same subsystem and command, though you may need to add the solenoid to another subsystem in some cases. Below is a general use command and subsystem for toggling a solenoid.  
-> **IMPORTANT: The below command must be bound with the `WithTimeout(3_ms)` decorator. Failure to do so may result in damage to the solenoid.**
-
-`SolenoidSubsystem.h`:
-```C++
-#pragma once
-
-#include <frc2/command/SubsystemBase.h>
-#include <frc/DoubleSolenoid.h>
-#include <frc/PneumaticHub.h>
-
-class SolenoidSubsystem : public frc2::SubsystemBase {
-public:
-	SolenoidSubsystem();
-
-	void SetPosition(frc::DoubleSolenoid::Value position);
-	frc::DoubleSolenoid::Value GetPosition();
-
-private:
-	frc::PneumaticHub hub{0};
- 	frc::DoubleSolenoid solenoid = hub.MakeDoubleSolenoid(0, 1);
-};
-```
-
-`SolenoidSubsystem.cpp`:
-```C++
-#include "subsystems/SolenoidSubsystem.h"
-
-SolenoidSubsystem::SolenoidSubsystem() {
-    hub.EnableCompressorDigital();
-}
-
-void SolenoidSubsystem::SetPosition(frc::DoubleSolenoid::Value position) {
-	solenoid.Set(position);
-}
-
-frc::DoubleSolenoid::Value SolenoidSubsystem::GetPosition() {
-	return solenoid.Get();
-}
-```
-
-`ToggleSolenoid.h`:
-```C++
-#pragma once
-
-#include <frc2/command/CommandBase.h>
-#include <frc2/command/CommandHelper.h>
-
-#include "subsystems/SolenoidSubsystem.h"
-
-class ToggleSolenoid : public frc2::CommandHelper<frc2::CommandBase, ToggleSolenoid> {
-public:
-	explicit ToggleSolenoid(SolenoidSubsystem* subsystem);
-
-	void Initialize() override;
-	void End(bool interrupted) override;
-
-private:
-	SolenoidSubsystem* solenoidSubsystem;
-	frc::DoubleSolenoid::Value currentPosition;
-};
-```
-
-`ToggleSolenoid.cpp`:
-```C++
-#include "commands/ToggleSolenoid.h"
-
-ToggleSolenoid::ToggleSolenoid(SolenoidSubsystem* subsystem) : solenoidSubsystem(subsystem) {
-	AddRequirements(subsystem);
-	currentPosition = solenoidSubsystem->GetPosition(); //set the initial position to whatever the solenoid is currently at
-}
-
-void ToggleSolenoid::Initialize() {
-	if (currentPosition == frc::DoubleSolenoid::Value::kReverse) { //if reverse, set to forward
-		SolenoidSubsystem->SetPosition(frc::DoubleSolenoid::Value::kForward);
-		currentPosition = frc::DoubleSolenoid::Value::kForward;
-	}
-	else { //if not reverse, set to reverse
-		SolenoidSubsystem->SetPosition(frc::DoubleSolenoid::Value::kReverse);
-		currentPosition = frc::DoubleSolenoid::Value::kReverse;
-	}
-}
-
-void ToggleSolenoid::End(bool interrupted) { //should be called 3 ms after `Initialize()` using `WithTimeout()` decorator
-	SolenoidSubsystem->SetPosition(frc::DoubleSolenoid::Value::kOff); //set the solenoid to off, the piston will remain where it was last set to
 }
 ```
