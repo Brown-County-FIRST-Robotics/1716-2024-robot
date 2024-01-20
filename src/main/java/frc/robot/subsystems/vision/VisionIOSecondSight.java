@@ -3,6 +3,7 @@ package frc.robot.subsystems.vision;
 import edu.wpi.first.networktables.*;
 import edu.wpi.first.wpilibj.Timer;
 
+/** The IO layer for one SecondSight camera */
 public class VisionIOSecondSight implements VisionIO {
   BooleanSubscriber isRecordingSub;
   StringSubscriber recordingPathSub;
@@ -10,6 +11,11 @@ public class VisionIOSecondSight implements VisionIO {
   DoubleArraySubscriber posesSub;
   DoubleSubscriber errorSub;
 
+  /**
+   * Constructs a new <code>VisionIOSecondSight</code> from a NT path
+   *
+   * @param name The NT path of the camera
+   */
   public VisionIOSecondSight(String name) {
     NetworkTable table = NetworkTableInstance.getDefault().getTable("SS_LAPTOP").getSubTable("0");
     isRecordingSub = table.getBooleanTopic("isRecording").subscribe(false);

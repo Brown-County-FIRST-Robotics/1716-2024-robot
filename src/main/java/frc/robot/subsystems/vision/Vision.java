@@ -7,12 +7,20 @@ import frc.robot.subsystems.vision.VisionIO.VisionIOInputs;
 import frc.robot.utils.PeriodicRunnable;
 import org.littletonrobotics.junction.Logger;
 
+/** The vision subsystem */
 public class Vision extends PeriodicRunnable {
   Transform3d[] camPoses;
   VisionIO[] ios;
   VisionIOInputs[] outs;
   Drivetrain drivetrain;
 
+  /**
+   * Constructs a <code>Vision</code> subsystem
+   *
+   * @param drivetrain The drivetrain to send the updates to
+   * @param camPoses The positions of the cameras
+   * @param ios The IOs of the cameras
+   */
   public Vision(Drivetrain drivetrain, Transform3d[] camPoses, VisionIO[] ios) {
     super();
     this.camPoses = camPoses;

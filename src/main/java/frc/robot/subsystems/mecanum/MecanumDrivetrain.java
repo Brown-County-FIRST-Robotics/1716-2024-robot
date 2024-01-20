@@ -12,7 +12,6 @@ import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import edu.wpi.first.math.trajectory.TrajectoryGenerator;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.DeferredCommand;
 import edu.wpi.first.wpilibj2.command.MecanumControllerCommand;
@@ -23,9 +22,10 @@ import java.util.List;
 import java.util.Set;
 import org.littletonrobotics.junction.Logger;
 
+/** The mecanum drivetrain subsystem */
 public class MecanumDrivetrain implements Drivetrain {
-  public static final double MAX_WHEEL_SPEED = 5.85;
-  public static final MecanumDriveKinematics KINEMATICS =
+  static final double MAX_WHEEL_SPEED = 5.85;
+  static final MecanumDriveKinematics KINEMATICS =
       new MecanumDriveKinematics(
           new Translation2d(25.75 * 0.0254 / 2, 18.75 * 0.0254 / 2),
           new Translation2d(25.75 * 0.0254 / 2, -18.75 * 0.0254 / 2),
@@ -37,6 +37,12 @@ public class MecanumDrivetrain implements Drivetrain {
   IMUIOInputsAutoLogged imuInputs = new IMUIOInputsAutoLogged();
   MecanumDrivePoseEstimator poseEstimator;
 
+  /**
+   * Constructs a <code>MecanumDrivetrain</code> from IO
+   *
+   * @param drive Drive IO
+   * @param imu Imu IO
+   */
   public MecanumDrivetrain(MecanumIO drive, IMUIO imu) {
     this.drive = drive;
     this.imu = imu;
@@ -46,7 +52,7 @@ public class MecanumDrivetrain implements Drivetrain {
     Logger.processInputs("Drive/IMU", imuInputs);
     poseEstimator =
         new MecanumDrivePoseEstimator(
-            KINEMATICS, imuInputs.rotation.toRotation2d(), driveInputs.pos, Constants.INIT_POSE);
+            KINEMATICS, getGyro().toRotation2d(), driveInputs.pos, Constants.INIT_POSE);
   }
 
   @Override
@@ -65,7 +71,7 @@ public class MecanumDrivetrain implements Drivetrain {
         new SwerveModuleState(driveInputs.vel.rearLeftMetersPerSecond, Rotation2d.fromDegrees(45)),
         new SwerveModuleState(
             driveInputs.vel.rearRightMetersPerSecond, Rotation2d.fromDegrees(-45)));
-    poseEstimator.update(imuInputs.rotation.toRotation2d(), driveInputs.pos);
+    poseEstimator.update(getGyro().toRotation2d(), driveInputs.pos);
   }
 
   @Override
@@ -109,7 +115,7 @@ public class MecanumDrivetrain implements Drivetrain {
     return null;
   }
 
-  public Command makeTrajectoryCommand(Trajectory trajectory) {
+  Command makeTrajectoryCommand(Trajectory trajectory) {
     Logger.recordOutput("Drive/CurrentTraj", trajectory);
     return new MecanumControllerCommand(
         trajectory,
@@ -129,22 +135,8 @@ public class MecanumDrivetrain implements Drivetrain {
   }
 
   @Override
-  public void humanDrive(ChassisSpeeds cmd, boolean foc) {
-    ChassisSpeeds sp =
-        new ChassisSpeeds(
-            -cmd.vxMetersPerSecond, -cmd.vyMetersPerSecond, -cmd.omegaRadiansPerSecond);
-    if (foc) {
-      Rotation2d rot =
-          DriverStation.getAlliance().get() == DriverStation.Alliance.Red
-              ? getPosition().getRotation()
-              : getPosition().getRotation().rotateBy(Rotation2d.fromRotations(0.5));
-      sp =
-          ChassisSpeeds.fromFieldRelativeSpeeds(
-              new ChassisSpeeds(
-                  cmd.vxMetersPerSecond, cmd.vyMetersPerSecond, -cmd.omegaRadiansPerSecond),
-              rot);
-    }
-    MecanumDriveWheelSpeeds speeds = KINEMATICS.toWheelSpeeds(sp);
+  public void humanDrive(ChassisSpeeds cmd) {
+    MecanumDriveWheelSpeeds speeds = KINEMATICS.toWheelSpeeds(cmd);
     setWheelSpeeds(speeds);
   }
 

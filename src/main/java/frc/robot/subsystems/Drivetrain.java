@@ -8,6 +8,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import java.util.List;
 
+/** This interface represents a holonomic drivetrain */
 public interface Drivetrain extends Subsystem {
   /**
    * Gets the position from the pose estimator
@@ -23,18 +24,56 @@ public interface Drivetrain extends Subsystem {
    */
   void setPosition(Pose2d newPose);
 
+  /**
+   * Adds a vision update to the pose estimator
+   *
+   * @param newPose The estimated pose
+   * @param timestamp The time at which the pose was detected
+   */
   void addVisionUpdate(Pose2d newPose, double timestamp);
-
+  /**
+   * Returns a command that drives to a point
+   *
+   * @param pose The ending pose
+   * @return The command that goes to the point
+   */
   Command getDriveToPointCmd(Pose2d pose);
-
+  /**
+   * Returns a command that drives to a point
+   *
+   * @param pose The ending pose
+   * @param endVelX The ending velocity in the x direction
+   * @param endVelY The ending velocity in the y direction
+   * @return The command that goes to the point
+   */
   Command getDriveToPointCmd(Pose2d pose, double endVelX, double endVelY);
-
+  /**
+   * Returns a command that follows the given waypoints
+   *
+   * @param waypoints The waypoints to intersect in the trajectory
+   * @param pose The ending pose
+   * @return The command that follows the waypoints
+   */
   Command getFollowWaypointsCmd(List<Translation2d> waypoints, Pose2d pose);
 
+  /**
+   * Returns a command that follows the given waypoints
+   *
+   * @param waypoints The waypoints to intersect in the trajectory
+   * @param pose The ending pose
+   * @param endVelX The ending velocity in the x direction
+   * @param endVelY The ending velocity in the y direction
+   * @return The command that follows the waypoints
+   */
   Command getFollowWaypointsCmd(
       List<Translation2d> waypoints, Pose2d pose, double endVelX, double endVelY);
 
-  void humanDrive(ChassisSpeeds cmd, boolean foc);
+  /**
+   * Commands a <code>ChassisSpeeds</code> to the drivetrain
+   *
+   * @param cmd The commanded speeds
+   */
+  void humanDrive(ChassisSpeeds cmd);
 
   /**
    * Gets the current orientation according to the gyro
