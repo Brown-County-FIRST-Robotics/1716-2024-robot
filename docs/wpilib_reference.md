@@ -14,7 +14,7 @@
 |-|-|-|
 |`TalonFX`|`com.ctre.phoenix6.hardware.TalonFX`|-|
 |`CANSparkMax`|`com.revrobotics.CANSparkMax`|-|
-|`TalonSRX`|`com.ctre.phoenix6.hardware.TalonSRX`|This is probably right, unconfirmed|
+|`WPI_TalonSRX`|`com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX`|-|
 |`DoubleSolenoid`|`edu.wpi.first.wpilibj.DoubleSolenoid`|Positions are accessible at `DoubleSolenoid.Value`; more info available [here](#solenoids)|
 
 ## 3rd Party Vendor Libraries:
