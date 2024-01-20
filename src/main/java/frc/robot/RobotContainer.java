@@ -7,6 +7,8 @@ package frc.robot;
 
 import edu.wpi.first.math.geometry.*;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.Servo;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -23,12 +25,9 @@ import frc.robot.subsystems.arm.ArmIOSim;
 import frc.robot.subsystems.mecanum.MecanumDrivetrain;
 import frc.robot.subsystems.mecanum.MecanumIO;
 import frc.robot.subsystems.mecanum.MecanumIOSpark;
-<<<<<<< HEAD
 import frc.robot.subsystems.shooter.Shooter;
-import frc.robot.subsystems.shooter.ShooterIOSparkFlex;
-=======
+import frc.robot.subsystems.shooter.ShooterIOSparkFlexes;
 import frc.robot.subsystems.swerve.ModuleIO;
->>>>>>> origin/main
 import frc.robot.subsystems.swerve.ModuleIOSim;
 import frc.robot.subsystems.swerve.ModuleIOSparkFX;
 import frc.robot.subsystems.swerve.SwerveDrivetrain;
@@ -47,6 +46,7 @@ public class RobotContainer {
       new CommandXboxController(Constants.Driver.DRIVER_CONTROLLER_PORT);
   private final Drivetrain driveSys;
   private Arm arm;
+  Servo as=new Servo(5);
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
@@ -126,8 +126,10 @@ public class RobotContainer {
     }
 
     useAlliance();
-    var sh = new Shooter(new ShooterIOSparkFlex(0));
-    sh.setDefaultCommand(Commands.run(() -> sh.cmdVoltage(driverController.getLeftY() * 12.0), sh));
+    SmartDashboard.putData("sa",as);
+    var sh = new Shooter(new ShooterIOSparkFlexes(59,60,0));
+    Commands.run(()->as.setAngle(10)).schedule();
+    sh.setDefaultCommand(Commands.run(() -> sh.cmdvel(driverController.getHID().getAButton()?4000:(driverController.getHID().getBButton()?-4000:0)), sh));
     driveSys.setDefaultCommand(new TeleopDrive(driveSys, arm, driverController));
 
     configureBindings();
