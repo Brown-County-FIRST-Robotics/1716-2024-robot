@@ -16,12 +16,11 @@ public class Shooter extends SubsystemBase {
 
   @Override
   public void periodic() {
-    var brokeLastTime = inputs.beamBroke;
     io.updateInputs(inputs);
     Logger.processInputs("Shooter/Inputs", inputs);
-    if (inputs.beamBroke && !brokeLastTime) {
-      io.setVoltage(0);
-    }
+  }
+  public void cmdvel(double voltage) {
+    io.setVelocity(voltage);
   }
 
   public void cmdVoltage(double voltage) {
