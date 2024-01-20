@@ -8,7 +8,7 @@
     2. [Command](#command)
     3. [Button Binding](#button-binding)
 3. [Command Composition](#command-composition)
-4. [Live Updating of Input Using Lambdas](#live-updating-of-input-using-lambdas)
+4. [Live Updating of Input Using Method References](#live-updating-of-input-using-method-references)
 5. [Default Commands for Subsystems](#default-commands-for-subsystems)
 6. [Autonomous](#autonomous)
 7. [Example Solenoid Subsystem and Command](#example-solenoid-subsystem-and-command)
@@ -49,8 +49,8 @@
         - These can be formed by declaring a `CommandXboxController` and calling a button method (`a()`, `b()`, `y()`) to declare which input to use, then a binding (`OnTrue()`, `WhileTrue()`) to declare what logic to use
         - Ex: `myCommandXboxController.a().onTrue(new CommandToBind())`
     - Commands are generally bound to triggers in the `configureButtonBindings()` method of `RobotContainer`
-    - Alternatively, you can make [arbitrary triggers](https://docs.wpilib.org/en/stable/docs/software/commandbased/binding-commands-to-triggers.html#arbitrary-triggers), which, rather than being a button input, take a boolean [lambda](#live-updating-of-input-using-lambdas) that you provide
-        - Example: `new Trigger(() -> { return controller.getA(); });`
+    - Alternatively, you can make [arbitrary triggers](https://docs.wpilib.org/en/stable/docs/software/commandbased/binding-commands-to-triggers.html#arbitrary-triggers), which, rather than being a button input, take a boolean [method reference](#live-updating-of-input-using-method-references) that you provide
+        - Example: `new Trigger(controller::getA);`
     - There are different [bindings](https://docs.wpilib.org/en/stable/docs/software/commandbased/binding-commands-to-triggers.html#trigger-bindings) available, which allow for different logical connections between triggers and commands
         - First, you make a trigger (such as a button), then call a binding on it and pass in a new instance of your command
     - Triggers can be [composed](https://docs.wpilib.org/en/stable/docs/software/commandbased/binding-commands-to-triggers.html#composing-triggers), allowing you to apply logical operators to trigger using the `and()`, `or()`, and `negate()` methods
@@ -219,19 +219,18 @@ controller.y().whileTrue(new ToggleSolenoid(solenoidSubsystem).withTimeout(3));
 
 There is a wide variety of compositions available for different functionality. Read [the official WPILib documentation](https://docs.wpilib.org/en/stable/docs/software/commandbased/command-compositions.html#composition-typesl) for more details.
 
-## Live Updating of Input Using Lambdas:
+## Live Updating of Input Using Method References:
 
-A useful technique in command based is using lambda functions to easily and quickly get live input from the controller or some other variable. Lambdas are functions declared inline, allowing you easily to pass them into commands. This way, you can send your command the current value of the joystick rather than the value the command was called with. The syntax for a lambda function in java looks like `() -> { return x; }`; you put the function's parameters in the parentheses and the function's body in the curly braces, returning whatever value you need. To use them for a command:
+A useful technique in command based is using method references to easily and quickly get live input from the controller or some other variable. Method references allow you to pass a method, such as getting a controller button input, into a command's constructor as a parameter. This way, you can send your command the current value of the joystick or some other input rather than the value the command was called with. In java, a method reference is accessed by using `::` on an object, for example: `controller::getA` (note the lack of parentheses). To use them for a command:
 
-1. Add a new parameter to your command's constructor of type `RETURNTYPESupplier`, where `RETURNTYPE` is whatever type your lambda will return.
+1. Add a new parameter to your command's constructor of type `RETURNTYPESupplier`, where `RETURNTYPE` is whatever type your method returns.
     - You will need to import the supplier from `java.util.function.RETURNTYPESupplier`
     - For example, a joystick axis has the type `double`, so your parameter would be of type `DoubleSupplier` and you would import `java.util.function.DoubleSupplier`
 2. Make a variable of that same type at the top of your command's class so that the supplier is accessible after the constructor (`DoubleSupplier x;`)
     - Remember to set your member variable equal to your parameter in the constructor
-3. When you bind your command, you can use the following format to define your lambda:
+3. When you bind your command, you use a method reference like so:
     ```java
-    controller.y().whileTrue(new Shoot(shooter, 
-    () -> { return controller.getLeftY(); }));
+    controller.y().whileTrue(new Shoot(shooter, controller::getLeftY));
     ```
     - In this example, `Shoot` would would look something like this:
         ```java
@@ -258,7 +257,7 @@ A useful technique in command based is using lambda functions to easily and quic
 
 ## Default Commands for Subsystems:
 
-Each subsystem can have a default command that is run if no other command is currently using it. This feature is often especially useful in combination with [lambda functions](#live-updating-of-input-using-lambdas) because they allow the input to the command to change without it being rescheduled. Driving is almost always the default command for the drivetrain, and shooting may also be one; both generally require [lambdas](#live-updating-of-input-using-lambdas). You can set the default command of a subsystem in the `RobotContainer.java` constructor like so:
+Each subsystem can have a default command that is run if no other command is currently using it. This feature is often especially useful in combination with [method references](#live-updating-of-input-using-method-references) because they allow the input to the command to change without it being rescheduled. Driving is almost always the default command for the drivetrain, and shooting may also be one; both generally require [method references](#live-updating-of-input-using-method-references). You can set the default command of a subsystem in the `RobotContainer.java` constructor like so:
 ```java
 drivetrain.setDefaultCommand(new DriveCommand(drivetrain,
     () -> { return controller.getLeftY(); },
