@@ -65,7 +65,7 @@ public class Robot extends LoggedRobot {
 
     switch (WhoAmI.mode) {
       case REAL:
-        Logger.addDataReceiver(new WPILOGWriter("/U"));
+        Logger.addDataReceiver(new WPILOGWriter("/home/lvuser/"));
         break;
       case SIM:
         Logger.addDataReceiver(new WPILOGWriter("SimLogs/"));
