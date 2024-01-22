@@ -19,6 +19,7 @@ public class Shooter extends SubsystemBase {
     io.updateInputs(inputs);
     Logger.processInputs("Shooter/Inputs", inputs);
   }
+
   public void cmdvel(double voltage) {
     io.setVelocity(voltage);
   }
