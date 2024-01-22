@@ -23,12 +23,9 @@ import frc.robot.subsystems.arm.ArmIOSim;
 import frc.robot.subsystems.mecanum.MecanumDrivetrain;
 import frc.robot.subsystems.mecanum.MecanumIO;
 import frc.robot.subsystems.mecanum.MecanumIOSpark;
-<<<<<<< HEAD
 import frc.robot.subsystems.shooter.Shooter;
-import frc.robot.subsystems.shooter.ShooterIOSparkFlex;
-=======
+import frc.robot.subsystems.shooter.ShooterIOSparkFlexes;
 import frc.robot.subsystems.swerve.ModuleIO;
->>>>>>> origin/main
 import frc.robot.subsystems.swerve.ModuleIOSim;
 import frc.robot.subsystems.swerve.ModuleIOSparkFX;
 import frc.robot.subsystems.swerve.SwerveDrivetrain;
@@ -126,7 +123,7 @@ public class RobotContainer {
     }
 
     useAlliance();
-    var sh = new Shooter(new ShooterIOSparkFlex(0));
+    var sh = new Shooter(new ShooterIOSparkFlexes(0,0,0));
     sh.setDefaultCommand(Commands.run(() -> sh.cmdVoltage(driverController.getLeftY() * 12.0), sh));
     driveSys.setDefaultCommand(new TeleopDrive(driveSys, arm, driverController));
 
