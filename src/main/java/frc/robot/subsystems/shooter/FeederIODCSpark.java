@@ -3,7 +3,6 @@ package frc.robot.subsystems.shooter;
 import com.revrobotics.*;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.Encoder;
-import frc.robot.subsystems.shooter.FeederIO.*;
 import frc.robot.utils.LoggedTunableNumber;
 
 public class FeederIODCSpark implements FeederIO {
@@ -16,6 +15,10 @@ public class FeederIODCSpark implements FeederIO {
 
   public FeederIODCSpark(int id, int encA, int encB) {
     controller = new CANSparkMax(id, CANSparkLowLevel.MotorType.kBrushed);
+    controller.restoreFactoryDefaults();
+    controller.setSmartCurrentLimit(20);
+    controller.setIdleMode(CANSparkBase.IdleMode.kCoast);
+    controller.burnFlash();
     encoder = new Encoder(encA, encB);
     p.attach(pid::setP);
     i.attach(pid::setI);
@@ -24,7 +27,9 @@ public class FeederIODCSpark implements FeederIO {
 
   @Override
   public void updateInputs(FeederIOInputs inputs) {
-    inputs.feederPos = encoder.get();
+    inputs.position = encoder.get();
+    inputs.velocity = encoder.getRate();
+    inputs.current = controller.getOutputCurrent();
   }
 
   @Override
