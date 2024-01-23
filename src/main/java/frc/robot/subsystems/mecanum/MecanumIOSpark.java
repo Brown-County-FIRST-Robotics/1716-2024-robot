@@ -49,6 +49,16 @@ public class MecanumIOSpark implements MecanumIO {
     brEncoder = br.getEncoder();
     brPID = br.getPIDController();
 
+    fl.restoreFactoryDefaults();
+    fr.restoreFactoryDefaults();
+    bl.restoreFactoryDefaults();
+    br.restoreFactoryDefaults();
+
+    fl.setIdleMode(CANSparkBase.IdleMode.kBrake);
+    fr.setIdleMode(CANSparkBase.IdleMode.kBrake);
+    bl.setIdleMode(CANSparkBase.IdleMode.kBrake);
+    br.setIdleMode(CANSparkBase.IdleMode.kBrake);
+
     fl.setSmartCurrentLimit(Constants.CurrentLimits.NEO);
     fr.setSmartCurrentLimit(Constants.CurrentLimits.NEO);
     bl.setSmartCurrentLimit(Constants.CurrentLimits.NEO);
