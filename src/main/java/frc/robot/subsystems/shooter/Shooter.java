@@ -24,7 +24,7 @@ public class Shooter extends SubsystemBase {
       new LoggedTunableNumber("Shooter/FEEDING_TO_SHOOTER_preset", 0.0);
   TrapezoidProfile.Constraints feederConstraints =
       new TrapezoidProfile.Constraints(7.0 * 5700 / 60, 3 * 7.0 * 5700 / 60);
-  SimpleMotorFeedforward feederFF = new SimpleMotorFeedforward(0, 12.0 * 60 / (7.0 * 5700));
+  SimpleMotorFeedforward feederFF = new SimpleMotorFeedforward(-0.3, 12.0 * 60 / (7.0 * 5700));
   LoggedDashboardNumber shootingSpeed = new LoggedDashboardNumber("Shooting RPM", 6500);
   LoggedTunableNumber speedThreshold = new LoggedTunableNumber("Shooting speed threshold", 0.05);
   LoggedTunableNumber firingTime = new LoggedTunableNumber("Firing Time", 0.5);
@@ -58,9 +58,9 @@ public class Shooter extends SubsystemBase {
     }
     if (!isFiring
         && isShooting
-        && Math.abs(shooterInputs.velocity[0] - shootingSpeed.get()) / shootingSpeed.get()
+        && Math.abs((shooterInputs.velocity[0] + shootingSpeed.get()) / shootingSpeed.get())
             < speedThreshold.get()
-        && Math.abs(shooterInputs.velocity[1] - shootingSpeed.get()) / shootingSpeed.get()
+        && Math.abs((shooterInputs.velocity[1] - shootingSpeed.get()) / shootingSpeed.get())
             < speedThreshold.get()) {
       isFiring = true;
       firingStartTime = Timer.getFPGATimestamp();
