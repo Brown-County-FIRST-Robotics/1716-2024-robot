@@ -1,5 +1,6 @@
 package frc.robot.subsystems.shooter;
 
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj.Timer;
@@ -18,19 +19,21 @@ public class Shooter extends SubsystemBase {
   ShooterIOInputsAutoLogged shooterInputs = new ShooterIOInputsAutoLogged();
   LoggedDashboardBoolean shouldReset = new LoggedDashboardBoolean("Reset arm", false);
   LoggedTunableNumber preset_RECEIVING_FROM_INTAKE =
-      new LoggedTunableNumber("Shooter/RECEIVING_FROM_INTAKE_preset", 0.0);
+      new LoggedTunableNumber("Shooter/RECEIVING_FROM_INTAKE_preset", -2.0);
   LoggedTunableNumber preset_HOLDING = new LoggedTunableNumber("Shooter/HOLDING_preset", 0.0);
   LoggedTunableNumber preset_FEEDING_TO_SHOOTER =
-      new LoggedTunableNumber("Shooter/FEEDING_TO_SHOOTER_preset", 0.0);
+      new LoggedTunableNumber("Shooter/FEEDING_TO_SHOOTER_preset", 4.0);
   TrapezoidProfile.Constraints feederConstraints =
       new TrapezoidProfile.Constraints(7.0 * 5700 / 60, 3 * 7.0 * 5700 / 60);
-  SimpleMotorFeedforward feederFF = new SimpleMotorFeedforward(0, 12.0 * 60 / (7.0 * 5700));
+  SimpleMotorFeedforward feederFF = new SimpleMotorFeedforward(-0.3, 1.1*12.0 * 60 / (7.0 * 5700));
   LoggedDashboardNumber shootingSpeed = new LoggedDashboardNumber("Shooting RPM", 6500);
   LoggedTunableNumber speedThreshold = new LoggedTunableNumber("Shooting speed threshold", 0.05);
   LoggedTunableNumber firingTime = new LoggedTunableNumber("Firing Time", 0.5);
+
   boolean isShooting = false;
   boolean isFiring = false;
   double firingStartTime;
+  PIDController pc=new PIDController(1,0.1,0);
 
   public Shooter(ShooterIO io, FeederIO feederIO) {
     this.shooterIO = io;
@@ -39,6 +42,9 @@ public class Shooter extends SubsystemBase {
     Logger.processInputs("Shooter/ShooterInputs", shooterInputs);
     feederIO.updateInputs(feederInputs);
     Logger.processInputs("Shooter/FeederInputs", feederInputs);
+    new LoggedTunableNumber("P",0.8).attach(pc::setP);
+    new LoggedTunableNumber("I",0).attach(pc::setI);
+    new LoggedTunableNumber("D",0).attach(pc::setD);
   }
 
   @Override
@@ -58,9 +64,9 @@ public class Shooter extends SubsystemBase {
     }
     if (!isFiring
         && isShooting
-        && Math.abs(shooterInputs.velocity[0] - shootingSpeed.get()) / shootingSpeed.get()
+        && Math.abs((shooterInputs.velocity[0] + shootingSpeed.get()) / shootingSpeed.get())
             < speedThreshold.get()
-        && Math.abs(shooterInputs.velocity[1] - shootingSpeed.get()) / shootingSpeed.get()
+        && Math.abs((shooterInputs.velocity[1] - shootingSpeed.get()) / shootingSpeed.get())
             < speedThreshold.get()) {
       isFiring = true;
       firingStartTime = Timer.getFPGATimestamp();
@@ -72,15 +78,8 @@ public class Shooter extends SubsystemBase {
         isShooting = false;
       }
     }
-    feederIO.setVoltage(
-        feederFF.calculate(
-            new TrapezoidProfile(feederConstraints)
-                .calculate(
-                    0.02,
-                    new TrapezoidProfile.State(feederInputs.position, feederInputs.velocity),
-                    new TrapezoidProfile.State(lastFeederCMD, 0))
-                .velocity,
-            0));
+    feederIO.setVoltage(pc.calculate(feederInputs.position,lastFeederCMD));
+
   }
 
   public void cmdvel(double voltage) {

@@ -13,10 +13,10 @@ public class ShooterIOSparkFlexes implements ShooterIO {
   DigitalInput beamBreakSensor;
   RelativeEncoder encoder1;
   RelativeEncoder encoder2;
-  LoggedTunableNumber ffTuner = new LoggedTunableNumber("Mecanum FF", 1.0 / 6500);
-  LoggedTunableNumber pTuner = new LoggedTunableNumber("Mecanum P", 0);
-  LoggedTunableNumber iTuner = new LoggedTunableNumber("Mecanum I", 0);
-  LoggedTunableNumber dTuner = new LoggedTunableNumber("Mecanum D", 0);
+  LoggedTunableNumber ffTuner = new LoggedTunableNumber("Shooter FF", 1.0 / 6500);
+  LoggedTunableNumber pTuner = new LoggedTunableNumber("Shooter P", 0);
+  LoggedTunableNumber iTuner = new LoggedTunableNumber("Shooter I", 0);
+  LoggedTunableNumber dTuner = new LoggedTunableNumber("Shooter D", 0);
 
   public ShooterIOSparkFlexes(int motorID1, int motorID2, int beamBreakID) {
     motor1 = new CANSparkFlex(motorID1, CANSparkLowLevel.MotorType.kBrushless);
@@ -68,13 +68,13 @@ public class ShooterIOSparkFlexes implements ShooterIO {
   @Override
   public void updateInputs(ShooterIOInputs inputs) {
     inputs.position[0] = encoder1.getPosition();
-    inputs.velocity[0] = encoder1.getVelocity() / 60.0;
+    inputs.velocity[0] = encoder1.getVelocity();
     inputs.motorTemperature[0] = motor1.getMotorTemperature();
     inputs.motorCurrent[0] = motor1.getOutputCurrent();
     inputs.motorOutput[0] = motor1.getAppliedOutput();
 
     inputs.position[1] = encoder2.getPosition();
-    inputs.velocity[1] = encoder2.getVelocity() / 60.0;
+    inputs.velocity[1] = encoder2.getVelocity();
     inputs.motorTemperature[1] = motor2.getMotorTemperature();
     inputs.motorCurrent[1] = motor2.getOutputCurrent();
     inputs.motorOutput[1] = motor2.getAppliedOutput();
@@ -88,8 +88,8 @@ public class ShooterIOSparkFlexes implements ShooterIO {
   @Override
   public void setVelocity(double vel) {
     if (vel != 0) {
-      pid1.setReference(vel, CANSparkBase.ControlType.kVelocity, 0);
-      pid2.setReference(-vel, CANSparkBase.ControlType.kVelocity, 0);
+      pid1.setReference(-vel, CANSparkBase.ControlType.kVelocity, 0);
+      pid2.setReference(vel, CANSparkBase.ControlType.kVelocity, 0);
     } else {
       motor1.set(0);
       motor2.set(0);
