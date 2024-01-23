@@ -72,12 +72,12 @@ flowchart BT
     s2 --> C2
     s2 --> C3(Command3)
 
-    C1 --> T1(Trigger1)
-    C1 --> T2(Trigger2)
-    C2 --> T3(Trigger3)
+    C1 ---> T1(Trigger1)
+    C1 ---> T2(Trigger2)
+    C2 ---> T3(Trigger3)
     C2 --> C4(Composite1)
     C3 --> C4
-    C3 --> T4(Trigger4)
+    C3 ---> T4(Trigger4)
     C4 --> T5(Trigger5)
 ```
 
