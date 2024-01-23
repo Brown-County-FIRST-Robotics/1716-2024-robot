@@ -58,9 +58,9 @@ public class Shooter extends SubsystemBase {
     }
     if (!isFiring
         && isShooting
-        && Math.abs(shooterInputs.velocity[0] - shootingSpeed.get()) / shootingSpeed.get()
+        && Math.abs((shooterInputs.velocity[0] + shootingSpeed.get()) / shootingSpeed.get())
             < speedThreshold.get()
-        && Math.abs(shooterInputs.velocity[1] - shootingSpeed.get()) / shootingSpeed.get()
+        && Math.abs((shooterInputs.velocity[1] - shootingSpeed.get()) / shootingSpeed.get())
             < speedThreshold.get()) {
       isFiring = true;
       firingStartTime = Timer.getFPGATimestamp();
@@ -72,7 +72,7 @@ public class Shooter extends SubsystemBase {
         isShooting = false;
       }
     }
-    feederIO.setVoltage(
+    feederIO.setVoltage(Math.abs(feederInputs.position-lastFeederCMD)<2?
         feederFF.calculate(
             new TrapezoidProfile(feederConstraints)
                 .calculate(
@@ -80,7 +80,7 @@ public class Shooter extends SubsystemBase {
                     new TrapezoidProfile.State(feederInputs.position, feederInputs.velocity),
                     new TrapezoidProfile.State(lastFeederCMD, 0))
                 .velocity,
-            0));
+            0):(feederInputs.position>lastFeederCMD?10:-10));
   }
 
   public void cmdvel(double voltage) {

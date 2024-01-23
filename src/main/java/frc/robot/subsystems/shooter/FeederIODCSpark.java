@@ -12,6 +12,7 @@ public class FeederIODCSpark implements FeederIO {
     controller.restoreFactoryDefaults();
     controller.setSmartCurrentLimit(20);
     controller.setIdleMode(CANSparkBase.IdleMode.kCoast);
+    controller.setInverted(true);
     controller.burnFlash();
     encoder = new Encoder(encA, encB);
   }
