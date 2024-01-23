@@ -23,9 +23,7 @@ import frc.robot.subsystems.arm.ArmIOSim;
 import frc.robot.subsystems.mecanum.MecanumDrivetrain;
 import frc.robot.subsystems.mecanum.MecanumIO;
 import frc.robot.subsystems.mecanum.MecanumIOSpark;
-import frc.robot.subsystems.shooter.FeederIODCSpark;
-import frc.robot.subsystems.shooter.Shooter;
-import frc.robot.subsystems.shooter.ShooterIOSparkFlexes;
+import frc.robot.subsystems.shooter.*;
 import frc.robot.subsystems.swerve.ModuleIO;
 import frc.robot.subsystems.swerve.ModuleIOSim;
 import frc.robot.subsystems.swerve.ModuleIOSparkFX;
@@ -45,6 +43,7 @@ public class RobotContainer {
       new CommandXboxController(Constants.Driver.DRIVER_CONTROLLER_PORT);
   private final Drivetrain driveSys;
   private Arm arm;
+  private Shooter shooter;
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
@@ -86,6 +85,10 @@ public class RobotContainer {
           case SIM_ARM:
             arm = new Arm(new ArmIOSim());
             break;
+          case SHOOTER:
+            shooter =
+                new Shooter(new ShooterIOSparkFlexes(59, 60, 0), new FeederIODCSpark(31, 4, 5));
+            break;
         }
       }
     } else {
@@ -122,10 +125,13 @@ public class RobotContainer {
     if (arm == null) {
       arm = new Arm(new ArmIO() {});
     }
+    if (shooter == null) {
+      shooter = new Shooter(new ShooterIO() {}, new FeederIO() {});
+    }
 
     useAlliance();
-    var sh = new Shooter(new ShooterIOSparkFlexes(59, 60, 0), new FeederIODCSpark(31, 4, 5));
-    sh.setDefaultCommand(Commands.run(() -> sh.cmdvel(driverController.getLeftY() * 6500.0), sh));
+    shooter.setDefaultCommand(
+        Commands.run(() -> shooter.cmdvel(driverController.getLeftY() * 6500.0), shooter));
     driveSys.setDefaultCommand(new TeleopDrive(driveSys, arm, driverController));
 
     configureBindings();

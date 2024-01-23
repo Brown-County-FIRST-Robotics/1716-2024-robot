@@ -3,7 +3,7 @@ package frc.robot.subsystems.shooter;
 import org.littletonrobotics.junction.AutoLog;
 
 public interface ShooterIO {
-  void setVelocity(double vel);
+  default void setVelocity(double vel) {}
 
   @AutoLog
   public static class ShooterIOInputs {
