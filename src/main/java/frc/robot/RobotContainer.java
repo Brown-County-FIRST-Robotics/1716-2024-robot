@@ -130,8 +130,13 @@ public class RobotContainer {
     }
 
     useAlliance();
-    shooter.setDefaultCommand(
-        Commands.run(() -> shooter.cmdvel(driverController.getLeftY() * 6500.0), shooter));
+    driverController
+        .a()
+        .onTrue(
+            Commands.runOnce(
+                () -> shooter.cmdFeeder(Shooter.FeederPreset.RECEIVING_FROM_INTAKE), shooter))
+        .onFalse(Commands.runOnce(() -> shooter.cmdFeeder(Shooter.FeederPreset.HOLDING), shooter));
+    driverController.b().onTrue(Commands.runOnce(() -> shooter.shoot(), shooter));
     driveSys.setDefaultCommand(new TeleopDrive(driveSys, arm, driverController));
 
     configureBindings();
