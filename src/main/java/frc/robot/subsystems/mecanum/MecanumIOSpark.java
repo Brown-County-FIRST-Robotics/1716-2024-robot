@@ -3,6 +3,7 @@ package frc.robot.subsystems.mecanum;
 import com.revrobotics.*;
 import edu.wpi.first.math.kinematics.MecanumDriveWheelPositions;
 import edu.wpi.first.math.kinematics.MecanumDriveWheelSpeeds;
+import frc.robot.Constants;
 import frc.robot.utils.LoggedTunableNumber;
 import org.littletonrobotics.junction.Logger;
 
@@ -48,10 +49,10 @@ public class MecanumIOSpark implements MecanumIO {
     brEncoder = br.getEncoder();
     brPID = br.getPIDController();
 
-    fl.setSmartCurrentLimit(30);
-    fr.setSmartCurrentLimit(30);
-    bl.setSmartCurrentLimit(30);
-    br.setSmartCurrentLimit(30);
+    fl.setSmartCurrentLimit(Constants.CurrentLimits.NEO);
+    fr.setSmartCurrentLimit(Constants.CurrentLimits.NEO);
+    bl.setSmartCurrentLimit(Constants.CurrentLimits.NEO);
+    br.setSmartCurrentLimit(Constants.CurrentLimits.NEO);
 
     flPID.setFeedbackDevice(flEncoder);
     flPID.setOutputRange(-1, 1);

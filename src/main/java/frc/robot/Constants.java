@@ -61,6 +61,12 @@ public final class Constants {
     public static final int DRIVER_CONTROLLER_PORT = 0;
   }
 
+  public static final class CurrentLimits {
+    public static final int NEO550 = 20;
+    public static final int NEO = 50;
+    public static final int NEO_VORTEX = 80;
+  }
+
   /** The initial pose of the robot */
   public static final Pose2d INIT_POSE = new Pose2d(0, 0, Rotation2d.fromDegrees(180));
   /** The initial pose of the robot when it is on the red alliance */

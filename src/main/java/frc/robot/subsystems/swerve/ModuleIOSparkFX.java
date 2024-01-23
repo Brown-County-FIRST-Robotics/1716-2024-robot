@@ -9,6 +9,7 @@ import com.revrobotics.*;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import frc.robot.Constants;
 import frc.robot.utils.LoggedTunableNumber;
 import org.littletonrobotics.junction.Logger;
 
@@ -71,7 +72,7 @@ public class ModuleIOSparkFX implements ModuleIO {
     pid.setPositionPIDWrappingEnabled(true);
     pid.setPositionPIDWrappingMaxInput(1);
     pid.setPositionPIDWrappingMinInput(0);
-    steer.setSmartCurrentLimit(30);
+    steer.setSmartCurrentLimit(Constants.CurrentLimits.NEO);
 
     steerKV.attach(pid::setFF);
     steerP.attach(pid::setP);
