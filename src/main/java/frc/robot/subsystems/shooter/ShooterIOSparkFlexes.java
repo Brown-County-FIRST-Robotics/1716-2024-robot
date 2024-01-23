@@ -68,13 +68,13 @@ public class ShooterIOSparkFlexes implements ShooterIO {
   @Override
   public void updateInputs(ShooterIOInputs inputs) {
     inputs.position[0] = encoder1.getPosition();
-    inputs.velocity[0] = encoder1.getVelocity() / 60.0;
+    inputs.velocity[0] = encoder1.getVelocity();
     inputs.motorTemperature[0] = motor1.getMotorTemperature();
     inputs.motorCurrent[0] = motor1.getOutputCurrent();
     inputs.motorOutput[0] = motor1.getAppliedOutput();
 
     inputs.position[1] = encoder2.getPosition();
-    inputs.velocity[1] = encoder2.getVelocity() / 60.0;
+    inputs.velocity[1] = encoder2.getVelocity();
     inputs.motorTemperature[1] = motor2.getMotorTemperature();
     inputs.motorCurrent[1] = motor2.getOutputCurrent();
     inputs.motorOutput[1] = motor2.getAppliedOutput();

@@ -58,9 +58,9 @@ public class Shooter extends SubsystemBase {
     }
     if (!isFiring
         && isShooting
-        && Math.abs(shooterInputs.velocity[0] - shootingSpeed.get()) / shootingSpeed.get()
+        && Math.abs(shooterInputs.velocity[0] - shootingSpeed.get() / shootingSpeed.get())
             < speedThreshold.get()
-        && Math.abs(shooterInputs.velocity[1] - shootingSpeed.get()) / shootingSpeed.get()
+        && Math.abs(shooterInputs.velocity[1] - shootingSpeed.get() / shootingSpeed.get())
             < speedThreshold.get()) {
       isFiring = true;
       firingStartTime = Timer.getFPGATimestamp();
