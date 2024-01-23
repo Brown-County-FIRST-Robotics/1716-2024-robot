@@ -22,11 +22,11 @@
 *3rd Party Vendor Libraries* are libraries written and distributed by component manufacturers for use in interfacing with their components (usually motors). To install REVLib or the CTRE Phoenix library:
 
 1. Install their respective software. 
-	- For REVLib, download the [Java/C++ API](https://docs.revrobotics.com/sparkmax/software-resources/spark-max-api-information#c++-and-java) (big orange button with "Download Latest JAVA API" on it) and unzip into the C:\Users\Public\wpilib\2023 directory on Windows or ~/wpilib/2023 directory on Linux, as described on the website under offline installation. 
-	- For the CTRE Phoenix library, download and install the [Phoenix Framework](https://store.ctr-electronics.com/software/).
-2. Next, in VSCode, press the wpilib icon in the top right in your project and go to `WPILib: Manage Vendor Libraries` then `Install new libraries (offline)` and select `REVLib`, `Phoenix (v5)`, or both.
+	- For REVLib, download the [Java/C++ API](https://docs.revrobotics.com/brushless/spark-flex/revlib#c-and-java-installation) (blue text with "REVLib C++/Java Download-Version 2024.2.0" on it) and unzip it into the C:\Users\Public\wpilib\2024 directory on Windows or ~/wpilib/2024 directory on Linux, as described on the website under [offline installation](https://docs.revrobotics.com/brushless/spark-flex/revlib#offline-installation). 
+	- For the CTRE Phoenix library, download and install the [Phoenix Framework](https://github.com/CrossTheRoadElec/Phoenix-Releases/releases/download/v24.1.0/Phoenix-Offline_v24.1.0.exe).
+2. Next, in VSCode, press the wpilib icon in the top right in your project and go to `WPILib: Manage Vendor Libraries` then `Install new libraries (offline)` and select `REVLib`, `Phoenix (v5)`, or `Phoenix (v6)`.
 
-To uninstall a library, go to `WPILib: Manage Vendor Libraries` again and select `Manage current libraries`, then select any libraries you wish to remove and press enter. This menu can also be used to check what libraries you currently have installed.
+To uninstall a library, go to `WPILib: Manage Vendor Libraries` again and select `Manage current libraries`, then select any libraries you wish to remove and press enter. Note that you'll need both Phoenix v5 and v6 in most cases. This menu can also be used to check what libraries you currently have installed.
 
 > ***IMPORTANT:*** **Do not** install the `Phoenix (Pro)` library, as it is locked behind a paywall and will prevent your code from building while installed.
 
