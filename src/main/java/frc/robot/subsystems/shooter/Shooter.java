@@ -1,18 +1,23 @@
 package frc.robot.subsystems.shooter;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.utils.LoggedTunableNumber;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedDashboardBoolean;
-import org.littletonrobotics.junction.networktables.LoggedDashboardNumber;
 
 public class Shooter extends SubsystemBase {
   ShooterIO shooterIO;
   FeederIO feederIO;
+  double lastFeederCMD = 0.0;
   FeederIOInputsAutoLogged feederInputs = new FeederIOInputsAutoLogged();
 
   ShooterIOInputsAutoLogged shooterInputs = new ShooterIOInputsAutoLogged();
   LoggedDashboardBoolean shouldReset = new LoggedDashboardBoolean("Reset arm", false);
-  LoggedDashboardNumber feederPos = new LoggedDashboardNumber("Arm Pos", 0);
+  LoggedTunableNumber preset_RECEIVING_FROM_INTAKE =
+      new LoggedTunableNumber("Shooter/RECEIVING_FROM_INTAKE_preset", 0.0);
+  LoggedTunableNumber preset_HOLDING = new LoggedTunableNumber("Shooter/HOLDING_preset", 0.0);
+  LoggedTunableNumber preset_FEEDING_TO_SHOOTER =
+      new LoggedTunableNumber("Shooter/FEEDING_TO_SHOOTER_preset", 0.0);
 
   public Shooter(ShooterIO io, FeederIO feederIO) {
     this.shooterIO = io;
@@ -33,7 +38,7 @@ public class Shooter extends SubsystemBase {
       feederIO.resetPos();
       shouldReset.set(false);
     }
-    feederIO.cmdPos(feederPos.get());
+    feederIO.cmdPos(lastFeederCMD);
   }
 
   public void cmdvel(double voltage) {
@@ -42,5 +47,30 @@ public class Shooter extends SubsystemBase {
 
   public void cmdVoltage(double voltage) {
     shooterIO.setVoltage(voltage);
+  }
+
+  public void cmdFeeder(double cmd) {
+    lastFeederCMD = cmd;
+    feederIO.cmdPos(cmd);
+  }
+
+  public void cmdFeeder(FeederPreset preset) {
+    switch (preset) {
+      case HOLDING:
+        cmdFeeder(preset_HOLDING.get());
+        break;
+      case RECEIVING_FROM_INTAKE:
+        cmdFeeder(preset_RECEIVING_FROM_INTAKE.get());
+        break;
+      case FEEDING_TO_SHOOTER:
+        cmdFeeder(preset_FEEDING_TO_SHOOTER.get());
+        break;
+    }
+  }
+
+  public static enum FeederPreset {
+    RECEIVING_FROM_INTAKE,
+    HOLDING,
+    FEEDING_TO_SHOOTER
   }
 }
