@@ -1,5 +1,7 @@
 package frc.robot.subsystems.shooter;
 
+import edu.wpi.first.math.controller.SimpleMotorFeedforward;
+import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.utils.LoggedTunableNumber;
 import org.littletonrobotics.junction.Logger;
@@ -18,6 +20,9 @@ public class Shooter extends SubsystemBase {
   LoggedTunableNumber preset_HOLDING = new LoggedTunableNumber("Shooter/HOLDING_preset", 0.0);
   LoggedTunableNumber preset_FEEDING_TO_SHOOTER =
       new LoggedTunableNumber("Shooter/FEEDING_TO_SHOOTER_preset", 0.0);
+  TrapezoidProfile.Constraints feederConstraints =
+      new TrapezoidProfile.Constraints(7.0 * 5700 / 60, 3 * 7.0 * 5700 / 60);
+  SimpleMotorFeedforward feederFF = new SimpleMotorFeedforward(0, 12.0 * 60 / (7.0 * 5700));
 
   public Shooter(ShooterIO io, FeederIO feederIO) {
     this.shooterIO = io;
@@ -38,7 +43,15 @@ public class Shooter extends SubsystemBase {
       feederIO.resetPos();
       shouldReset.set(false);
     }
-    feederIO.cmdPos(lastFeederCMD);
+    feederIO.setVoltage(
+        feederFF.calculate(
+            new TrapezoidProfile(feederConstraints)
+                .calculate(
+                    0.02,
+                    new TrapezoidProfile.State(feederInputs.position, feederInputs.velocity),
+                    new TrapezoidProfile.State(lastFeederCMD, 0))
+                .velocity,
+            0));
   }
 
   public void cmdvel(double voltage) {
@@ -51,7 +64,15 @@ public class Shooter extends SubsystemBase {
 
   public void cmdFeeder(double cmd) {
     lastFeederCMD = cmd;
-    feederIO.cmdPos(cmd);
+    feederIO.setVoltage(
+        feederFF.calculate(
+            new TrapezoidProfile(feederConstraints)
+                .calculate(
+                    0.02,
+                    new TrapezoidProfile.State(feederInputs.position, feederInputs.velocity),
+                    new TrapezoidProfile.State(lastFeederCMD, 0))
+                .velocity,
+            0));
   }
 
   public void cmdFeeder(FeederPreset preset) {
