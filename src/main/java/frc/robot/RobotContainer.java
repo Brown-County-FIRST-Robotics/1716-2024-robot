@@ -10,6 +10,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.commands.Climb;
 import frc.robot.commands.TeleopDrive;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.IMUIO;
@@ -19,6 +20,7 @@ import frc.robot.subsystems.IMUIOSim;
 import frc.robot.subsystems.arm.Arm;
 import frc.robot.subsystems.arm.ArmIO;
 import frc.robot.subsystems.arm.ArmIOSim;
+import frc.robot.subsystems.climber.*;
 import frc.robot.subsystems.mecanum.MecanumDrivetrain;
 import frc.robot.subsystems.mecanum.MecanumIO;
 import frc.robot.subsystems.mecanum.MecanumIOSpark;
@@ -39,18 +41,19 @@ import frc.robot.subsystems.vision.VisionIOSecondSight;
 public class RobotContainer {
   private final CommandXboxController driverController =
       new CommandXboxController(Constants.Driver.DRIVER_CONTROLLER_PORT);
-  private final Drivetrain driveSys;
+  private final Drivetrain drivetrain;
   private Arm arm;
+  private Climber climber;
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
     if (WhoAmI.mode != WhoAmI.Mode.REPLAY) {
       switch (WhoAmI.bot) {
         case MECHBASE:
-          driveSys = new MecanumDrivetrain(new MecanumIOSpark(1, 2, 3, 4), new IMUIOPigeon(20));
+          drivetrain = new MecanumDrivetrain(new MecanumIOSpark(1, 2, 3, 4), new IMUIOPigeon(20));
           break;
         case SIMSWERVEBASE:
-          driveSys =
+          drivetrain =
               new SwerveDrivetrain(
                   new ModuleIOSim(0),
                   new ModuleIOSim(1),
@@ -59,7 +62,7 @@ public class RobotContainer {
                   new IMUIOSim());
           break;
         case SWERVEBASE:
-          driveSys =
+          drivetrain =
               new SwerveDrivetrain(
                   new ModuleIOSparkFX(20, 10, "FL"),
                   new ModuleIOSparkFX(21, 11, "FR"),
@@ -68,26 +71,28 @@ public class RobotContainer {
                   new IMUIONavx());
           var vision =
               new Vision(
-                  driveSys,
+                  drivetrain,
                   new Transform3d[] {
                     new Transform3d(new Translation3d(-0.1, 0, 0), new Rotation3d(0, 0, 0))
                   },
                   new VisionIO[] {new VisionIOSecondSight("SS_LAPTOP/0")});
           break;
         default:
-          driveSys = new MecanumDrivetrain(new MecanumIOSpark(1, 2, 3, 4), new IMUIONavx());
+          drivetrain = new MecanumDrivetrain(new MecanumIOSpark(1, 2, 3, 4), new IMUIONavx());
       }
       for (var appendage : WhoAmI.appendages) {
         switch (appendage) {
           case SIM_ARM:
             arm = new Arm(new ArmIOSim());
             break;
+          case CLIMBER:
+            climber = new Climber(new ClimberIOSparkMaxes(0, 1)); // TODO: UPDATE IDs
         }
       }
     } else {
       switch (WhoAmI.bot) {
         case SIMSWERVEBASE:
-          driveSys =
+          drivetrain =
               new SwerveDrivetrain(
                   new ModuleIO() {},
                   new ModuleIO() {},
@@ -96,7 +101,7 @@ public class RobotContainer {
                   new IMUIO() {});
           break;
         case SWERVEBASE:
-          driveSys =
+          drivetrain =
               new SwerveDrivetrain(
                   new ModuleIO() {},
                   new ModuleIO() {},
@@ -105,28 +110,31 @@ public class RobotContainer {
                   new IMUIO() {});
           var vision =
               new Vision(
-                  driveSys,
+                  drivetrain,
                   new Transform3d[] {
                     new Transform3d(new Translation3d(-0.1, 0, 0), new Rotation3d(0, 0, 0))
                   },
                   new VisionIO[] {new VisionIO() {}});
           break;
         default:
-          driveSys = new MecanumDrivetrain(new MecanumIO() {}, new IMUIO() {});
+          drivetrain = new MecanumDrivetrain(new MecanumIO() {}, new IMUIO() {});
       }
     }
     if (arm == null) {
       arm = new Arm(new ArmIO() {});
     }
+    if (climber == null) {
+      climber = new Climber(new ClimberIO() {});
+    }
 
     useAlliance();
-    driveSys.setDefaultCommand(new TeleopDrive(driveSys, arm, driverController));
+    drivetrain.setDefaultCommand(new TeleopDrive(drivetrain, arm, driverController));
     configureBindings();
   }
 
   /** Updates the pose estimator to use the correct initial pose */
   public void useAlliance() {
-    driveSys.setPosition(
+    drivetrain.setPosition(
         DriverStation.getAlliance().orElse(DriverStation.Alliance.Blue)
                 == DriverStation.Alliance.Blue
             ? Constants.BLUE_INIT_POSE
@@ -142,7 +150,11 @@ public class RobotContainer {
    * PS4} controllers or {@link edu.wpi.first.wpilibj2.command.button.CommandJoystick Flight
    * joysticks}.
    */
-  private void configureBindings() {}
+  private void configureBindings() {
+    driverController
+        .rightBumper()
+        .toggleOnTrue(new Climb(climber, () -> drivetrain.getGyro().getX()));
+  }
 
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.
@@ -151,6 +163,6 @@ public class RobotContainer {
    */
   public Command getAutonomousCommand() {
     // An example command will be run in autonomous
-    return driveSys.getDriveToPointCmd(new Pose2d(2, 0, Rotation2d.fromRotations(0)), 0, 0);
+    return drivetrain.getDriveToPointCmd(new Pose2d(2, 0, Rotation2d.fromRotations(0)), 0, 0);
   }
 }
