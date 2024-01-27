@@ -1,21 +1,19 @@
 package frc.robot.commands;
 
-import java.util.function.DoubleSupplier;
-
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.climber.Climber;
+import java.util.function.DoubleSupplier;
 
 public class Climb extends Command {
-    Climber climber;
+  private final Climber climber;
+  private final DoubleSupplier roll;
 
-    public Climb(Climber climber, DoubleSupplier roll) {
-        this.climber = climber;
+  public Climb(Climber climber, DoubleSupplier roll) {
+    this.climber = climber;
+    this.roll = roll;
+    addRequirements(climber);
+  }
 
-        addRequirements(climber);
-    }
-
-    @Override
-    public void execute() {
-        
-    }
+  @Override
+  public void execute() {}
 }
