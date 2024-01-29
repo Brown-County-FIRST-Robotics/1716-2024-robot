@@ -8,6 +8,7 @@ package frc.robot;
 import edu.wpi.first.math.geometry.*;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.commands.TeleopDrive;
@@ -22,6 +23,7 @@ import frc.robot.subsystems.arm.ArmIOSim;
 import frc.robot.subsystems.mecanum.MecanumDrivetrain;
 import frc.robot.subsystems.mecanum.MecanumIO;
 import frc.robot.subsystems.mecanum.MecanumIOSpark;
+import frc.robot.subsystems.shooter.*;
 import frc.robot.subsystems.swerve.ModuleIO;
 import frc.robot.subsystems.swerve.ModuleIOSim;
 import frc.robot.subsystems.swerve.ModuleIOSparkFX;
@@ -41,6 +43,7 @@ public class RobotContainer {
       new CommandXboxController(Constants.Driver.DRIVER_CONTROLLER_PORT);
   private final Drivetrain driveSys;
   private Arm arm;
+  private Shooter shooter;
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
@@ -82,6 +85,10 @@ public class RobotContainer {
           case SIM_ARM:
             arm = new Arm(new ArmIOSim());
             break;
+          case SHOOTER:
+            shooter =
+                new Shooter(new ShooterIOSparkFlexes(59, 60, 0), new FeederIODCSpark(31, 4, 5));
+            break;
         }
       }
     } else {
@@ -118,9 +125,20 @@ public class RobotContainer {
     if (arm == null) {
       arm = new Arm(new ArmIO() {});
     }
+    if (shooter == null) {
+      shooter = new Shooter(new ShooterIO() {}, new FeederIO() {});
+    }
 
     useAlliance();
+    driverController
+        .a()
+        .onTrue(
+            Commands.runOnce(
+                () -> shooter.cmdFeeder(Shooter.FeederPreset.RECEIVING_FROM_INTAKE), shooter))
+        .onFalse(Commands.runOnce(() -> shooter.cmdFeeder(Shooter.FeederPreset.HOLDING), shooter));
+    driverController.b().onTrue(Commands.runOnce(() -> shooter.shoot(), shooter));
     driveSys.setDefaultCommand(new TeleopDrive(driveSys, arm, driverController));
+
     configureBindings();
   }
 
