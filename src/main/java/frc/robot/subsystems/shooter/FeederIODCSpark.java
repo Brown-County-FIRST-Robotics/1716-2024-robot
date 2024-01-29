@@ -7,19 +7,19 @@ public class FeederIODCSpark implements FeederIO {
   CANSparkMax controller;
   Encoder encoder;
 
-  public FeederIODCSpark(int id, int encA, int encB) {
-    controller = new CANSparkMax(id, CANSparkLowLevel.MotorType.kBrushed);
+  public FeederIODCSpark(int motorId, int encoderAId, int encoderBId) {
+    controller = new CANSparkMax(motorId, CANSparkLowLevel.MotorType.kBrushed);
     controller.restoreFactoryDefaults();
     controller.setSmartCurrentLimit(20);
     controller.setIdleMode(CANSparkBase.IdleMode.kCoast);
     controller.setInverted(true);
     controller.burnFlash();
-    encoder = new Encoder(encA, encB);
+    encoder = new Encoder(encoderAId, encoderBId);
   }
 
   @Override
   public void updateInputs(FeederIOInputs inputs) {
-    inputs.position = encoder.get();
+    inputs.position = encoder.getDistance();
     inputs.velocity = encoder.getRate();
     inputs.current = controller.getOutputCurrent();
   }

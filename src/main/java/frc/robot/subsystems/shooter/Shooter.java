@@ -18,10 +18,8 @@ public class Shooter extends SubsystemBase {
 
   ShooterIOInputsAutoLogged shooterInputs = new ShooterIOInputsAutoLogged();
   LoggedDashboardBoolean shouldReset = new LoggedDashboardBoolean("Reset arm", false);
-  LoggedTunableNumber preset_RECEIVING_FROM_INTAKE =
-      new LoggedTunableNumber("Shooter/RECEIVING_FROM_INTAKE_preset", -2.0);
-  LoggedTunableNumber preset_HOLDING = new LoggedTunableNumber("Shooter/HOLDING_preset", 0.0);
-  LoggedTunableNumber preset_FEEDING_TO_SHOOTER =
+  LoggedTunableNumber preset_HOLD = new LoggedTunableNumber("Shooter/HOLDING_preset", 0.0);
+  LoggedTunableNumber preset_INTAKE_OR_SHOOT =
       new LoggedTunableNumber("Shooter/FEEDING_TO_SHOOTER_preset", 4.0);
   TrapezoidProfile.Constraints feederConstraints =
       new TrapezoidProfile.Constraints(7.0 * 5700 / 60, 3 * 7.0 * 5700 / 60);
@@ -34,7 +32,8 @@ public class Shooter extends SubsystemBase {
   boolean isShooting = false;
   boolean isFiring = false;
   double firingStartTime;
-  PIDController pc = new PIDController(1, 0.1, 0);
+  PIDController pidController = new PIDController(1, 0.1, 0);
+  FeederPreset currentPreset = FeederPreset.INTAKE_OR_SHOOT;
 
   public Shooter(ShooterIO io, FeederIO feederIO) {
     this.shooterIO = io;
@@ -43,9 +42,9 @@ public class Shooter extends SubsystemBase {
     Logger.processInputs("Shooter/ShooterInputs", shooterInputs);
     feederIO.updateInputs(feederInputs);
     Logger.processInputs("Shooter/FeederInputs", feederInputs);
-    new LoggedTunableNumber("P", 0.8).attach(pc::setP);
-    new LoggedTunableNumber("I", 0).attach(pc::setI);
-    new LoggedTunableNumber("D", 0).attach(pc::setD);
+    new LoggedTunableNumber("P", 0.8).attach(pidController::setP);
+    new LoggedTunableNumber("I", 0).attach(pidController::setI);
+    new LoggedTunableNumber("D", 0).attach(pidController::setD);
   }
 
   @Override
@@ -73,16 +72,27 @@ public class Shooter extends SubsystemBase {
       firingStartTime = Timer.getFPGATimestamp();
     }
     if (isFiring) {
-      cmdFeeder(FeederPreset.FEEDING_TO_SHOOTER);
+      cmdFeeder(FeederPreset.INTAKE_OR_SHOOT);
+      currentPreset = FeederPreset.INTAKE_OR_SHOOT;
       if (firingStartTime + firingTime.get() < Timer.getFPGATimestamp()) {
         isFiring = false;
         isShooting = false;
       }
     }
-    feederIO.setVoltage(pc.calculate(feederInputs.position, lastFeederCMD));
+    feederIO.setVoltage(pidController.calculate(feederInputs.position, lastFeederCMD));
+
+    checkFeeder();
   }
 
-  public void cmdvel(double voltage) {
+  //Checks the feeder position to see if a note has been inserted and bumped the feeder
+  public void checkFeeder() {
+    if (currentPreset == FeederPreset.INTAKE_OR_SHOOT && Math.abs(feederInputs.position - preset_INTAKE_OR_SHOOT.get()) > 0.02) { //Margin for error here
+      cmdFeeder(FeederPreset.HOLD);
+      currentPreset = FeederPreset.HOLD;
+    }
+  }
+
+  public void cmdVel(double voltage) {
     shooterIO.setVelocity(voltage);
   }
 
@@ -90,7 +100,24 @@ public class Shooter extends SubsystemBase {
     shooterIO.setVoltage(voltage);
   }
 
-  public void cmdFeeder(double cmd) {
+  public void shoot() {
+    isShooting = true;
+  }
+
+  public void cmdFeeder(FeederPreset preset) {
+    switch (preset) {
+      case INTAKE_OR_SHOOT:
+        cmdFeeder(preset_INTAKE_OR_SHOOT.get());
+        currentPreset = FeederPreset.INTAKE_OR_SHOOT;
+        break;
+      case HOLD:
+        cmdFeeder(preset_HOLD.get());
+        currentPreset = FeederPreset.HOLD;
+        break;
+    }
+  }
+
+  private void cmdFeeder(double cmd) {
     lastFeederCMD = cmd;
     feederIO.setVoltage(
         feederFF.calculate(
@@ -103,27 +130,8 @@ public class Shooter extends SubsystemBase {
             0));
   }
 
-  public void shoot() {
-    isShooting = true;
-  }
-
-  public void cmdFeeder(FeederPreset preset) {
-    switch (preset) {
-      case HOLDING:
-        cmdFeeder(preset_HOLDING.get());
-        break;
-      case RECEIVING_FROM_INTAKE:
-        cmdFeeder(preset_RECEIVING_FROM_INTAKE.get());
-        break;
-      case FEEDING_TO_SHOOTER:
-        cmdFeeder(preset_FEEDING_TO_SHOOTER.get());
-        break;
-    }
-  }
-
   public static enum FeederPreset {
-    RECEIVING_FROM_INTAKE,
-    HOLDING,
-    FEEDING_TO_SHOOTER
+    INTAKE_OR_SHOOT,
+    HOLD
   }
 }
