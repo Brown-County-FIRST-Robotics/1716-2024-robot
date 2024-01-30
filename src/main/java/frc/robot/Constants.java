@@ -69,6 +69,8 @@ public final class Constants {
     public static final int NEO = 50;
     /** Current limit for NEO vortex */
     public static final int NEO_VORTEX = 80;
+    /** Current limit for brushed motors */
+    public static final int GENERIC_BRUSHED = 20;
   }
 
   /** The initial pose of the robot */
