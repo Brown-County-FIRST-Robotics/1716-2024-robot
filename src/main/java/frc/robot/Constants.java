@@ -61,9 +61,13 @@ public final class Constants {
     public static final int DRIVER_CONTROLLER_PORT = 0;
   }
 
+  /** Current limits for different motors */
   public static final class CurrentLimits {
+    /** Current limit for NEO 550 */
     public static final int NEO550 = 20;
+    /** Current limit for NEO v1.1 */
     public static final int NEO = 50;
+    /** Current limit for NEO vortex */
     public static final int NEO_VORTEX = 80;
   }
 
