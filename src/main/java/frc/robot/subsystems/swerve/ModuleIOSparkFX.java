@@ -41,18 +41,13 @@ public class ModuleIOSparkFX implements ModuleIO {
     this.name = name;
     thrust = new TalonFX(thrustID);
     TalonFXConfiguration config = new TalonFXConfiguration();
+    config.Audio.BeepOnConfig=false;
+    config.Audio.BeepOnBoot=false;
+    config.Audio.AllowMusicDurDisable=true;
     config.Slot0.kV = thrustKV.get();
-    if (name == "FL") {
-      config.CustomParams.CustomParam0 = 825;
-    } else if (name == "FR") {
-      config.CustomParams.CustomParam0 = 5;
-    } else if (name == "BL") {
-      config.CustomParams.CustomParam0 = 982;
-    } else if (name == "BR") {
-      config.CustomParams.CustomParam0 = 456;
-    }
+    thrust.getConfigurator().refresh(config.CustomParams);
     config.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RotorSensor;
-    config.MotorOutput.NeutralMode = NeutralModeValue.Coast;
+    config.MotorOutput.NeutralMode = NeutralModeValue.Brake;
     thrust.getConfigurator().apply(config);
     thrust.optimizeBusUtilization();
     steer = new CANSparkMax(steerID, CANSparkLowLevel.MotorType.kBrushless);
