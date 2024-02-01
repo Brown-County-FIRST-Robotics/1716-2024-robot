@@ -15,17 +15,19 @@ public class VisionIOSecondSight implements VisionIO {
   /**
    * Constructs a new <code>VisionIOSecondSight</code> from a NT path
    *
-   * @param name The NT path of the camera
+   * @param inst_name The NT path of the instance
+   * @param cam_name The name of the camera
    */
-  public VisionIOSecondSight(String name) {
-    NetworkTable table = NetworkTableInstance.getDefault().getTable("SS_LAPTOP").getSubTable("0");
+  public VisionIOSecondSight(String inst_name, String cam_name) {
+    NetworkTable table =
+        NetworkTableInstance.getDefault().getTable(inst_name).getSubTable(cam_name);
     isRecordingSub = table.getBooleanTopic("isRecording").subscribe(false);
     recordingPathSub = table.getStringTopic("recordingPath").subscribe("");
     idsSub =
         table
             .getStringArrayTopic("IDs")
             .subscribe(
-                new String[] {"asd"},
+                new String[] {},
                 PubSubOption.keepDuplicates(true),
                 PubSubOption.sendAll(true),
                 PubSubOption.pollStorage(3));
@@ -33,7 +35,7 @@ public class VisionIOSecondSight implements VisionIO {
         table
             .getDoubleArrayTopic("Pose")
             .subscribe(
-                new double[] {0, 0, 0, 0, 0, 0, 0},
+                new double[] {},
                 PubSubOption.keepDuplicates(true),
                 PubSubOption.sendAll(true),
                 PubSubOption.pollStorage(3));
@@ -41,7 +43,7 @@ public class VisionIOSecondSight implements VisionIO {
         table
             .getDoubleTopic("RMSError")
             .subscribe(
-                -1.0,
+                0.0,
                 PubSubOption.keepDuplicates(true),
                 PubSubOption.sendAll(true),
                 PubSubOption.pollStorage(3));
