@@ -3,6 +3,8 @@ package frc.robot.subsystems.vision;
 import edu.wpi.first.networktables.*;
 import edu.wpi.first.wpilibj.Timer;
 
+import java.util.Arrays;
+
 /** The IO layer for one SecondSight camera */
 public class VisionIOSecondSight implements VisionIO {
   BooleanSubscriber isRecordingSub;
@@ -34,12 +36,17 @@ public class VisionIOSecondSight implements VisionIO {
         table
             .getDoubleTopic("RMSError")
             .subscribe(-1, PubSubOption.keepDuplicates(true), PubSubOption.sendAll(true));
+    idsSub.readQueue();
+    posesSub.readQueue();
+    errorSub.readQueue();
   }
 
   @Override
   public void updateInputs(VisionIOInputs inputs) {
     inputs.isRecording = isRecordingSub.get();
     inputs.recordingPath = recordingPathSub.get();
+    var unused=posesSub.readQueue();
+    System.out.println(Arrays.toString(unused));
     double[][] poses = posesSub.readQueueValues();
     String[][] ids = idsSub.readQueueValues();
     inputs.timestamps = new double[ids.length];
