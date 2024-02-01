@@ -29,8 +29,8 @@ public class Vision extends PeriodicRunnable {
     this.outs = new VisionIOInputs[ios.length];
     for (int i = 0; i < ios.length; i++) {
       outs[i] = new VisionIOInputs();
-      ios[i].updateInputs(outs[i]);
-      Logger.processInputs("Vision/" + i, outs[i]);
+      //      ios[i].updateInputs(outs[i]);
+      //      Logger.processInputs("Vision/" + i, outs[i]);
     }
     this.drivetrain = drivetrain;
   }
