@@ -1,5 +1,6 @@
 package frc.robot.subsystems.swerve;
 
+import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.VelocityDutyCycle;
@@ -97,13 +98,14 @@ public class ModuleIOSparkFX implements ModuleIO {
 
   @Override
   public void updateInputs(ModuleIOInputs inputs) {
+    BaseStatusSignal.refreshAll(velSignal, posSignal, errSignal, tempSignal);
     inputs.pos = getModulePosition();
     inputs.vel =
         new SwerveModuleState(
-            velSignal.refresh().getValue() * THRUST_DISTANCE_PER_TICK, getModulePosition().angle);
+            velSignal.getValue() * THRUST_DISTANCE_PER_TICK, getModulePosition().angle);
     inputs.steerTempC = steer.getMotorTemperature();
-    inputs.thrustErr = errSignal.refresh().getValue();
-    inputs.thrustTempC = tempSignal.refresh().getValue();
+    inputs.thrustErr = errSignal.getValue();
+    inputs.thrustTempC = tempSignal.getValue();
     //    inputs.offset = thrust.configGetCustomParam(0) / 1000.0;
     //    if (name == "FL") {
     //      inputs.offset = 0.825;
@@ -127,7 +129,7 @@ public class ModuleIOSparkFX implements ModuleIO {
 
   private SwerveModulePosition getModulePosition() {
     return new SwerveModulePosition(
-        posSignal.refresh().getValue() * THRUST_DISTANCE_PER_TICK,
+        posSignal.getValue() * THRUST_DISTANCE_PER_TICK,
         Rotation2d.fromRotations(encoder.getPosition()));
   }
 }
