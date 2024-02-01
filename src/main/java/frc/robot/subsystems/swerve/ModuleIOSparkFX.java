@@ -41,9 +41,9 @@ public class ModuleIOSparkFX implements ModuleIO {
     this.name = name;
     thrust = new TalonFX(thrustID);
     TalonFXConfiguration config = new TalonFXConfiguration();
-    config.Audio.BeepOnConfig=false;
-    config.Audio.BeepOnBoot=false;
-    config.Audio.AllowMusicDurDisable=true;
+    config.Audio.BeepOnConfig = false;
+    config.Audio.BeepOnBoot = false;
+    config.Audio.AllowMusicDurDisable = true;
     config.Slot0.kV = thrustKV.get();
     thrust.getConfigurator().refresh(config.CustomParams);
     config.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RotorSensor;
@@ -75,8 +75,8 @@ public class ModuleIOSparkFX implements ModuleIO {
     steerD.attach(pid::setD);
 
     steer.burnFlash();
-    Logger.recordOutput(name + "_Steer_FW", steer.getFirmwareString());
-    Logger.recordOutput(name + "_Thrust_Name", thrust.getDescription());
+    Logger.recordOutput("Firmware/" + name + "_Steer", steer.getFirmwareString());
+    Logger.recordOutput("Firmware/" + name + "_Thrust", thrust.getVersion().getValue());
   }
 
   @Override
