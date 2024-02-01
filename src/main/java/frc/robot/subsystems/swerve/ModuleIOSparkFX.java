@@ -19,6 +19,7 @@ public class ModuleIOSparkFX implements ModuleIO {
   private final SparkAnalogSensor encoder;
   private final SparkPIDController pid;
   private final TalonFX thrust;
+  double offset;
   String name;
   LoggedTunableNumber thrustP = new LoggedTunableNumber("Thrust P", 0);
   LoggedTunableNumber thrustI = new LoggedTunableNumber("Thrust I", 0);
@@ -41,14 +42,14 @@ public class ModuleIOSparkFX implements ModuleIO {
     thrust = new TalonFX(thrustID);
     TalonFXConfiguration config = new TalonFXConfiguration();
     config.Slot0.kV = thrustKV.get();
-    if (name == "FL") {
-      config.CustomParams.CustomParam0 = 825;
-    } else if (name == "FR") {
-      config.CustomParams.CustomParam0 = 5;
-    } else if (name == "BL") {
-      config.CustomParams.CustomParam0 = 982;
-    } else if (name == "BR") {
-      config.CustomParams.CustomParam0 = 456;
+    if (steerID == 10) {
+      offset = 825/1000.0;
+    } else if (steerID == 11) {
+      offset = 5/1000.0;
+    } else if (steerID == 12) {
+      offset = 982/1000.0;
+    } else if (steerID == 13) {
+      offset = 456/1000.0;
     }
     config.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RotorSensor;
     config.MotorOutput.NeutralMode = NeutralModeValue.Coast;
@@ -94,15 +95,16 @@ public class ModuleIOSparkFX implements ModuleIO {
     inputs.thrustErr = thrust.getClosedLoopError().getValue();
     inputs.thrustTempC = thrust.getDeviceTemp().getValue();
     //    inputs.offset = thrust.configGetCustomParam(0) / 1000.0;
-    if (name == "FL") {
-      inputs.offset = 0.825;
-    } else if (name == "FR") {
-      inputs.offset = 0.005;
-    } else if (name == "BL") {
-      inputs.offset = 0.982;
-    } else if (name == "BR") {
-      inputs.offset = 0.456;
-    }
+//    if (name == "FL") {
+//      inputs.offset = 0.825;
+//    } else if (name == "FR") {
+//      inputs.offset = 0.005;
+//    } else if (name == "BL") {
+//      inputs.offset = 0.982;
+//    } else if (name == "BR") {
+//      inputs.offset = 0.456;
+//    }
+    inputs.offset=offset;
   }
 
   @Override
