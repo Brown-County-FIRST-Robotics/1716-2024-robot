@@ -1,5 +1,6 @@
 package frc.robot.subsystems.vision;
 
+import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.geometry.*;
 import frc.robot.subsystems.Drivetrain;
@@ -13,6 +14,7 @@ public class Vision extends PeriodicRunnable {
   VisionIO[] ios;
   VisionIOInputs[] outs;
   Drivetrain drivetrain;
+  AprilTagFieldLayout layout = AprilTagFields.k2023ChargedUp.loadAprilTagLayoutField();
 
   /**
    * Constructs a <code>Vision</code> subsystem
@@ -53,10 +55,7 @@ public class Vision extends PeriodicRunnable {
                             outs[i].pose.get()[6]))
                     .rotateBy(new Rotation3d(0, 0, Math.PI));
             Pose3d tagpose =
-                AprilTagFields.k2023ChargedUp
-                    .loadAprilTagLayoutField()
-                    .getTagPose(Integer.parseInt(outs[i].ids.get()[0]))
-                    .orElse(new Pose3d());
+                layout.getTagPose(Integer.parseInt(outs[i].ids.get()[0])).orElse(new Pose3d());
             Rotation3d rot =
                 new Rotation3d(
                     r1.getX(),
