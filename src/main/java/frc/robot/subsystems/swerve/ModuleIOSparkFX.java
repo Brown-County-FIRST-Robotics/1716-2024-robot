@@ -54,7 +54,15 @@ public class ModuleIOSparkFX implements ModuleIO {
     config.Audio.AllowMusicDurDisable = true;
     config.Slot0.kV = thrustKV.get();
     thrust.getConfigurator().refresh(config.CustomParams);
-    offset = config.CustomParams.CustomParam0 / 1000.0;
+    if (steerID == 10) {
+      offset = 825 / 1000.0;
+    } else if (steerID == 11) {
+      offset = 5 / 1000.0;
+    } else if (steerID == 12) {
+      offset = 982 / 1000.0;
+    } else if (steerID == 13) {
+      offset = 456 / 1000.0;
+    }
     config.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RotorSensor;
     config.MotorOutput.NeutralMode = NeutralModeValue.Brake;
     thrust.getConfigurator().apply(config);
