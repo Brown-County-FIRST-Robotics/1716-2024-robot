@@ -3,6 +3,8 @@ package frc.robot.subsystems.vision;
 import edu.wpi.first.networktables.*;
 import edu.wpi.first.wpilibj.Timer;
 
+import java.util.Arrays;
+
 /** The IO layer for one SecondSight camera */
 public class VisionIOSecondSight implements VisionIO {
   BooleanSubscriber isRecordingSub;
@@ -24,31 +26,40 @@ public class VisionIOSecondSight implements VisionIO {
         table
             .getStringArrayTopic("IDs")
             .subscribe(
-                new String[] {}, PubSubOption.keepDuplicates(true), PubSubOption.sendAll(true));
+                new String[] {"asd"}, PubSubOption.keepDuplicates(true), PubSubOption.sendAll(true),PubSubOption.pollStorage(3));
     posesSub =
         table
             .getDoubleArrayTopic("Pose")
             .subscribe(
-                new double[] {}, PubSubOption.keepDuplicates(true), PubSubOption.sendAll(true));
+                new double[] {0,0,0,0,0,0,0}, PubSubOption.keepDuplicates(true), PubSubOption.sendAll(true),PubSubOption.pollStorage(3));
     errorSub =
         table
             .getDoubleTopic("RMSError")
-            .subscribe(-1, PubSubOption.keepDuplicates(true), PubSubOption.sendAll(true));
+            .subscribe(-1.0, PubSubOption.keepDuplicates(true), PubSubOption.sendAll(true),PubSubOption.pollStorage(3));
   }
 
   @Override
   public void updateInputs(VisionIOInputs inputs) {
     inputs.isRecording = isRecordingSub.get();
     inputs.recordingPath = recordingPathSub.get();
-    double[][] poses = posesSub.readQueueValues();
-    String[][] ids = idsSub.readQueueValues();
-    inputs.timestamps = new double[ids.length];
-    inputs.ids = new String[ids.length][];
-    inputs.poses = poses.clone();
-    for (int i = 0; i < ids.length; i++) {
-      inputs.timestamps[i] = Timer.getFPGATimestamp();
-      inputs.ids[i] = ids[i];
+    TimestampedStringArray[] ids=idsSub.readQueue();
+    TimestampedDoubleArray[] poses=posesSub.readQueue();
+    TimestampedDouble[] errors=errorSub.readQueue();
+    if(ids.length!=poses.length){
+      ids=new TimestampedStringArray[]{};
+      poses=new TimestampedDoubleArray[]{};
     }
-    inputs.errors = errorSub.readQueueValues();
+    inputs.poses=new double[poses.length][];
+    inputs.ids=new String[poses.length][];
+    inputs.timestamps=new double[poses.length];
+    inputs.errors=new double[poses.length];
+    for (int i = 0; i < ids.length; i++) {
+      inputs.timestamps[i]=poses[i].timestamp/1000000.0;
+      inputs.ids[i]=ids[i].value;
+      inputs.poses[i]=poses[i].value;
+      if(ids.length==errors.length){
+        inputs.errors[i]=errors[i].value;
+      }
+    }
   }
 }
