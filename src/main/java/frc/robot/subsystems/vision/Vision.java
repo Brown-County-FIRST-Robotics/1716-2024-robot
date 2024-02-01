@@ -27,11 +27,11 @@ public class Vision extends PeriodicRunnable {
     this.ios = ios;
     assert ios.length == camPoses.length;
     this.outs = new VisionIOInputs[ios.length];
-    for (int i = 0; i < ios.length; i++) {
-      outs[i] = new VisionIOInputs();
-      ios[i].updateInputs(outs[i]);
-      Logger.processInputs("Vision/" + i, outs[i]);
-    }
+//    for (int i = 0; i < ios.length; i++) {
+//      outs[i] = new VisionIOInputs();
+//      ios[i].updateInputs(outs[i]);
+//      Logger.processInputs("Vision/" + i, outs[i]);
+//    }
     this.drivetrain = drivetrain;
   }
 

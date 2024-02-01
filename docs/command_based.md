@@ -37,7 +37,7 @@
         - Each subsystem can be required by multiple commands
         - WPILib prevents conflicts, ensuring that a subsystem doesn't try to do two things at once
         - If a command that requires a subsystem that's currently being used is scheduled, the command currently using the subsystem will be *interrupted* to free up the subsystem
-        - You can detect if your command was ended due to an interruption using the boolean `interrupted` parameter on the command's `end()` method 
+        - You can detect if your command was ended due to an interruption using the boolean `interrupted` parameter on the command's `end()` method
         - You can make a command [non-interruptible](https://docs.wpilib.org/en/stable/docs/software/commandbased/commands.html#getinterruptionbehavior), meaning that a command with a shared requirement being scheduled won't interrupt it
     - Commands can be formed out of other commands by command grouping, these commands are called compositions
         - There are several different types of composition to control the order that the composed commands are run in, read more [here](https://docs.wpilib.org/en/stable/docs/software/commandbased/command-compositions.html)
@@ -137,39 +137,39 @@ import frc.robot.subsystems.SubsytemName.java; //Subsystem requirement
 
 public class CommandName extends CommandBase {
     SubsytemName subsytemName;
-	
-	//constructor, it must take all required subsystems as parameters
+
+  //constructor, it must take all required subsystems as parameters
     public CommandName(SubsytemName subsystem)  {
-		subsytemName = subsystem;
+    subsytemName = subsystem;
 
-		addRequirements(subsystem); //subsystems must be added to the command's requirements
-	}
+    addRequirements(subsystem); //subsystems must be added to the command's requirements
+  }
 
-	//you must override initialize(), execute(), end(), and isFinished()
-	//Called once at the beginning
-	@Override
+  //you must override initialize(), execute(), end(), and isFinished()
+  //Called once at the beginning
+  @Override
     public void initialize() {
-		subsystemName.ExampleMethod1();
-		subsystemName.ExampleMethod2(0.5);
-	}
+    subsystemName.ExampleMethod1();
+    subsystemName.ExampleMethod2(0.5);
+  }
 
-	//Called every frame that the command is scheduled
-  	@Override
+  //Called every frame that the command is scheduled
+    @Override
     public void execute() {
-		subsytemName.ExampleMethod1();
-	}
+    subsytemName.ExampleMethod1();
+  }
 
-	//Called once at the end, `interrupted` parameter tells whether the commmand was ended due to an interruption
-	@Override
+  //Called once at the end, `interrupted` parameter tells whether the commmand was ended due to an interruption
+  @Override
     public void end(boolean interrupted) {
-		subsytemName.ExampleMethod2(0);
-	}
-  
-	//return true when the command has completed, run once per frame that the command is scheduled, defaults to false (no end until interrupted)
-	@Override
+    subsytemName.ExampleMethod2(0);
+  }
+
+  //return true when the command has completed, run once per frame that the command is scheduled, defaults to false (no end until interrupted)
+  @Override
     public boolean isFinished() {
-		return false;
-	}
+    return false;
+  }
 
 }
 ```
@@ -187,25 +187,25 @@ import frc.robot.commands.CommandName;
 import frc.robot.commands.Command2Name;
 
 public class RobotContainer {
-	private final SubsytemName subsytemName = new SubsytemName();
-	private final CommandXboxController controller = new CommandXboxController(0);
+  private final SubsytemName subsytemName = new SubsytemName();
+  private final CommandXboxController controller = new CommandXboxController(0);
 
-	public RobotContainer() {
-		configureButtonBindings();
-	}
+  public RobotContainer() {
+    configureButtonBindings();
+  }
 
-	private void configureButtonBindings() {
-		//create a trigger by calling the method named for the button you want on the controller, then call a binding on that (such as `whileTrue()`, which schedules the command when you hit the button and deschedules it when you release it). The binding takes your command, which you can declare inline using your subsystem.
-		controller.a().whileTrue(new CommandName(subsystemName));
+  private void configureButtonBindings() {
+    //create a trigger by calling the method named for the button you want on the controller, then call a binding on that (such as `whileTrue()`, which schedules the command when you hit the button and deschedules it when you release it). The binding takes your command, which you can declare inline using your subsystem.
+    controller.a().whileTrue(new CommandName(subsystemName));
 
-		//bindings return the original trigger, so bindings can be chained together
-		controller.b()
-			.onTrue(new CommandName(subsystemName))
-			.whileTrue(new Command2Name(subsystemName));
+    //bindings return the original trigger, so bindings can be chained together
+    controller.b()
+      .onTrue(new CommandName(subsystemName))
+      .whileTrue(new Command2Name(subsystemName));
 
-		//trigger composition, which allows for the use of logical operators with triggers. Here, if neither are pressed, the command `CommandName` will be scheduled.
-		controller.x().or(controller.y()).whileFalse(new CommandName(subsystemName));
-	}
+    //trigger composition, which allows for the use of logical operators with triggers. Here, if neither are pressed, the command `CommandName` will be scheduled.
+    controller.x().or(controller.y()).whileFalse(new CommandName(subsystemName));
+  }
 }
 ```
 
@@ -242,7 +242,7 @@ A useful technique in command based is using method references to easily and qui
             Shooter shooter;
             DoubleSupplier leftY;
 
-            public Shoot(Shooter shooter_p, 
+            public Shoot(Shooter shooter_p,
                 DoubleSupplier leftY_p)
             {
                 shooter = shooter_p;
@@ -268,7 +268,7 @@ drivetrain.setDefaultCommand(new DriveCommand(drivetrain,
 
 To add a button to smartdashboard allowing you to choose between various commands to run during autonomous (including compositions), follow [this guide](https://docs.wpilib.org/en/stable/docs/software/dashboards/smartdashboard/choosing-an-autonomous-program-from-smartdashboard.html#command-based) from the official smartdashboard docs.
 
-## Example Solenoid Subsystem and Command  
+## Example Solenoid Subsystem and Command
 
 Most double solenoids should be able to function using basically the same subsystem and command, though you may need to add the solenoid to another subsystem in some cases. Below is a general use command and subsystem for toggling a solenoid, which also serves as a full example of what subsytems and commands look like.
 > **IMPORTANT:** The below command must be bound with the `withTimeout(0.003)` [composition](#command-composition). Failure to do so may result in damage to the piston.
