@@ -1,7 +1,8 @@
 package frc.robot.subsystems.swerve;
 
+import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
-import com.ctre.phoenix6.controls.VelocityVoltage;
+import com.ctre.phoenix6.controls.VelocityDutyCycle;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
@@ -20,6 +21,12 @@ public class ModuleIOSparkFX implements ModuleIO {
   private final SparkAnalogSensor encoder;
   private final SparkPIDController pid;
   private final TalonFX thrust;
+  StatusSignal<Double> velSignal;
+  StatusSignal<Double> posSignal;
+  StatusSignal<Double> errSignal;
+  StatusSignal<Double> tempSignal;
+  double offset;
+
   String name;
   LoggedTunableNumber thrustP = new LoggedTunableNumber("Thrust P", 0);
   LoggedTunableNumber thrustI = new LoggedTunableNumber("Thrust I", 0);
@@ -46,9 +53,18 @@ public class ModuleIOSparkFX implements ModuleIO {
     config.Audio.AllowMusicDurDisable = true;
     config.Slot0.kV = thrustKV.get();
     thrust.getConfigurator().refresh(config.CustomParams);
+    offset = config.CustomParams.CustomParam0 / 1000.0;
     config.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RotorSensor;
     config.MotorOutput.NeutralMode = NeutralModeValue.Brake;
     thrust.getConfigurator().apply(config);
+    velSignal = thrust.getRotorVelocity();
+    posSignal = thrust.getRotorPosition();
+    errSignal = thrust.getClosedLoopError();
+    tempSignal = thrust.getDeviceTemp();
+    velSignal.setUpdateFrequency(50.0);
+    posSignal.setUpdateFrequency(50.0);
+    errSignal.setUpdateFrequency(50.0);
+    tempSignal.setUpdateFrequency(20.0);
     thrust.optimizeBusUtilization();
     steer = new CANSparkMax(steerID, CANSparkLowLevel.MotorType.kBrushless);
     steer.restoreFactoryDefaults();
@@ -84,34 +100,34 @@ public class ModuleIOSparkFX implements ModuleIO {
     inputs.pos = getModulePosition();
     inputs.vel =
         new SwerveModuleState(
-            thrust.getRotorVelocity().getValue() * THRUST_DISTANCE_PER_TICK,
-            getModulePosition().angle);
+            velSignal.refresh().getValue() * THRUST_DISTANCE_PER_TICK, getModulePosition().angle);
     inputs.steerTempC = steer.getMotorTemperature();
-    inputs.thrustErr = thrust.getClosedLoopError().getValue();
-    inputs.thrustTempC = thrust.getDeviceTemp().getValue();
+    inputs.thrustErr = errSignal.refresh().getValue();
+    inputs.thrustTempC = tempSignal.refresh().getValue();
     //    inputs.offset = thrust.configGetCustomParam(0) / 1000.0;
-    if (name == "FL") {
-      inputs.offset = 0.825;
-    } else if (name == "FR") {
-      inputs.offset = 0.005;
-    } else if (name == "BL") {
-      inputs.offset = 0.982;
-    } else if (name == "BR") {
-      inputs.offset = 0.456;
-    }
+    //    if (name == "FL") {
+    //      inputs.offset = 0.825;
+    //    } else if (name == "FR") {
+    //      inputs.offset = 0.005;
+    //    } else if (name == "BL") {
+    //      inputs.offset = 0.982;
+    //    } else if (name == "BR") {
+    //      inputs.offset = 0.456;
+    //    }
+    inputs.offset = offset;
   }
 
   @Override
   public void setCmdState(SwerveModuleState state) {
     double cmd_ang = state.angle.getRotations();
-    thrust.setControl(new VelocityVoltage(state.speedMetersPerSecond / THRUST_DISTANCE_PER_TICK));
+    thrust.setControl(new VelocityDutyCycle(state.speedMetersPerSecond / THRUST_DISTANCE_PER_TICK));
 
     pid.setReference(((cmd_ang % 1.0) + 1.0) % 1.0, CANSparkMax.ControlType.kSmartMotion);
   }
 
   private SwerveModulePosition getModulePosition() {
     return new SwerveModulePosition(
-        thrust.getRotorPosition().getValue() * THRUST_DISTANCE_PER_TICK,
+        posSignal.refresh().getValue() * THRUST_DISTANCE_PER_TICK,
         Rotation2d.fromRotations(encoder.getPosition()));
   }
 }
