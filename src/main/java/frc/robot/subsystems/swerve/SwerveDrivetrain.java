@@ -257,7 +257,8 @@ public class SwerveDrivetrain implements Drivetrain {
 
   @Override
   public void humanDrive(ChassisSpeeds cmd) {
-    SwerveModuleState[] states = KINEMATICS.toSwerveModuleStates(cmd);
+
+    SwerveModuleState[] states = KINEMATICS.toSwerveModuleStates(ChassisSpeeds.discretize(cmd,0.02));
     setModuleStates(states);
   }
 
