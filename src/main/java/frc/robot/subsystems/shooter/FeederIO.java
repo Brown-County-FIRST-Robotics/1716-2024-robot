@@ -12,7 +12,5 @@ public interface FeederIO {
 
   default void updateInputs(FeederIOInputs inputs) {}
 
-  default void setVoltage(double voltage) {}
-
-  default void resetPos() {}
+  default void setPosition(double position) {}
 }

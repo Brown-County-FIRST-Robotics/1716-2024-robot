@@ -86,8 +86,7 @@ public class RobotContainer {
             arm = new Arm(new ArmIOSim());
             break;
           case SHOOTER:
-            shooter =
-                new Shooter(new ShooterIOSparkFlexes(59, 60, 0), new FeederIODCSpark(31, 4, 5));
+            shooter = new Shooter(new ShooterIOSparkFlexes(59, 60, 0), new FeederIODCSpark(31));
             break;
         }
       }
@@ -130,7 +129,7 @@ public class RobotContainer {
     }
 
     useAlliance();
-    
+
     driveSys.setDefaultCommand(new TeleopDrive(driveSys, arm, driverController));
 
     configureBindings();
@@ -155,11 +154,13 @@ public class RobotContainer {
    * joysticks}.
    */
   private void configureBindings() {
-    driverController.a()
-      .onTrue(Commands.runOnce(() -> shooter.cmdFeeder(Shooter.FeederPreset.INTAKE_OR_SHOOT), shooter))
-      .onFalse(Commands.runOnce(() -> shooter.cmdFeeder(Shooter.FeederPreset.HOLD), shooter));
-    driverController.b()
-      .onTrue(Commands.runOnce(() -> shooter.shoot(), shooter));
+    driverController
+        .a()
+        .onTrue(
+            Commands.runOnce(
+                () -> shooter.cmdFeeder(Shooter.FeederPreset.INTAKE_OR_SHOOT), shooter))
+        .onFalse(Commands.runOnce(() -> shooter.cmdFeeder(Shooter.FeederPreset.HOLD), shooter));
+    driverController.b().onTrue(Commands.runOnce(() -> shooter.shoot(), shooter));
   }
 
   /**
