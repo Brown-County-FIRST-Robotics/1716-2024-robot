@@ -15,6 +15,5 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           javadoc-branch: gh-pages
           java-version: 17
-          target-folder: javadoc 
           project: gradle
           custom-command: ./gradlew javadoc
