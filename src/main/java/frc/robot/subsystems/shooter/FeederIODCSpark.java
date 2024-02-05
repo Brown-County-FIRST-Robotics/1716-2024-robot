@@ -2,6 +2,7 @@ package frc.robot.subsystems.shooter;
 
 import com.revrobotics.*;
 import edu.wpi.first.wpilibj.Encoder;
+import frc.robot.Constants;
 
 public class FeederIODCSpark implements FeederIO {
   CANSparkMax controller;
@@ -10,7 +11,7 @@ public class FeederIODCSpark implements FeederIO {
   public FeederIODCSpark(int id, int encA, int encB) {
     controller = new CANSparkMax(id, CANSparkLowLevel.MotorType.kBrushed);
     controller.restoreFactoryDefaults();
-    controller.setSmartCurrentLimit(20);
+    controller.setSmartCurrentLimit(Constants.CurrentLimits.GENERIC_BRUSHED);
     controller.setIdleMode(CANSparkBase.IdleMode.kCoast);
     controller.setInverted(true);
     controller.burnFlash();

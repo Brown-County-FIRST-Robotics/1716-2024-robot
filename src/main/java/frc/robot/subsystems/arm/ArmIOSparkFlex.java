@@ -2,6 +2,7 @@ package frc.robot.subsystems.arm;
 
 import com.revrobotics.*;
 import edu.wpi.first.math.geometry.Rotation2d;
+import frc.robot.Constants;
 import frc.robot.utils.LoggedTunableNumber;
 
 public class ArmIOSparkFlex implements ArmIO {
@@ -21,7 +22,7 @@ public class ArmIOSparkFlex implements ArmIO {
     encoder = controller.getAbsoluteEncoder(SparkAbsoluteEncoder.Type.kDutyCycle);
     controller.restoreFactoryDefaults();
     controller.setIdleMode(CANSparkBase.IdleMode.kBrake);
-    controller.setSmartCurrentLimit(80);
+    controller.setSmartCurrentLimit(Constants.CurrentLimits.NEO_VORTEX);
     pid.setFeedbackDevice(encoder);
     pid.setOutputRange(-1, 1);
     pid.setSmartMotionMaxVelocity(FREE_RPM / GEAR_RATIO, 0);
