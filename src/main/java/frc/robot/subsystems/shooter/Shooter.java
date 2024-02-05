@@ -68,9 +68,7 @@ public class Shooter extends SubsystemBase {
 
   // Checks the feeder position to see if a note has been inserted and bumped the feeder
   public void checkFeeder() {
-    if (currentPreset == FeederPreset.INTAKE_OR_SHOOT
-        && Math.abs(feederInputs.position - preset_INTAKE_OR_SHOOT.get())
-            > 0.02) { // Margin for error here
+    if (currentPreset == FeederPreset.INTAKE_OR_SHOOT && feederInputs.beamBroken) { //TODO: DOES THIS NEED A DELAY?
       cmdFeeder(FeederPreset.HOLD);
       currentPreset = FeederPreset.HOLD;
     }

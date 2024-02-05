@@ -1,12 +1,15 @@
 package frc.robot.subsystems.shooter;
 
 import com.revrobotics.*;
+
+import edu.wpi.first.wpilibj.DigitalInput;
 import frc.robot.utils.LoggedTunableNumber;
 
 public class FeederIODCSpark implements FeederIO {
   CANSparkMax motor;
   SparkAnalogSensor encoder;
   SparkPIDController pid;
+  DigitalInput photoelectricSensor = new DigitalInput(0); //light-based proximity sensor from SICK
 
   // TEMP CODE
   LoggedTunableNumber feederP = new LoggedTunableNumber("Feeder P", 0);
@@ -53,6 +56,7 @@ public class FeederIODCSpark implements FeederIO {
     inputs.position = encoder.getPosition();
     inputs.velocity = encoder.getVelocity();
     inputs.current = motor.getOutputCurrent();
+    inputs.beamBroken = photoelectricSensor.get(); //TODO: ENSURE THIS DOESN'T NEED INVERTING
   }
 
   @Override
