@@ -1,4 +1,5 @@
 # PeriodicRunnable class
+PeriodicRunnable is for systems that need to be run periodically, but do not need to be full subsystems.
 ## Decision flowchart
 ```mermaid
 flowchart TB
@@ -10,12 +11,12 @@ flowchart TB
 
 ## Code example
 ```java
-class Example extends PeriodicRunnable{
-  public Example(){
+class Example extends PeriodicRunnable {
+  public Example() {
     super(); // Super call adds it to the registry, which calls the periodic method every tick
   }
   @Override
-  public void periodic(){
+  public void periodic() {
     //Periodic functionality
   }
 }
