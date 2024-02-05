@@ -1,5 +1,6 @@
 package frc.robot.subsystems.vision;
 
+import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.geometry.*;
 import frc.robot.subsystems.Drivetrain;
@@ -11,8 +12,9 @@ import org.littletonrobotics.junction.Logger;
 public class Vision extends PeriodicRunnable {
   Transform3d[] camPoses;
   VisionIO[] ios;
-  VisionIOInputs[] outs;
+  VisionIOInputs[] inputs;
   Drivetrain drivetrain;
+  AprilTagFieldLayout layout = AprilTagFields.k2023ChargedUp.loadAprilTagLayoutField();
 
   /**
    * Constructs a <code>Vision</code> subsystem
@@ -25,12 +27,12 @@ public class Vision extends PeriodicRunnable {
     super();
     this.camPoses = camPoses;
     this.ios = ios;
-    assert ios.length == camPoses.length;
-    this.outs = new VisionIOInputs[ios.length];
+    if (camPoses.length != ios.length) {
+      throw new IllegalArgumentException("Number of IOs and camera poses do not match");
+    }
+    this.inputs = new VisionIOInputs[ios.length];
     for (int i = 0; i < ios.length; i++) {
-      outs[i] = new VisionIOInputs();
-      ios[i].updateInputs(outs[i]);
-      Logger.processInputs("Vision/" + i, outs[i]);
+      inputs[i] = new VisionIOInputs();
     }
     this.drivetrain = drivetrain;
   }
@@ -38,25 +40,24 @@ public class Vision extends PeriodicRunnable {
   @Override
   public void periodic() {
     for (int i = 0; i < ios.length; i++) {
-      ios[i].updateInputs(outs[i]);
-      Logger.processInputs("Vision/" + i, outs[i]);
-      for (int j = 0; j < outs[i].ids.length; j++) {
-        if (outs[i].ids[j].length > 0) {
+      ios[i].updateInputs(inputs[i]);
+      Logger.processInputs("Vision/Inputs_" + i, inputs[i]);
+      if (inputs[i].ids.isPresent()
+          && inputs[i].pose.isPresent()
+          && inputs[i].timestamp.isPresent()) {
+        if (inputs[i].ids.get().length > 0) {
           Pose3d outPose = new Pose3d();
-          if (outs[i].ids[j].length == 1) {
+          if (inputs[i].ids.get().length == 1) {
             Rotation3d r1 =
                 new Rotation3d(
                         new Quaternion(
-                            outs[i].poses[j][3],
-                            outs[i].poses[j][4],
-                            outs[i].poses[j][5],
-                            outs[i].poses[j][6]))
+                            inputs[i].pose.get()[3],
+                            inputs[i].pose.get()[4],
+                            inputs[i].pose.get()[5],
+                            inputs[i].pose.get()[6]))
                     .rotateBy(new Rotation3d(0, 0, Math.PI));
             Pose3d tagpose =
-                AprilTagFields.k2023ChargedUp
-                    .loadAprilTagLayoutField()
-                    .getTagPose(Integer.parseInt(outs[i].ids[j][0]))
-                    .orElse(new Pose3d());
+                layout.getTagPose(Integer.parseInt(inputs[i].ids.get()[0])).orElse(new Pose3d());
             Rotation3d rot =
                 new Rotation3d(
                     r1.getX(),
@@ -71,25 +72,25 @@ public class Vision extends PeriodicRunnable {
             Transform3d as =
                 new Transform3d(
                     new Translation3d(
-                        outs[i].poses[j][0], outs[i].poses[j][1], outs[i].poses[j][2]),
+                        inputs[i].pose.get()[0], inputs[i].pose.get()[1], inputs[i].pose.get()[2]),
                     rot);
             outPose = tagpose.plus(as);
-          } else if (outs[i].ids[j].length > 1) {
+          } else if (inputs[i].ids.get().length > 1) {
             outPose =
                 new Pose3d(
-                    outs[i].poses[j][0],
-                    outs[i].poses[j][1],
-                    outs[i].poses[j][2],
+                    inputs[i].pose.get()[0],
+                    inputs[i].pose.get()[1],
+                    inputs[i].pose.get()[2],
                     new Rotation3d(
                         new Quaternion(
-                            outs[i].poses[j][3],
-                            outs[i].poses[j][4],
-                            outs[i].poses[j][5],
-                            outs[i].poses[j][6])));
+                            inputs[i].pose.get()[3],
+                            inputs[i].pose.get()[4],
+                            inputs[i].pose.get()[5],
+                            inputs[i].pose.get()[6])));
           }
           Pose3d poseOfBot = outPose.plus(camPoses[i].inverse());
-          Logger.recordOutput("Vision/EstPose_" + i + "_" + j, poseOfBot);
-          drivetrain.addVisionUpdate(poseOfBot.toPose2d(), outs[i].timestamps[j]);
+          Logger.recordOutput("Vision/EstPose_" + i, poseOfBot);
+          drivetrain.addVisionUpdate(poseOfBot.toPose2d(), inputs[i].timestamp.get());
         }
       }
     }

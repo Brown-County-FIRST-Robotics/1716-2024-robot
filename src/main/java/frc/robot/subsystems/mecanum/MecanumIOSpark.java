@@ -3,6 +3,7 @@ package frc.robot.subsystems.mecanum;
 import com.revrobotics.*;
 import edu.wpi.first.math.kinematics.MecanumDriveWheelPositions;
 import edu.wpi.first.math.kinematics.MecanumDriveWheelSpeeds;
+import frc.robot.Constants;
 import frc.robot.utils.LoggedTunableNumber;
 import org.littletonrobotics.junction.Logger;
 
@@ -48,10 +49,20 @@ public class MecanumIOSpark implements MecanumIO {
     brEncoder = br.getEncoder();
     brPID = br.getPIDController();
 
-    fl.setSmartCurrentLimit(30);
-    fr.setSmartCurrentLimit(30);
-    bl.setSmartCurrentLimit(30);
-    br.setSmartCurrentLimit(30);
+    fl.restoreFactoryDefaults();
+    fr.restoreFactoryDefaults();
+    bl.restoreFactoryDefaults();
+    br.restoreFactoryDefaults();
+
+    fl.setIdleMode(CANSparkBase.IdleMode.kBrake);
+    fr.setIdleMode(CANSparkBase.IdleMode.kBrake);
+    bl.setIdleMode(CANSparkBase.IdleMode.kBrake);
+    br.setIdleMode(CANSparkBase.IdleMode.kBrake);
+
+    fl.setSmartCurrentLimit(Constants.CurrentLimits.NEO);
+    fr.setSmartCurrentLimit(Constants.CurrentLimits.NEO);
+    bl.setSmartCurrentLimit(Constants.CurrentLimits.NEO);
+    br.setSmartCurrentLimit(Constants.CurrentLimits.NEO);
 
     flPID.setFeedbackDevice(flEncoder);
     flPID.setOutputRange(-1, 1);
@@ -95,10 +106,10 @@ public class MecanumIOSpark implements MecanumIO {
     fr.burnFlash();
     bl.burnFlash();
     br.burnFlash();
-    Logger.recordMetadata("FLFW", fl.getFirmwareString());
-    Logger.recordMetadata("FRFW", fr.getFirmwareString());
-    Logger.recordMetadata("BLFW", bl.getFirmwareString());
-    Logger.recordMetadata("BRFW", br.getFirmwareString());
+    Logger.recordOutput("Firmware/FLController", fl.getFirmwareString());
+    Logger.recordOutput("Firmware/FRController", fr.getFirmwareString());
+    Logger.recordOutput("Firmware/BLController", bl.getFirmwareString());
+    Logger.recordOutput("Firmware/BRController", br.getFirmwareString());
   }
 
   @Override
