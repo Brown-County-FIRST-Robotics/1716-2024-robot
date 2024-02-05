@@ -87,10 +87,10 @@ public class ShooterIOSparkFlexes implements ShooterIO {
   }
 
   @Override
-  public void setVelocity(double vel) {
-    if (vel != 0) {
-      pid1.setReference(-vel, CANSparkBase.ControlType.kVelocity, 0);
-      pid2.setReference(vel, CANSparkBase.ControlType.kVelocity, 0);
+  public void setVelocity(double vel1, double vel2) {
+    if (vel1 != 0) {
+      pid1.setReference(vel1, CANSparkBase.ControlType.kVelocity, 0);
+      pid2.setReference(vel2, CANSparkBase.ControlType.kVelocity, 0);
     } else {
       motor1.set(0);
       motor2.set(0);

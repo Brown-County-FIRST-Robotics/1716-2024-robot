@@ -27,7 +27,11 @@ public class Shooter extends SubsystemBase {
       new TrapezoidProfile.Constraints(7.0 * 5700 / 60, 3 * 7.0 * 5700 / 60);
   SimpleMotorFeedforward feederFF =
       new SimpleMotorFeedforward(-0.3, 1.1 * 12.0 * 60 / (7.0 * 5700));
-  LoggedDashboardNumber shootingSpeed = new LoggedDashboardNumber("Shooting RPM", 6500);
+  // TEMP CODE
+  LoggedDashboardNumber topShootingSpeed = new LoggedDashboardNumber("Top Shooting RPM", 6500);
+  LoggedDashboardNumber bottomShootingSpeed =
+      new LoggedDashboardNumber("Bottom Shooting RPM", -6500);
+  // END TEMP
   LoggedTunableNumber speedThreshold = new LoggedTunableNumber("Shooting speed threshold", 0.05);
   LoggedTunableNumber firingTime = new LoggedTunableNumber("Firing Time", 0.5);
 
@@ -59,15 +63,16 @@ public class Shooter extends SubsystemBase {
       shouldReset.set(false);
     }
     if (isShooting) {
-      shooterIO.setVelocity(shootingSpeed.get());
+      shooterIO.setVelocity(topShootingSpeed.get(), bottomShootingSpeed.get());
     } else {
-      shooterIO.setVelocity(0);
+      shooterIO.setVelocity(0, 0);
     }
     if (!isFiring
         && isShooting
-        && Math.abs((shooterInputs.velocity[0] + shootingSpeed.get()) / shootingSpeed.get())
+        && Math.abs((shooterInputs.velocity[0] + topShootingSpeed.get()) / topShootingSpeed.get())
             < speedThreshold.get()
-        && Math.abs((shooterInputs.velocity[1] - shootingSpeed.get()) / shootingSpeed.get())
+        && Math.abs(
+                (shooterInputs.velocity[1] - bottomShootingSpeed.get()) / bottomShootingSpeed.get())
             < speedThreshold.get()) {
       isFiring = true;
       firingStartTime = Timer.getFPGATimestamp();
@@ -80,10 +85,6 @@ public class Shooter extends SubsystemBase {
       }
     }
     feederIO.setVoltage(pc.calculate(feederInputs.position, lastFeederCMD));
-  }
-
-  public void cmdvel(double voltage) {
-    shooterIO.setVelocity(voltage);
   }
 
   public void cmdVoltage(double voltage) {
