@@ -21,13 +21,15 @@ public class ArmIOSparkFlex implements ArmIO {
     pid = controller.getPIDController();
     encoder = controller.getAbsoluteEncoder(SparkAbsoluteEncoder.Type.kDutyCycle);
     controller.restoreFactoryDefaults();
+        encoder.setInverted(true);
+
     controller.setIdleMode(CANSparkBase.IdleMode.kBrake);
     controller.setSmartCurrentLimit(Constants.CurrentLimits.NEO_VORTEX);
     pid.setFeedbackDevice(encoder);
     pid.setOutputRange(-1, 1);
     pid.setSmartMotionMaxVelocity(FREE_RPM / GEAR_RATIO, 0);
     pid.setSmartMotionMinOutputVelocity(0, 0);
-    pid.setSmartMotionMaxAccel(300, 0);
+    pid.setSmartMotionMaxAccel(100, 0);
     pid.setSmartMotionAllowedClosedLoopError(0.01, 0);
     ffTuner.attach(pid::setFF);
     pTuner.attach(pid::setP);
@@ -38,7 +40,7 @@ public class ArmIOSparkFlex implements ArmIO {
 
   @Override
   public void updateInputs(ArmIOInputs inputs) {
-    inputs.angle = Rotation2d.fromRotations(encoder.getPosition());
+    inputs.angle = Rotation2d.fromRotations(encoder.getPosition()-0.75);
     inputs.omega = encoder.getVelocity() / 60.0;
     inputs.appliedOutput = controller.getAppliedOutput();
     inputs.temperature = controller.getMotorTemperature();
@@ -47,7 +49,7 @@ public class ArmIOSparkFlex implements ArmIO {
   @Override
   public void setAngle(Rotation2d cmdAng, double arbFF) {
     pid.setReference(
-        cmdAng.getRotations(),
+        cmdAng.getRotations()+0.75,
         CANSparkBase.ControlType.kSmartMotion,
         0,
         arbFF,
