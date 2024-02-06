@@ -64,10 +64,10 @@ public class RobotContainer {
         case SWERVEBASE:
           driveSys =
               new SwerveDrivetrain(
-                  new ModuleIOSparkFX(20, 10, "FL"),
-                  new ModuleIOSparkFX(21, 11, "FR"),
-                  new ModuleIOSparkFX(22, 12, "BL"),
-                  new ModuleIOSparkFX(23, 13, "BR"),
+                  new ModuleIOSparkFX(21, 11, "FL"),
+                  new ModuleIOSparkFX(22, 12, "FR"),
+                  new ModuleIOSparkFX(23, 13, "BL"),
+                  new ModuleIOSparkFX(20, 10, "BR"),
                   new IMUIONavx());
           var vision =
               new Vision(
@@ -75,7 +75,7 @@ public class RobotContainer {
                   new Transform3d[] {
                     new Transform3d(new Translation3d(-0.1, 0, 0), new Rotation3d(0, 0, 0))
                   },
-                  new VisionIO[] {new VisionIOSecondSight("SS_LAPTOP/0")});
+                  new VisionIO[] {new VisionIOSecondSight("SS_LAPTOP", "0")});
           break;
         default:
           driveSys = new MecanumDrivetrain(new MecanumIOSpark(1, 2, 3, 4), new IMUIONavx());

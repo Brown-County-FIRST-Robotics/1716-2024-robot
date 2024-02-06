@@ -4,6 +4,7 @@ import com.revrobotics.*;
 
 import edu.wpi.first.wpilibj.DigitalInput;
 import frc.robot.utils.LoggedTunableNumber;
+import frc.robot.Constants;
 
 public class FeederIODCSpark implements FeederIO {
   CANSparkMax motor;
@@ -21,7 +22,7 @@ public class FeederIODCSpark implements FeederIO {
   public FeederIODCSpark(int motorId) {
     motor = new CANSparkMax(motorId, CANSparkLowLevel.MotorType.kBrushed);
     motor.restoreFactoryDefaults();
-    motor.setSmartCurrentLimit(20);
+    motor.setSmartCurrentLimit(Constants.CurrentLimits.GENERIC_BRUSHED);
     motor.setIdleMode(CANSparkBase.IdleMode.kCoast);
     motor.setInverted(true);
 
@@ -40,7 +41,6 @@ public class FeederIODCSpark implements FeederIO {
     pid.setPositionPIDWrappingEnabled(true);
     pid.setPositionPIDWrappingMaxInput(1);
     pid.setPositionPIDWrappingMinInput(0);
-    motor.setSmartCurrentLimit(30);
     // END TEMP CODE
 
     feederKV.attach(pid::setFF);
@@ -49,6 +49,7 @@ public class FeederIODCSpark implements FeederIO {
     feederD.attach(pid::setD);
 
     motor.burnFlash();
+
   }
 
   @Override

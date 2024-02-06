@@ -10,12 +10,12 @@ import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Constants;
-import frc.robot.FieldConstants;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.arm.Arm;
 import frc.robot.utils.DualRateLimiter;
 import frc.robot.utils.LoggedTunableNumber;
 import org.littletonrobotics.junction.Logger;
+import org.littletonrobotics.junction.networktables.LoggedDashboardNumber;
 
 /** A command for manual control */
 public class TeleopDrive extends Command {
@@ -32,6 +32,10 @@ public class TeleopDrive extends Command {
   DualRateLimiter xVelLimiter = new DualRateLimiter(4, 100);
   DualRateLimiter yVelLimiter = new DualRateLimiter(4, 100);
   DualRateLimiter omegaLimiter = new DualRateLimiter(6, 100);
+
+  // TEMP CODE
+  LoggedDashboardNumber armSetpoint = new LoggedDashboardNumber("Arm Setpoint", 0.0);
+  // END TEMP
 
   /**
    * Constructs a new command with a given controller and drivetrain
@@ -60,33 +64,36 @@ public class TeleopDrive extends Command {
   @Override
   public void execute() {
     double ext = 0;
-    if (controller.getHID().getRightTriggerAxis() > 0.2) {
-      if (deadband(controller.getRightX())) {
-        ext =
-            ppc.calculate(
-                drivetrain
-                    .getPosition()
-                    .getRotation()
-                    .minus(
-                        drivetrain
-                            .getPosition()
-                            .getTranslation()
-                            .minus(FieldConstants.getSpeaker().toTranslation2d())
-                            .getAngle())
-                    .getRotations(),
-                0);
-      }
-      arm.setAngle(
-          new Rotation2d(
-              drivetrain
-                  .getPosition()
-                  .getTranslation()
-                  .minus(FieldConstants.getSpeaker().toTranslation2d())
-                  .getNorm(),
-              FieldConstants.getSpeaker().getZ()));
-    } else {
-      arm.setAngle(Rotation2d.fromRotations(0.7));
-    }
+    // TEMP CODE
+    //    if (controller.getHID().getRightTriggerAxis() > 0.2) {
+    //      if (deadband(controller.getRightX())) {
+    //        ext =
+    //            ppc.calculate(
+    //                drivetrain
+    //                    .getPosition()
+    //                    .getRotation()
+    //                    .minus(
+    //                        drivetrain
+    //                            .getPosition()
+    //                            .getTranslation()
+    //                            .minus(FieldConstants.getSpeaker().toTranslation2d())
+    //                            .getAngle())
+    //                    .getRotations(),
+    //                0);
+    //      }
+    //      arm.setAngle(
+    //          new Rotation2d(
+    //              drivetrain
+    //                  .getPosition()
+    //                  .getTranslation()
+    //                  .minus(FieldConstants.getSpeaker().toTranslation2d())
+    //                  .getNorm(),
+    //              FieldConstants.getSpeaker().getZ()));
+    //    } else {
+    //      arm.setAngle(Rotation2d.fromRotations(0.7));
+    //    }
+    arm.setAngle(Rotation2d.fromRotations(armSetpoint.get()));
+    // END TEMP
 
     controller.getHID().setRumble(GenericHID.RumbleType.kRightRumble, Math.abs(ext / 3.0));
     Logger.recordOutput("TeleopDrive/ext", ext);

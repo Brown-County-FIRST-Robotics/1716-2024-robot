@@ -2,6 +2,7 @@ package frc.robot.subsystems.shooter;
 
 import com.revrobotics.*;
 import edu.wpi.first.wpilibj.DigitalInput;
+import frc.robot.Constants;
 import frc.robot.utils.LoggedTunableNumber;
 
 public class ShooterIOSparkFlexes implements ShooterIO {
@@ -23,9 +24,9 @@ public class ShooterIOSparkFlexes implements ShooterIO {
     motor2 = new CANSparkFlex(motorID2, CANSparkLowLevel.MotorType.kBrushless);
     encoder1 = motor1.getEncoder();
     encoder2 = motor2.getEncoder();
-    motor1.setSmartCurrentLimit(80);
+    motor1.setSmartCurrentLimit(Constants.CurrentLimits.NEO_VORTEX);
     motor1.setIdleMode(CANSparkBase.IdleMode.kCoast);
-    motor2.setSmartCurrentLimit(80);
+    motor2.setSmartCurrentLimit(Constants.CurrentLimits.NEO_VORTEX);
     motor2.setIdleMode(CANSparkBase.IdleMode.kCoast);
     pid1 = motor1.getPIDController();
     pid2 = motor2.getPIDController();
@@ -86,10 +87,10 @@ public class ShooterIOSparkFlexes implements ShooterIO {
   }
 
   @Override
-  public void setVelocity(double vel) {
-    if (vel != 0) {
-      pid1.setReference(-vel, CANSparkBase.ControlType.kVelocity, 0);
-      pid2.setReference(vel, CANSparkBase.ControlType.kVelocity, 0);
+  public void setVelocity(double vel1, double vel2) {
+    if (vel1 != 0) {
+      pid1.setReference(vel1, CANSparkBase.ControlType.kVelocity, 0);
+      pid2.setReference(vel2, CANSparkBase.ControlType.kVelocity, 0);
     } else {
       motor1.set(0);
       motor2.set(0);

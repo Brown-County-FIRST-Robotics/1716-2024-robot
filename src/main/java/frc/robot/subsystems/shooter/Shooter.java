@@ -16,7 +16,11 @@ public class Shooter extends SubsystemBase {
   LoggedTunableNumber preset_HOLD = new LoggedTunableNumber("Shooter/HOLDING_preset", 0.0);
   LoggedTunableNumber preset_INTAKE_OR_SHOOT =
       new LoggedTunableNumber("Shooter/FEEDING_TO_SHOOTER_preset", 4.0);
-  LoggedDashboardNumber shootingSpeed = new LoggedDashboardNumber("Shooting RPM", 6500);
+  // TEMP CODE
+  LoggedDashboardNumber topShootingSpeed = new LoggedDashboardNumber("Top Shooting RPM", 6500);
+  LoggedDashboardNumber bottomShootingSpeed =
+      new LoggedDashboardNumber("Bottom Shooting RPM", -6500);
+  // END TEMP
   LoggedTunableNumber speedThreshold = new LoggedTunableNumber("Shooting speed threshold", 0.05);
   LoggedTunableNumber firingTime = new LoggedTunableNumber("Firing Time", 0.5);
 
@@ -41,15 +45,16 @@ public class Shooter extends SubsystemBase {
     feederIO.updateInputs(feederInputs);
     Logger.processInputs("Shooter/FeederInputs", feederInputs);
     if (isShooting) {
-      shooterIO.setVelocity(shootingSpeed.get());
+      shooterIO.setVelocity(topShootingSpeed.get(), bottomShootingSpeed.get());
     } else {
-      shooterIO.setVelocity(0);
+      shooterIO.setVelocity(0, 0);
     }
     if (!isFiring
         && isShooting
-        && Math.abs((shooterInputs.velocity[0] + shootingSpeed.get()) / shootingSpeed.get())
+        && Math.abs((shooterInputs.velocity[0] + topShootingSpeed.get()) / topShootingSpeed.get())
             < speedThreshold.get()
-        && Math.abs((shooterInputs.velocity[1] - shootingSpeed.get()) / shootingSpeed.get())
+        && Math.abs(
+                (shooterInputs.velocity[1] - bottomShootingSpeed.get()) / bottomShootingSpeed.get())
             < speedThreshold.get()) {
       isFiring = true;
       firingStartTime = Timer.getFPGATimestamp();
@@ -74,8 +79,8 @@ public class Shooter extends SubsystemBase {
     }
   }
 
-  public void cmdVel(double voltage) {
-    shooterIO.setVelocity(voltage);
+  public void cmdVel(double v1,double v2) {
+    shooterIO.setVelocity(v1,v2);
   }
 
   public void cmdVoltage(double voltage) {
