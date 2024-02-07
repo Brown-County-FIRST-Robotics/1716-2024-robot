@@ -27,8 +27,6 @@ public final class WhoAmI {
     SIM_SHOOTER,
     CLIMBER,
     SIM_CLIMBER,
-    INTAKE,
-    SIM_INTAKE
   }
 
   /** The code execution mode */
