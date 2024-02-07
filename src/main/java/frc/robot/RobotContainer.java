@@ -20,6 +20,7 @@ import frc.robot.subsystems.IMUIOSim;
 import frc.robot.subsystems.arm.Arm;
 import frc.robot.subsystems.arm.ArmIO;
 import frc.robot.subsystems.arm.ArmIOSim;
+import frc.robot.subsystems.arm.ArmIOSparkFlex;
 import frc.robot.subsystems.mecanum.MecanumDrivetrain;
 import frc.robot.subsystems.mecanum.MecanumIO;
 import frc.robot.subsystems.mecanum.MecanumIOSpark;
@@ -85,9 +86,14 @@ public class RobotContainer {
           case SIM_ARM:
             arm = new Arm(new ArmIOSim());
             break;
+          case ARM:
+            arm = new Arm(new ArmIOSparkFlex(55));
+            break;
           case SHOOTER:
             shooter =
-                new Shooter(new ShooterIOSparkFlexes(59, 60, 0), new FeederIODCSpark(31, 4, 5));
+                new Shooter(
+                    new ShooterIOSparkFlexes(58, 57, 0),
+                    new FeederIO() {}); // new FeederIODCSpark(31, 4, 5));
             break;
         }
       }
