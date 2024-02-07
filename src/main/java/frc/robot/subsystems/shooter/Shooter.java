@@ -32,6 +32,8 @@ public class Shooter extends SubsystemBase {
   LoggedDashboardNumber bottomShootingSpeed =
       new LoggedDashboardNumber("Bottom Shooting RPM", -6500);
   // END TEMP
+  double cmdTopSpeed;
+  double cmdBottomSpeed;
   LoggedTunableNumber speedThreshold = new LoggedTunableNumber("Shooting speed threshold", 0.05);
   LoggedTunableNumber firingTime = new LoggedTunableNumber("Firing Time", 0.5);
 
@@ -63,7 +65,7 @@ public class Shooter extends SubsystemBase {
       shouldReset.set(false);
     }
     if (isShooting) {
-      shooterIO.setVelocity(topShootingSpeed.get(), bottomShootingSpeed.get());
+      shooterIO.setVelocity(cmdTopSpeed, cmdBottomSpeed);
     } else {
       shooterIO.setVelocity(0, 0);
     }
@@ -109,8 +111,17 @@ public class Shooter extends SubsystemBase {
             0));
   }
 
+  public void commandSpeed(double exitVel) {
+    isShooting = true;
+    double factor = 4000 / 9.88;
+    cmdTopSpeed = -factor * exitVel;
+    cmdBottomSpeed = factor * exitVel;
+  }
+
   public void shoot() {
     isShooting = true;
+    cmdTopSpeed = topShootingSpeed.get();
+    cmdBottomSpeed = bottomShootingSpeed.get();
     firingStartTime = Timer.getFPGATimestamp();
   }
 
