@@ -3,12 +3,18 @@ package frc.robot.subsystems.arm;
 import edu.wpi.first.math.geometry.Rotation2d;
 import org.littletonrobotics.junction.AutoLog;
 
+/** The arm IO layer */
 public interface ArmIO {
+  /** The inputs from the arm */
   @AutoLog
   class ArmIOInputs {
+    /** The angle of the arm */
     Rotation2d angle = new Rotation2d();
+    /** The arm velocity (rotations per second) */
     double omega = 0.0;
+    /** The applied output of the motor (duty cycle) */
     double appliedOutput = 0.0;
+    /** The temperature of the arm motor (Celsius) */
     double temperature = 0.0;
   }
   /**
