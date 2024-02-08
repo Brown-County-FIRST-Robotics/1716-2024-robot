@@ -112,9 +112,13 @@ public class Shooter extends SubsystemBase {
   }
 
   public void shoot() {
+    shoot(topShootingSpeed.get(), bottomShootingSpeed.get());
+  }
+
+  public void shoot(double tvel, double bvel) {
     isShooting = true;
-    cmdTopSpeed = topShootingSpeed.get();
-    cmdBottomSpeed = bottomShootingSpeed.get();
+    cmdTopSpeed = tvel;
+    cmdBottomSpeed = bvel;
   }
 
   public void cmdFeeder(FeederPreset preset) {
