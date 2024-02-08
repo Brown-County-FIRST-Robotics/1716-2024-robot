@@ -17,6 +17,7 @@ public class Arm extends SubsystemBase {
   ArmIOInputsAutoLogged inputs = new ArmIOInputsAutoLogged();
   Rotation2d cmdAng = new Rotation2d();
   LoggedTunableNumber gravFF = new LoggedTunableNumber("Arm Gravity FF", 0.0);
+  LoggedTunableNumber neutralPosition = new LoggedTunableNumber("Arm neutral position", 0.2);
 
   /**
    * Constructs the subsystem from an IO object
@@ -49,6 +50,9 @@ public class Arm extends SubsystemBase {
     io.setAngle(cmdAng, cmdAng.getCos() * gravFF.get());
   }
 
+  public void commandNeutral() {
+    setAngle(Rotation2d.fromRotations(neutralPosition.get()));
+  }
   /**
    * Gets the angle of the arm
    *
