@@ -69,27 +69,20 @@ public class Shooter extends SubsystemBase {
     } else {
       shooterIO.setVelocity(0, 0);
     }
-    //    if (!isFiring
-    //        && isShooting
-    //        && Math.abs((shooterInputs.velocity[0] + topShootingSpeed.get()) /
-    // topShootingSpeed.get())
-    //            < speedThreshold.get()
-    //        && Math.abs(
-    //                (shooterInputs.velocity[1] - bottomShootingSpeed.get()) /
-    // bottomShootingSpeed.get())
-    //            < speedThreshold.get()) {
-    //      isFiring = true;
-    //      firingStartTime = Timer.getFPGATimestamp();
-    //    }
-    //    if (isFiring) {
-    //      cmdFeeder(FeederPreset.FEEDING_TO_SHOOTER);
-    //      if (firingStartTime + firingTime.get() < Timer.getFPGATimestamp()) {
-    //        isFiring = false;
-    //        isShooting = false;
-    //      }
-    //    }
-    if (firingStartTime + firingTime.get() < Timer.getFPGATimestamp()) {
-      isShooting = false;
+    if (!isFiring
+        && isShooting
+        && Math.abs((shooterInputs.velocity[0] + cmdTopSpeed) / cmdTopSpeed) < speedThreshold.get()
+        && Math.abs((shooterInputs.velocity[1] - cmdBottomSpeed) / cmdBottomSpeed)
+            < speedThreshold.get()) {
+      isFiring = true;
+      firingStartTime = Timer.getFPGATimestamp();
+    }
+    if (isFiring) {
+      cmdFeeder(FeederPreset.FEEDING_TO_SHOOTER);
+      if (firingStartTime + firingTime.get() < Timer.getFPGATimestamp()) {
+        isFiring = false;
+        isShooting = false;
+      }
     }
     feederIO.setVoltage(pc.calculate(feederInputs.position, lastFeederCMD));
   }
@@ -122,7 +115,6 @@ public class Shooter extends SubsystemBase {
     isShooting = true;
     cmdTopSpeed = topShootingSpeed.get();
     cmdBottomSpeed = bottomShootingSpeed.get();
-    firingStartTime = Timer.getFPGATimestamp();
   }
 
   public void cmdFeeder(FeederPreset preset) {
