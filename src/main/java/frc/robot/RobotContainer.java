@@ -93,7 +93,7 @@ public class RobotContainer {
             arm = new Arm(new ArmIOSparkFlex(55));
             break;
           case SHOOTER:
-            shooter = new Shooter(new ShooterIOSparkFlexes(58, 57, 0), new FeederIODCSpark(31));
+            shooter = new Shooter(new ShooterIOSparkFlexes(58, 57, 0),new FeederIO(){});// new FeederIODCSpark(31));
             break;
         }
       }
