@@ -35,6 +35,12 @@ public class Shooter extends SubsystemBase {
 
   boolean holding = false;
 
+  public void setFiringBlocked(boolean firingBlocked) {
+    this.firingBlocked = firingBlocked;
+  }
+
+  boolean firingBlocked = false;
+
   double firingStartTime;
   FeederPreset currentPreset = FeederPreset.INTAKE_OR_SHOOT;
 
@@ -62,7 +68,8 @@ public class Shooter extends SubsystemBase {
         && isShooting
         && Math.abs((shooterInputs.velocity[0] + cmdTopSpeed) / cmdTopSpeed) < speedThreshold.get()
         && Math.abs((shooterInputs.velocity[1] - cmdBottomSpeed) / cmdBottomSpeed)
-            < speedThreshold.get()) {
+            < speedThreshold.get()
+        && !firingBlocked) {
       isFiring = true;
       firingStartTime = Timer.getFPGATimestamp();
     }
@@ -130,6 +137,7 @@ public class Shooter extends SubsystemBase {
   }
 
   public void stop() {
+    setFiringBlocked(false);
     isShooting = false;
     isFiring = false;
     cmdFeeder(FeederPreset.HOLD);
