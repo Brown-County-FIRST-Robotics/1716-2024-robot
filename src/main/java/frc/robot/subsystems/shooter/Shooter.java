@@ -28,6 +28,13 @@ public class Shooter extends SubsystemBase {
 
   boolean isShooting = false;
   boolean isFiring = false;
+
+  public boolean isHolding() {
+    return holding;
+  }
+
+  boolean holding = false;
+
   double firingStartTime;
   FeederPreset currentPreset = FeederPreset.INTAKE_OR_SHOOT;
 
@@ -65,6 +72,7 @@ public class Shooter extends SubsystemBase {
       if (firingStartTime + firingTime.get() < Timer.getFPGATimestamp()) {
         isFiring = false;
         isShooting = false;
+        holding = false;
       }
     }
 
@@ -76,6 +84,7 @@ public class Shooter extends SubsystemBase {
     if (currentPreset == FeederPreset.INTAKE_OR_SHOOT
         && feederInputs.beamBroken) { // TODO: DOES THIS NEED A DELAY?
       cmdFeeder(FeederPreset.HOLD);
+      holding = true;
       currentPreset = FeederPreset.HOLD;
     }
   }
@@ -90,6 +99,7 @@ public class Shooter extends SubsystemBase {
 
   public void commandSpeed(double exitVel) {
     isShooting = true;
+    holding = true;
     double factor = 4000 / 9.88;
     cmdTopSpeed = -factor * exitVel;
     cmdBottomSpeed = factor * exitVel;
@@ -100,6 +110,7 @@ public class Shooter extends SubsystemBase {
   }
 
   public void shoot(double tvel, double bvel) {
+    holding = true;
     isShooting = true;
     cmdTopSpeed = tvel;
     cmdBottomSpeed = bvel;
