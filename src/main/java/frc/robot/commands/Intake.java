@@ -40,6 +40,6 @@ public class Intake extends Command {
 
   @Override
   public boolean isFinished() {
-    return !shooter.isHolding();
+    return false;//!shooter.isHolding();
   }
 }
