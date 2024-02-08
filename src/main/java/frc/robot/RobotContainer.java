@@ -90,10 +90,7 @@ public class RobotContainer {
             arm = new Arm(new ArmIOSparkFlex(55));
             break;
           case SHOOTER:
-            shooter =
-                new Shooter(
-                    new ShooterIOSparkFlexes(58, 57, 0),
-                    new FeederIO() {}); // new FeederIODCSpark(31, 4, 5));
+            shooter = new Shooter(new ShooterIOSparkFlexes(58, 57, 0), new FeederIODCSpark(31));
             break;
         }
       }
@@ -136,13 +133,7 @@ public class RobotContainer {
     }
 
     useAlliance();
-    driverController
-        .a()
-        .onTrue(
-            Commands.runOnce(
-                () -> shooter.cmdFeeder(Shooter.FeederPreset.RECEIVING_FROM_INTAKE), shooter))
-        .onFalse(Commands.runOnce(() -> shooter.cmdFeeder(Shooter.FeederPreset.HOLDING), shooter));
-    driverController.b().onTrue(Commands.runOnce(() -> shooter.shoot(), shooter));
+
     driveSys.setDefaultCommand(new TeleopDrive(driveSys, driverController));
 
     configureBindings();
@@ -166,7 +157,15 @@ public class RobotContainer {
    * PS4} controllers or {@link edu.wpi.first.wpilibj2.command.button.CommandJoystick Flight
    * joysticks}.
    */
-  private void configureBindings() {}
+  private void configureBindings() {
+    driverController
+        .a()
+        .onTrue(
+            Commands.runOnce(
+                () -> shooter.cmdFeeder(Shooter.FeederPreset.INTAKE_OR_SHOOT), shooter))
+        .onFalse(Commands.runOnce(() -> shooter.cmdFeeder(Shooter.FeederPreset.HOLD), shooter));
+    driverController.b().onTrue(Commands.runOnce(() -> shooter.shoot(), shooter));
+  }
 
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.
