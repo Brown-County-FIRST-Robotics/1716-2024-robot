@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.commands.Intake;
 import frc.robot.commands.TeleopDrive;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.IMUIO;
@@ -164,6 +165,7 @@ public class RobotContainer {
             Commands.runOnce(
                 () -> shooter.cmdFeeder(Shooter.FeederPreset.INTAKE_OR_SHOOT), shooter))
         .onFalse(Commands.runOnce(() -> shooter.cmdFeeder(Shooter.FeederPreset.HOLD), shooter));
+    driverController.leftTrigger(0.2).whileTrue(new Intake(shooter, arm));
     driverController.b().onTrue(Commands.runOnce(() -> shooter.shoot(), shooter));
   }
 
