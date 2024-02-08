@@ -11,9 +11,9 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Constants;
 import frc.robot.subsystems.Drivetrain;
-import frc.robot.subsystems.arm.Arm;
 import frc.robot.utils.DualRateLimiter;
 import frc.robot.utils.LoggedTunableNumber;
+import java.util.Optional;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedDashboardNumber;
 
@@ -23,7 +23,6 @@ public class TeleopDrive extends Command {
   private final CommandXboxController controller;
   private final ProfiledPIDController ppc =
       new ProfiledPIDController(0, 0, 0, new TrapezoidProfile.Constraints(3, 3));
-  private final Arm arm;
   LoggedTunableNumber p = new LoggedTunableNumber("drP", -100);
   LoggedTunableNumber i = new LoggedTunableNumber("drI", 0);
   LoggedTunableNumber d = new LoggedTunableNumber("drD", 0);
@@ -37,17 +36,22 @@ public class TeleopDrive extends Command {
   LoggedDashboardNumber armSetpoint = new LoggedDashboardNumber("Arm Setpoint", 0.0);
   // END TEMP
 
+  public void setCustomRotation(Optional<Rotation2d> customRotation) {
+    this.customRotation = customRotation;
+  }
+
+  Optional<Rotation2d> customRotation = Optional.empty();
+
   /**
    * Constructs a new command with a given controller and drivetrain
    *
    * @param drivetrain The drivetrain subsystem
    * @param controller The driver conroller
    */
-  public TeleopDrive(Drivetrain drivetrain, Arm arm, CommandXboxController controller) {
+  public TeleopDrive(Drivetrain drivetrain, CommandXboxController controller) {
     this.drivetrain = drivetrain;
     this.controller = controller;
-    this.arm = arm;
-    addRequirements(this.drivetrain, this.arm);
+    addRequirements(this.drivetrain);
     p.attach(ppc::setP);
     i.attach(ppc::setI);
     d.attach(ppc::setD);
@@ -64,6 +68,11 @@ public class TeleopDrive extends Command {
   @Override
   public void execute() {
     double ext = 0;
+    if (customRotation.isPresent()) {
+      ext =
+          ppc.calculate(
+              customRotation.get().minus(drivetrain.getPosition().getRotation()).getRotations(), 0);
+    }
     // TEMP CODE
     //    if (controller.getHID().getRightTriggerAxis() > 0.2) {
     //      if (deadband(controller.getRightX())) {
@@ -92,7 +101,6 @@ public class TeleopDrive extends Command {
     //    } else {
     //      arm.setAngle(Rotation2d.fromRotations(0.7));
     //    }
-    arm.setAngle(Rotation2d.fromRotations(armSetpoint.get()));
     // END TEMP
 
     controller.getHID().setRumble(GenericHID.RumbleType.kRightRumble, Math.abs(ext / 3.0));

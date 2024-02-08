@@ -143,7 +143,7 @@ public class RobotContainer {
                 () -> shooter.cmdFeeder(Shooter.FeederPreset.RECEIVING_FROM_INTAKE), shooter))
         .onFalse(Commands.runOnce(() -> shooter.cmdFeeder(Shooter.FeederPreset.HOLDING), shooter));
     driverController.b().onTrue(Commands.runOnce(() -> shooter.shoot(), shooter));
-    driveSys.setDefaultCommand(new TeleopDrive(driveSys, arm, driverController));
+    driveSys.setDefaultCommand(new TeleopDrive(driveSys, driverController));
 
     configureBindings();
   }
