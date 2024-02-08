@@ -33,6 +33,7 @@ import frc.robot.subsystems.swerve.SwerveDrivetrain;
 import frc.robot.subsystems.vision.Vision;
 import frc.robot.subsystems.vision.VisionIO;
 import frc.robot.subsystems.vision.VisionIOSecondSight;
+import frc.robot.utils.LoggedTunableNumber;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -41,8 +42,8 @@ import frc.robot.subsystems.vision.VisionIOSecondSight;
  * subsystems, commands, and trigger mappings) should be declared here.
  */
 public class RobotContainer {
-  private final CommandXboxController driverController =
-      new CommandXboxController(Constants.Driver.DRIVER_CONTROLLER_PORT);
+  private final CommandXboxController driverController = new CommandXboxController(0);
+  private final CommandXboxController secondController = new CommandXboxController(1);
   private final Drivetrain driveSys;
   private Arm arm;
   private Shooter shooter;
@@ -159,14 +160,20 @@ public class RobotContainer {
    * joysticks}.
    */
   private void configureBindings() {
-    driverController
-        .a()
-        .onTrue(
-            Commands.runOnce(
-                () -> shooter.cmdFeeder(Shooter.FeederPreset.INTAKE_OR_SHOOT), shooter))
-        .onFalse(Commands.runOnce(() -> shooter.cmdFeeder(Shooter.FeederPreset.HOLD), shooter));
     driverController.leftTrigger(0.2).whileTrue(new Intake(shooter, arm));
-    driverController.b().onTrue(Commands.runOnce(() -> shooter.shoot(), shooter));
+    LoggedTunableNumber ampPreset =
+        new LoggedTunableNumber("Presets/Arm Amp", 0.1); // TODO: add value
+    LoggedTunableNumber ampTop =
+        new LoggedTunableNumber("Presets/Amp top", -2000); // TODO: add value
+    LoggedTunableNumber ampBottom =
+        new LoggedTunableNumber("Presets/Amp bottom", 2000); // TODO: add value
+    secondController
+        .leftTrigger(0.2)
+        .whileTrue(Commands.run(() -> arm.setAngle(Rotation2d.fromRotations(ampPreset.get())), arm))
+        .onFalse(Commands.runOnce(arm::commandNeutral, arm))
+        .and(() -> secondController.getHID().getPOV() == 270)
+        .onTrue(Commands.runOnce(() -> shooter.shoot(ampTop.get(), ampBottom.get()), shooter))
+        .onFalse(Commands.runOnce(shooter::stop, shooter));
   }
 
   /**
