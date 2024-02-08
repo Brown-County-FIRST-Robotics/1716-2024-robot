@@ -129,6 +129,12 @@ public class Shooter extends SubsystemBase {
     }
   }
 
+  public void stop() {
+    isShooting = false;
+    isFiring = false;
+    cmdFeeder(FeederPreset.HOLD);
+  }
+
   private void cmdFeeder(double cmd) {
     lastFeederCMD = cmd;
     feederIO.setPosition(cmd);
