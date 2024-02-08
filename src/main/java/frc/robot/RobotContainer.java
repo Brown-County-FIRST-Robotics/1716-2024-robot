@@ -12,6 +12,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.commands.Intake;
+import frc.robot.commands.SpeakerShoot;
 import frc.robot.commands.TeleopDrive;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.IMUIO;
@@ -135,9 +136,6 @@ public class RobotContainer {
     }
 
     useAlliance();
-
-    driveSys.setDefaultCommand(new TeleopDrive(driveSys, driverController));
-
     configureBindings();
   }
 
@@ -160,6 +158,9 @@ public class RobotContainer {
    * joysticks}.
    */
   private void configureBindings() {
+    var teleopDrive = new TeleopDrive(driveSys, driverController);
+    driveSys.setDefaultCommand(teleopDrive);
+
     driverController.leftTrigger(0.2).whileTrue(new Intake(shooter, arm));
     LoggedTunableNumber ampPreset =
         new LoggedTunableNumber("Presets/Arm Amp", 0.1); // TODO: add value
@@ -174,6 +175,9 @@ public class RobotContainer {
         .and(() -> secondController.getHID().getPOV() == 270)
         .onTrue(Commands.runOnce(() -> shooter.shoot(ampTop.get(), ampBottom.get()), shooter))
         .onFalse(Commands.runOnce(shooter::stop, shooter));
+    driverController
+        .rightTrigger(0.2)
+        .whileTrue(new SpeakerShoot(driveSys, arm, teleopDrive::setCustomRotation, shooter));
   }
 
   /**
