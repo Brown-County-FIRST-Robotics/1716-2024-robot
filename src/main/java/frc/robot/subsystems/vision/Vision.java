@@ -54,8 +54,8 @@ public class Vision extends PeriodicRunnable {
                             inputs[i].pose.get()[3],
                             inputs[i].pose.get()[4],
                             inputs[i].pose.get()[5],
-                            inputs[i].pose.get()[6]))
-                    .rotateBy(new Rotation3d(0, 0, Math.PI));
+                            inputs[i].pose.get()[6]));
+//                    .rotateBy(new Rotation3d(0, 0, Math.PI));
             Pose3d tagpose =
                 layout.getTagPose(Integer.parseInt(inputs[i].ids.get()[0])).orElse(new Pose3d());
             Rotation3d rot =
@@ -65,8 +65,8 @@ public class Vision extends PeriodicRunnable {
                     drivetrain
                         .getPosition()
                         .relativeTo(tagpose.toPose2d())
-                        .getRotation()
-                        .interpolate(r1.toRotation2d(), 0.5)
+                        .getRotation().rotateBy(Rotation2d.fromDegrees(180))
+                        .interpolate(r1.toRotation2d(), 0.1)
                         .getRadians());
 
             Transform3d as =
