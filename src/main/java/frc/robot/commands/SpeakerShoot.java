@@ -1,6 +1,8 @@
 package frc.robot.commands;
 
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.FieldConstants;
@@ -40,8 +42,9 @@ public class SpeakerShoot extends Command {
 
   @Override
   public void execute() {
+    Pose2d pos=drive.getPosition().plus(new Transform2d(-0.1,0, new Rotation2d()));
     Translation3d botPose =
-        new Translation3d(drive.getPosition().getX(), drive.getPosition().getY(), 0);
+        new Translation3d(pos.getX(), pos.getY(), 0);
     var cmd =
         ShootWhileMove.calcSimpleCommand(
             botPose.minus(FieldConstants.getSpeaker()),
