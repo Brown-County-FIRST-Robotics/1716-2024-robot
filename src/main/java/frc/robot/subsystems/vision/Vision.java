@@ -14,7 +14,7 @@ public class Vision extends PeriodicRunnable {
   VisionIO[] ios;
   VisionIOInputs[] inputs;
   Drivetrain drivetrain;
-  AprilTagFieldLayout layout = AprilTagFields.k2023ChargedUp.loadAprilTagLayoutField();
+  AprilTagFieldLayout layout = AprilTagFields.k2024Crescendo.loadAprilTagLayoutField();
 
   /**
    * Constructs a <code>Vision</code> subsystem
