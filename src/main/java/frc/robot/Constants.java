@@ -78,5 +78,5 @@ public final class Constants {
   /** The initial pose of the robot when it is on the red alliance */
   public static final Pose2d RED_INIT_POSE = new Pose2d(0, 0, Rotation2d.fromDegrees(0));
   /** The initial pose of the robot when it is on the blue alliance */
-  public static final Pose2d BLUE_INIT_POSE = new Pose2d(0, 0, Rotation2d.fromDegrees(180));
+  public static final Pose2d BLUE_INIT_POSE = new Pose2d(0, 0, Rotation2d.fromDegrees(0));
 }
