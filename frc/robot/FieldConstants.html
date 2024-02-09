@@ -77,6 +77,7 @@ loadScripts(document, 'script');</script>
 <hr>
 <div class="type-signature"><span class="modifiers">public class </span><span class="element-name type-name-label">FieldConstants</span>
 <span class="extends-implements">extends <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a></span></div>
+<div class="block">Field positions of game components</div>
 </section>
 <section class="summary">
 <ul class="summary-list">
@@ -106,13 +107,19 @@ loadScripts(document, 'script');</script>
 <div class="table-header col-last">Description</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static edu.wpi.first.math.geometry.Translation2d</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#flip(edu.wpi.first.math.geometry.Translation2d)" class="member-name-link">flip</a><wbr>(edu.wpi.first.math.geometry.Translation2d&nbsp;inp)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
+<div class="block">Flips the translation based on alliance</div>
+</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static edu.wpi.first.math.geometry.Translation3d</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#flip(edu.wpi.first.math.geometry.Translation3d)" class="member-name-link">flip</a><wbr>(edu.wpi.first.math.geometry.Translation3d&nbsp;inp)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
+<div class="block">Flips the translation based on alliance</div>
+</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static edu.wpi.first.math.geometry.Translation3d</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#getSpeaker()" class="member-name-link">getSpeaker</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
+<div class="block">Gets the position of the speaker</div>
+</div>
 </div>
 </div>
 </div>
@@ -148,18 +155,37 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="getSpeaker()">
 <h3>getSpeaker</h3>
 <div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type">edu.wpi.first.math.geometry.Translation3d</span>&nbsp;<span class="element-name">getSpeaker</span>()</div>
+<div class="block">Gets the position of the speaker</div>
+<dl class="notes">
+<dt>Returns:</dt>
+<dd>The position of the speaker, based on alliance color</dd>
+</dl>
 </section>
 </li>
 <li>
 <section class="detail" id="flip(edu.wpi.first.math.geometry.Translation3d)">
 <h3>flip</h3>
 <div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type">edu.wpi.first.math.geometry.Translation3d</span>&nbsp;<span class="element-name">flip</span><wbr><span class="parameters">(edu.wpi.first.math.geometry.Translation3d&nbsp;inp)</span></div>
+<div class="block">Flips the translation based on alliance</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>inp</code> - The position for the blue alliance</dd>
+<dt>Returns:</dt>
+<dd>The position for the FMS alliance</dd>
+</dl>
 </section>
 </li>
 <li>
 <section class="detail" id="flip(edu.wpi.first.math.geometry.Translation2d)">
 <h3>flip</h3>
 <div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type">edu.wpi.first.math.geometry.Translation2d</span>&nbsp;<span class="element-name">flip</span><wbr><span class="parameters">(edu.wpi.first.math.geometry.Translation2d&nbsp;inp)</span></div>
+<div class="block">Flips the translation based on alliance</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>inp</code> - The position for the blue alliance</dd>
+<dt>Returns:</dt>
+<dd>The position for the FMS alliance</dd>
+</dl>
 </section>
 </li>
 </ul>
