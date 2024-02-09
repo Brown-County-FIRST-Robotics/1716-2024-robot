@@ -77,7 +77,7 @@ public class RobotContainer {
               new Vision(
                   driveSys,
                   new Transform3d[] {
-                    new Transform3d(new Translation3d(-0.1, 0, 0), new Rotation3d(0, 0, 0))
+                    new Transform3d(new Translation3d(-0.1, 0, 0.4), new Rotation3d(0, 32*Math.PI/180.0, Math.PI))
                   },
                   new VisionIO[] {new VisionIOSecondSight("SS_LAPTOP", "0")});
           break;
@@ -93,7 +93,7 @@ public class RobotContainer {
             arm = new Arm(new ArmIOSparkFlex(55));
             break;
           case SHOOTER:
-            shooter = new Shooter(new ShooterIOSparkFlexes(58, 57, 0), new FeederIODCSpark(31));
+            shooter = new Shooter(new ShooterIOSparkFlexes(58, 57, 0),new FeederIO(){});// new FeederIODCSpark(31));
             break;
         }
       }
@@ -120,7 +120,7 @@ public class RobotContainer {
               new Vision(
                   driveSys,
                   new Transform3d[] {
-                    new Transform3d(new Translation3d(-0.1, 0, 0), new Rotation3d(0, 0, 0))
+                    new Transform3d(new Translation3d(-0.1, -0.2, 0), new Rotation3d(0, 0, 0))
                   },
                   new VisionIO[] {new VisionIO() {}});
           break;
@@ -163,7 +163,7 @@ public class RobotContainer {
 
     driverController.leftTrigger(0.2).whileTrue(new Intake(shooter, arm));
     LoggedTunableNumber ampPreset =
-        new LoggedTunableNumber("Presets/Arm Amp", 0.1); // TODO: add value
+        new LoggedTunableNumber("Presets/Arm Amp", 0.15); // TODO: add value
     LoggedTunableNumber ampTop =
         new LoggedTunableNumber("Presets/Amp top", -2000); // TODO: add value
     LoggedTunableNumber ampBottom =

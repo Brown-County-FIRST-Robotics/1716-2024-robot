@@ -107,7 +107,7 @@ public class Shooter extends SubsystemBase {
   public void commandSpeed(double exitVel) {
     isShooting = true;
     holding = true;
-    double factor = 4000 / 9.88;
+    double factor = 3400 / 9.88;
     cmdTopSpeed = -factor * exitVel;
     cmdBottomSpeed = factor * exitVel;
   }
