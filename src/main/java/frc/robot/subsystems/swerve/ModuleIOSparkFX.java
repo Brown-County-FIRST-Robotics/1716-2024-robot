@@ -58,13 +58,13 @@ public class ModuleIOSparkFX implements ModuleIO {
     thrust.getConfigurator().refresh(config.CustomParams);
     offsetTun = new LoggedTunableNumber(name + "_offset");
     if (steerID == 10) {
-      off=0.824;
+      off = 0.824;
     } else if (steerID == 11) {
-      off=0;
+      off = 0;
     } else if (steerID == 12) {
-      off=0;
+      off = 0;
     } else if (steerID == 13) {
-      off=0.5;
+      off = 0.5;
     }
     config.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RotorSensor;
     config.MotorOutput.NeutralMode = NeutralModeValue.Brake;

@@ -105,7 +105,8 @@ public class TeleopDrive extends Command {
 
     controller.getHID().setRumble(GenericHID.RumbleType.kRightRumble, Math.abs(ext / 3.0));
     Logger.recordOutput("TeleopDrive/ext", ext);
-    double slow=controller.getHID().getLeftBumper()||controller.getHID().getRightBumper()?0.2:1.0;
+    double slow =
+        controller.getHID().getLeftBumper() || controller.getHID().getRightBumper() ? 0.2 : 1.0;
 
     if (deadband(controller.getLeftY())
         && deadband(controller.getLeftX())
@@ -115,9 +116,9 @@ public class TeleopDrive extends Command {
       locked = false;
       ChassisSpeeds cmd =
           new ChassisSpeeds(
-              controller.getLeftY() * Constants.Driver.MAX_X_SPEED*slow,
-              controller.getLeftX() * Constants.Driver.MAX_Y_SPEED*slow,
-              controller.getRightX() * Constants.Driver.MAX_THETA_SPEED*slow + ext);
+              controller.getLeftY() * Constants.Driver.MAX_X_SPEED * slow,
+              controller.getLeftX() * Constants.Driver.MAX_Y_SPEED * slow,
+              controller.getRightX() * Constants.Driver.MAX_THETA_SPEED * slow + ext);
 
       ChassisSpeeds sp =
           new ChassisSpeeds(

@@ -28,9 +28,9 @@ public class ArmIOSparkFlex implements ArmIO {
     controller.setSmartCurrentLimit(Constants.CurrentLimits.NEO_VORTEX);
     pid.setFeedbackDevice(encoder);
     pid.setOutputRange(-1, 1);
-    pid.setSmartMotionMaxVelocity(0.2*FREE_RPM / GEAR_RATIO, 0);
+    pid.setSmartMotionMaxVelocity(0.2 * FREE_RPM / GEAR_RATIO, 0);
     pid.setSmartMotionMinOutputVelocity(0, 0);
-    pid.setSmartMotionMaxAccel(300/10, 0);
+    pid.setSmartMotionMaxAccel(300 / 10, 0);
     pid.setSmartMotionAllowedClosedLoopError(0.02, 0);
     ffTuner.attach(pid::setFF);
     pTuner.attach(pid::setP);
