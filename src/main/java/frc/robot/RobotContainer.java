@@ -163,7 +163,7 @@ public class RobotContainer {
 
     driverController.leftTrigger(0.2).whileTrue(new Intake(shooter, arm));
     LoggedTunableNumber ampPreset =
-        new LoggedTunableNumber("Presets/Arm Amp", 0.1); // TODO: add value
+        new LoggedTunableNumber("Presets/Arm Amp", 0.15); // TODO: add value
     LoggedTunableNumber ampTop =
         new LoggedTunableNumber("Presets/Amp top", -2000); // TODO: add value
     LoggedTunableNumber ampBottom =
