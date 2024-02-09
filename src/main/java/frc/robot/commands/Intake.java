@@ -11,7 +11,7 @@ public class Intake extends Command {
   Arm arm;
   LoggedTunableNumber armPreset = new LoggedTunableNumber("Presets/Intake_Arm", -0.2);
   LoggedTunableNumber topSpeed = new LoggedTunableNumber("Presets/Intake_Top", 1700);
-  LoggedTunableNumber bottomSpeed = new LoggedTunableNumber("Presets/Intake_Bottom", -1700);
+  LoggedTunableNumber bottomSpeed = new LoggedTunableNumber("Presets/Intake_Bottom", -2000);
 
   public Intake(Shooter shooter, Arm arm) {
     this.shooter = shooter;
@@ -40,6 +40,6 @@ public class Intake extends Command {
 
   @Override
   public boolean isFinished() {
-    return !shooter.isHolding();
+    return false;//!shooter.isHolding();
   }
 }
