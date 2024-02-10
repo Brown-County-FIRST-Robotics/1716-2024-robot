@@ -1,11 +1,28 @@
 package frc.robot.utils;
 
+import edu.wpi.first.math.Matrix;
+import edu.wpi.first.math.Nat;
+import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Twist2d;
+import edu.wpi.first.math.numbers.N1;
+import edu.wpi.first.math.numbers.N3;
+import edu.wpi.first.wpilibj.Timer;
 import java.util.*;
 
 public class PoseEstimator {
+  // Ship of Theseused from
+  // https://github.com/wpilibsuite/allwpilib/blob/1db3936965bd8ed33224ad388cf9f16d12999a08/wpimath/src/main/java/edu/wpi/first/math/estimator/PoseEstimator.java
   NavigableMap<Double, PoseRecord> pastSnapshots = new TreeMap<>();
+
+  public void addOdometry(Twist2d odo) {
+    addOdometry(odo, Timer.getFPGATimestamp());
+  }
+
+  public void setPose(Pose2d pose) {
+    pastSnapshots.clear();
+    pastSnapshots.put(Timer.getFPGATimestamp(), new PoseRecord(pose, new Twist2d()));
+  }
 
   public void addOdometry(Twist2d odo, double timestamp) {
     ArrayList<Object> l =
@@ -32,9 +49,37 @@ public class PoseEstimator {
     Pose2d poseAtTime =
         getPose(t).orElseThrow(() -> new IllegalArgumentException("Time given is outside bounds"));
     Twist2d proposedUpdate = poseAtTime.log(estimate);
-
     // TEMP: Add Kalman matrix code
-    Twist2d resultantTwist = new Twist2d();
+    var stateStdDevs = VecBuilder.fill(0.1, 0.1, 0.1);
+    var visionMeasurementStdDevs = VecBuilder.fill(0.9, 0.9, 0.9);
+
+    Matrix<N3, N1> m_q = new Matrix<>(Nat.N3(), Nat.N1());
+    Matrix<N3, N3> m_visionK = new Matrix<>(Nat.N3(), Nat.N3());
+    for (int i = 0; i < 3; ++i) {
+      m_q.set(i, 0, stateStdDevs.get(i, 0) * stateStdDevs.get(i, 0));
+    }
+
+    var r = new double[3];
+    for (int i = 0; i < 3; ++i) {
+      r[i] = visionMeasurementStdDevs.get(i, 0) * visionMeasurementStdDevs.get(i, 0);
+    }
+
+    // Solve for closed form Kalman gain for continuous Kalman filter with A = 0
+    // and C = I
+    for (int row = 0; row < 3; ++row) {
+      if (m_q.get(row, 0) == 0.0) {
+        m_visionK.set(row, row, 0.0);
+      } else {
+        m_visionK.set(
+            row, row, m_q.get(row, 0) / (m_q.get(row, 0) + Math.sqrt(m_q.get(row, 0) * r[row])));
+      }
+    }
+    var k_times_twist =
+        m_visionK.times(
+            VecBuilder.fill(proposedUpdate.dx, proposedUpdate.dy, proposedUpdate.dtheta));
+
+    Twist2d resultantTwist =
+        new Twist2d(k_times_twist.get(0, 0), k_times_twist.get(1, 0), k_times_twist.get(2, 0));
     pastSnapshots.put(t, new PoseRecord(poseAtTime.exp(resultantTwist), estimate));
     var updatesAfter = pastSnapshots.tailMap(t, false).entrySet().toArray();
     while (pastSnapshots.lastKey() > t) {
@@ -79,6 +124,8 @@ public class PoseEstimator {
                   (t - floor.getKey()) / (ceil.getKey() - floor.getKey())));
     }
   }
+
+  public PoseEstimator() {}
 
   static class PoseRecord {
     public Pose2d poseEstimate;
