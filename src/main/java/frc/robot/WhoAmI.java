@@ -21,14 +21,18 @@ public final class WhoAmI {
 
   /** The appendages to the robot */
   public static enum Appendages {
+    /** An arm that pivots the shooter */
     ARM,
+    /** A simulated arm that pivots the shooter */
     SIM_ARM,
+    /** A shooter for notes */
     SHOOTER,
+    /** A simulated shooter for notes */
     SIM_SHOOTER,
+    /** A climber for the chain */
     CLIMBER,
+    /** A simulated climber for the chain */
     SIM_CLIMBER,
-    INTAKE,
-    SIM_INTAKE
   }
 
   /** The code execution mode */
@@ -41,6 +45,11 @@ public final class WhoAmI {
     SIM
   }
 
+  /**
+   * Checks the configuration
+   *
+   * @param args Not used
+   */
   public static void main(String... args) {
     if (mode != Mode.REAL) {
       throw new IllegalArgumentException("Cannot deploy code in Sim mode to the robot");

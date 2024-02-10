@@ -37,7 +37,8 @@ public class TeleopDrive extends Command {
    * Constructs a new command with a given controller and drivetrain
    *
    * @param drivetrain The drivetrain subsystem
-   * @param controller The driver conroller
+   * @param arm The arm subsystem
+   * @param controller The driver controller
    */
   public TeleopDrive(Drivetrain drivetrain, Arm arm, CommandXboxController controller) {
     this.drivetrain = drivetrain;
