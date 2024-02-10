@@ -49,7 +49,7 @@ public class SpeakerShoot extends Command {
             ShootWhileMove.getFieldRelativeSpeeds(
                 drive.getVelocity(), drive.getPosition().getRotation()));
     shooter.commandSpeed(cmd.shooterSpeedMPS);
-    rotationCommander.accept(Optional.of(cmd.botAngle));
+    rotationCommander.accept(Optional.of(cmd.botAngle.unaryMinus()));
     arm.setAngle(cmd.shooterAngle);
     shooter.setFiringBlocked(
         botAngleThreshold.get()
