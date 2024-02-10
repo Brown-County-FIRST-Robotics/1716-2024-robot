@@ -2,9 +2,11 @@ package frc.robot.subsystems.vision;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
+import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.*;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.vision.VisionIO.VisionIOInputs;
+import frc.robot.utils.LoggedTunableNumber;
 import frc.robot.utils.PeriodicRunnable;
 import org.littletonrobotics.junction.Logger;
 
@@ -15,6 +17,14 @@ public class Vision extends PeriodicRunnable {
   VisionIOInputs[] inputs;
   Drivetrain drivetrain;
   AprilTagFieldLayout layout = AprilTagFields.k2023ChargedUp.loadAprilTagLayoutField();
+  LoggedTunableNumber oneTagTranslationStdDev =
+      new LoggedTunableNumber("Vision/One tag Translation StdDev", 0.9);
+  LoggedTunableNumber oneTagRotationStdDev =
+      new LoggedTunableNumber("Vision/One tag Rotation StdDev", 0.9);
+  LoggedTunableNumber multiTagTranslationStdDev =
+      new LoggedTunableNumber("Vision/Multi tag Translation StdDev", 0.9);
+  LoggedTunableNumber multiTagRotationStdDev =
+      new LoggedTunableNumber("Vision/Multi tag Rotation StdDev", 0.9);
 
   /**
    * Constructs a <code>Vision</code> subsystem
@@ -90,7 +100,19 @@ public class Vision extends PeriodicRunnable {
           }
           Pose3d poseOfBot = outPose.plus(camPoses[i].inverse());
           Logger.recordOutput("Vision/EstPose_" + i, poseOfBot);
-          drivetrain.addVisionUpdate(poseOfBot.toPose2d(), inputs[i].timestamp.get());
+          drivetrain.addVisionUpdate(
+              poseOfBot.toPose2d(),
+              VecBuilder.fill(
+                  inputs[i].ids.get().length > 1
+                      ? multiTagTranslationStdDev.get()
+                      : oneTagTranslationStdDev.get(),
+                  inputs[i].ids.get().length > 1
+                      ? multiTagTranslationStdDev.get()
+                      : oneTagTranslationStdDev.get(),
+                  inputs[i].ids.get().length > 1
+                      ? multiTagRotationStdDev.get()
+                      : oneTagRotationStdDev.get()),
+              inputs[i].timestamp.get());
         }
       }
     }

@@ -1,16 +1,11 @@
 package frc.robot.subsystems.swerve;
 
+import edu.wpi.first.math.Vector;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
-import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Rotation3d;
-import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
-import edu.wpi.first.math.kinematics.SwerveModulePosition;
-import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.math.geometry.*;
+import edu.wpi.first.math.kinematics.*;
+import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import edu.wpi.first.math.trajectory.TrajectoryGenerator;
@@ -21,6 +16,7 @@ import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
 import frc.robot.Constants;
 import frc.robot.subsystems.*;
+import frc.robot.utils.PoseEstimator;
 import java.util.List;
 import java.util.Set;
 import org.littletonrobotics.junction.Logger;
@@ -43,11 +39,12 @@ public class SwerveDrivetrain implements Drivetrain {
   ModuleIOInputsAutoLogged frInputs = new ModuleIOInputsAutoLogged();
   ModuleIOInputsAutoLogged blInputs = new ModuleIOInputsAutoLogged();
   ModuleIOInputsAutoLogged brInputs = new ModuleIOInputsAutoLogged();
+  Rotation2d lastIMU;
+  SwerveModulePosition[] lastPositions;
+  PoseEstimator poseEstimator;
 
   IMUIO imu;
   IMUIOInputsAutoLogged imuInputs = new IMUIOInputsAutoLogged();
-
-  SwerveDrivePoseEstimator poseEstimator;
 
   private SwerveModulePosition[] getPositions() {
 
@@ -106,9 +103,10 @@ public class SwerveDrivetrain implements Drivetrain {
     fr.updateInputs(frInputs);
     bl.updateInputs(blInputs);
     br.updateInputs(brInputs);
-    poseEstimator =
-        new SwerveDrivePoseEstimator(
-            KINEMATICS, getGyro().toRotation2d(), getPositions(), Constants.INIT_POSE);
+    poseEstimator = new PoseEstimator();
+    poseEstimator.setPose(Constants.INIT_POSE);
+    lastIMU = getGyro().toRotation2d();
+    lastPositions = getPositions();
   }
 
   @Override
@@ -125,7 +123,15 @@ public class SwerveDrivetrain implements Drivetrain {
     Logger.processInputs("Drive/BR", brInputs);
 
     Logger.recordOutput("Drive/RealStates", getWheelSpeeds());
-    poseEstimator.update(getGyro().toRotation2d(), getPositions());
+    Twist2d odoTwist =
+        KINEMATICS.toTwist2d(
+            new SwerveDriveWheelPositions(lastPositions),
+            new SwerveDriveWheelPositions(getPositions()));
+    odoTwist =
+        new Twist2d(odoTwist.dx, odoTwist.dy, getGyro().toRotation2d().minus(lastIMU).getRadians());
+    poseEstimator.addOdometry(odoTwist);
+    lastPositions = getPositions();
+    lastIMU = getGyro().toRotation2d();
     Logger.recordOutput("Drive/Pose", getPosition());
   }
 
@@ -135,7 +141,7 @@ public class SwerveDrivetrain implements Drivetrain {
 
   @Override
   public Pose2d getPosition() {
-    return poseEstimator.getEstimatedPosition();
+    return poseEstimator.getPose();
   }
 
   private void setModuleStates(SwerveModuleState[] states) {
@@ -206,12 +212,12 @@ public class SwerveDrivetrain implements Drivetrain {
 
   @Override
   public void setPosition(Pose2d pos) {
-    poseEstimator.resetPosition(getGyro().toRotation2d(), getPositions(), pos);
+    poseEstimator.setPose(pos);
   }
 
   @Override
-  public void addVisionUpdate(Pose2d newPose, double timestamp) {
-    poseEstimator.addVisionMeasurement(newPose, timestamp);
+  public void addVisionUpdate(Pose2d newPose, Vector<N3> stdDevs, double timestamp) {
+    poseEstimator.addVision(newPose, stdDevs, timestamp);
   }
 
   @Override
