@@ -66,9 +66,11 @@ public class Robot extends LoggedRobot {
     switch (WhoAmI.mode) {
       case REAL:
         Logger.addDataReceiver(new WPILOGWriter("/U"));
+        Logger.addDataReceiver(new NT4Publisher());
         break;
       case SIM:
         Logger.addDataReceiver(new WPILOGWriter("SimLogs/"));
+        Logger.addDataReceiver(new NT4Publisher());
         break;
       case REPLAY:
         setUseTiming(false); // Run as fast as possible
@@ -81,11 +83,6 @@ public class Robot extends LoggedRobot {
                     "_replay" + new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date()))));
         break;
     }
-    Logger.addDataReceiver(new NT4Publisher());
-
-    // See http://bit.ly/3YIzFZ6 for more information on timestamps in AdvantageKit.
-    // Logger.disableDeterministicTimestamps()
-
     // Start AdvantageKit logger
     Logger.start();
     robotContainer = new RobotContainer();
