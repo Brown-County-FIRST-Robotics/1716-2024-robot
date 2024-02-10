@@ -52,13 +52,25 @@ loadScripts(document, 'script');</script>
 <a href="#I:A">A</a>&nbsp;<a href="#I:B">B</a>&nbsp;<a href="#I:C">C</a>&nbsp;<a href="#I:D">D</a>&nbsp;<a href="#I:E">E</a>&nbsp;<a href="#I:F">F</a>&nbsp;<a href="#I:G">G</a>&nbsp;<a href="#I:H">H</a>&nbsp;<a href="#I:I">I</a>&nbsp;<a href="#I:L">L</a>&nbsp;<a href="#I:M">M</a>&nbsp;<a href="#I:N">N</a>&nbsp;<a href="#I:O">O</a>&nbsp;<a href="#I:P">P</a>&nbsp;<a href="#I:R">R</a>&nbsp;<a href="#I:S">S</a>&nbsp;<a href="#I:T">T</a>&nbsp;<a href="#I:U">U</a>&nbsp;<a href="#I:V">V</a>&nbsp;<a href="#I:W">W</a>&nbsp;<a href="#I:X">X</a>&nbsp;<a href="#I:Y">Y</a>&nbsp;<a href="#I:Z">Z</a>&nbsp;<br><a href="allclasses-index.html">All&nbsp;Classes&nbsp;and&nbsp;Interfaces</a><span class="vertical-separator">|</span><a href="allpackages-index.html">All&nbsp;Packages</a><span class="vertical-separator">|</span><a href="constant-values.html">Constant&nbsp;Field&nbsp;Values</a>
 <h2 class="title" id="I:A">A</h2>
 <dl class="index">
-<dt><a href="frc/robot/subsystems/Drivetrain.html#addVisionUpdate(edu.wpi.first.math.geometry.Pose2d,double)" class="member-name-link">addVisionUpdate(Pose2d, double)</a> - Method in interface frc.robot.subsystems.<a href="frc/robot/subsystems/Drivetrain.html" title="interface in frc.robot.subsystems">Drivetrain</a></dt>
+<dt><a href="frc/robot/utils/PoseEstimator.html#addOdometry(edu.wpi.first.math.geometry.Twist2d)" class="member-name-link">addOdometry(Twist2d)</a> - Method in class frc.robot.utils.<a href="frc/robot/utils/PoseEstimator.html" title="class in frc.robot.utils">PoseEstimator</a></dt>
+<dd>
+<div class="block">Adds an odometry record at the current time</div>
+</dd>
+<dt><a href="frc/robot/utils/PoseEstimator.html#addOdometry(edu.wpi.first.math.geometry.Twist2d,double)" class="member-name-link">addOdometry(Twist2d, double)</a> - Method in class frc.robot.utils.<a href="frc/robot/utils/PoseEstimator.html" title="class in frc.robot.utils">PoseEstimator</a></dt>
+<dd>
+<div class="block">Adds an odometry record at the given time</div>
+</dd>
+<dt><a href="frc/robot/utils/PoseEstimator.html#addVision(edu.wpi.first.math.geometry.Pose2d,edu.wpi.first.math.Vector,double)" class="member-name-link">addVision(Pose2d, Vector&lt;N3&gt;, double)</a> - Method in class frc.robot.utils.<a href="frc/robot/utils/PoseEstimator.html" title="class in frc.robot.utils">PoseEstimator</a></dt>
+<dd>
+<div class="block">Adds a vision update</div>
+</dd>
+<dt><a href="frc/robot/subsystems/Drivetrain.html#addVisionUpdate(edu.wpi.first.math.geometry.Pose2d,edu.wpi.first.math.Vector,double)" class="member-name-link">addVisionUpdate(Pose2d, Vector&lt;N3&gt;, double)</a> - Method in interface frc.robot.subsystems.<a href="frc/robot/subsystems/Drivetrain.html" title="interface in frc.robot.subsystems">Drivetrain</a></dt>
 <dd>
 <div class="block">Adds a vision update to the pose estimator</div>
 </dd>
-<dt><a href="frc/robot/subsystems/mecanum/MecanumDrivetrain.html#addVisionUpdate(edu.wpi.first.math.geometry.Pose2d,double)" class="member-name-link">addVisionUpdate(Pose2d, double)</a> - Method in class frc.robot.subsystems.mecanum.<a href="frc/robot/subsystems/mecanum/MecanumDrivetrain.html" title="class in frc.robot.subsystems.mecanum">MecanumDrivetrain</a></dt>
+<dt><a href="frc/robot/subsystems/mecanum/MecanumDrivetrain.html#addVisionUpdate(edu.wpi.first.math.geometry.Pose2d,edu.wpi.first.math.Vector,double)" class="member-name-link">addVisionUpdate(Pose2d, Vector&lt;N3&gt;, double)</a> - Method in class frc.robot.subsystems.mecanum.<a href="frc/robot/subsystems/mecanum/MecanumDrivetrain.html" title="class in frc.robot.subsystems.mecanum">MecanumDrivetrain</a></dt>
 <dd>&nbsp;</dd>
-<dt><a href="frc/robot/subsystems/swerve/SwerveDrivetrain.html#addVisionUpdate(edu.wpi.first.math.geometry.Pose2d,double)" class="member-name-link">addVisionUpdate(Pose2d, double)</a> - Method in class frc.robot.subsystems.swerve.<a href="frc/robot/subsystems/swerve/SwerveDrivetrain.html" title="class in frc.robot.subsystems.swerve">SwerveDrivetrain</a></dt>
+<dt><a href="frc/robot/subsystems/swerve/SwerveDrivetrain.html#addVisionUpdate(edu.wpi.first.math.geometry.Pose2d,edu.wpi.first.math.Vector,double)" class="member-name-link">addVisionUpdate(Pose2d, Vector&lt;N3&gt;, double)</a> - Method in class frc.robot.subsystems.swerve.<a href="frc/robot/subsystems/swerve/SwerveDrivetrain.html" title="class in frc.robot.subsystems.swerve">SwerveDrivetrain</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="frc/robot/WhoAmI.html#appendages" class="member-name-link">appendages</a> - Static variable in class frc.robot.<a href="frc/robot/WhoAmI.html" title="class in frc.robot">WhoAmI</a></dt>
 <dd>
@@ -319,6 +331,14 @@ loadScripts(document, 'script');</script>
 <dt><a href="frc/robot/SwerveSimManager.html#getModState(int)" class="member-name-link">getModState(int)</a> - Method in class frc.robot.<a href="frc/robot/SwerveSimManager.html" title="class in frc.robot">SwerveSimManager</a></dt>
 <dd>
 <div class="block">Gets the state of the swerve module</div>
+</dd>
+<dt><a href="frc/robot/utils/PoseEstimator.html#getPose()" class="member-name-link">getPose()</a> - Method in class frc.robot.utils.<a href="frc/robot/utils/PoseEstimator.html" title="class in frc.robot.utils">PoseEstimator</a></dt>
+<dd>
+<div class="block">Gets the current pose</div>
+</dd>
+<dt><a href="frc/robot/utils/PoseEstimator.html#getPose(double)" class="member-name-link">getPose(double)</a> - Method in class frc.robot.utils.<a href="frc/robot/utils/PoseEstimator.html" title="class in frc.robot.utils">PoseEstimator</a></dt>
+<dd>
+<div class="block">Gets the pose at a given time</div>
 </dd>
 <dt><a href="frc/robot/subsystems/Drivetrain.html#getPosition()" class="member-name-link">getPosition()</a> - Method in interface frc.robot.subsystems.<a href="frc/robot/subsystems/Drivetrain.html" title="interface in frc.robot.subsystems">Drivetrain</a></dt>
 <dd>
@@ -595,6 +615,14 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">The pose from the camera</div>
 </dd>
+<dt><a href="frc/robot/utils/PoseEstimator.html" class="type-name-link" title="class in frc.robot.utils">PoseEstimator</a> - Class in <a href="frc/robot/utils/package-summary.html">frc.robot.utils</a></dt>
+<dd>
+<div class="block">A pose estimator that fuses vision and odometry updates</div>
+</dd>
+<dt><a href="frc/robot/utils/PoseEstimator.html#%3Cinit%3E()" class="member-name-link">PoseEstimator()</a> - Constructor for class frc.robot.utils.<a href="frc/robot/utils/PoseEstimator.html" title="class in frc.robot.utils">PoseEstimator</a></dt>
+<dd>
+<div class="block">Constructs a new pose estimator</div>
+</dd>
 <dt><a href="frc/robot/SwerveSimManager.html#propagate()" class="member-name-link">propagate()</a> - Method in class frc.robot.<a href="frc/robot/SwerveSimManager.html" title="class in frc.robot">SwerveSimManager</a></dt>
 <dd>
 <div class="block">Step the simulation one tick (20 ms) forward.</div>
@@ -675,6 +703,10 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="frc/robot/subsystems/swerve/ModuleIOSparkFX.html#setCmdState(edu.wpi.first.math.kinematics.SwerveModuleState)" class="member-name-link">setCmdState(SwerveModuleState)</a> - Method in class frc.robot.subsystems.swerve.<a href="frc/robot/subsystems/swerve/ModuleIOSparkFX.html" title="class in frc.robot.subsystems.swerve">ModuleIOSparkFX</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="frc/robot/utils/PoseEstimator.html#setPose(edu.wpi.first.math.geometry.Pose2d)" class="member-name-link">setPose(Pose2d)</a> - Method in class frc.robot.utils.<a href="frc/robot/utils/PoseEstimator.html" title="class in frc.robot.utils">PoseEstimator</a></dt>
+<dd>
+<div class="block">Resets the pose, and clears all the updates</div>
+</dd>
 <dt><a href="frc/robot/subsystems/Drivetrain.html#setPosition(edu.wpi.first.math.geometry.Pose2d)" class="member-name-link">setPosition(Pose2d)</a> - Method in interface frc.robot.subsystems.<a href="frc/robot/subsystems/Drivetrain.html" title="interface in frc.robot.subsystems">Drivetrain</a></dt>
 <dd>
 <div class="block">Sets the position of the pose estimator</div>

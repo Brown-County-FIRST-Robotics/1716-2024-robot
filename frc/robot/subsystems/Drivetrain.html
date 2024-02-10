@@ -98,7 +98,8 @@ extends edu.wpi.first.wpilibj2.command.Subsystem</span></div>
 <div class="table-header col-second">Method</div>
 <div class="table-header col-last">Description</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#addVisionUpdate(edu.wpi.first.math.geometry.Pose2d,double)" class="member-name-link">addVisionUpdate</a><wbr>(edu.wpi.first.math.geometry.Pose2d&nbsp;newPose,
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#addVisionUpdate(edu.wpi.first.math.geometry.Pose2d,edu.wpi.first.math.Vector,double)" class="member-name-link">addVisionUpdate</a><wbr>(edu.wpi.first.math.geometry.Pose2d&nbsp;newPose,
+ edu.wpi.first.math.Vector&lt;edu.wpi.first.math.numbers.N3&gt;&nbsp;stdDevs,
  double&nbsp;timestamp)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
 <div class="block">Adds a vision update to the pose estimator</div>
@@ -204,14 +205,16 @@ extends edu.wpi.first.wpilibj2.command.Subsystem</span></div>
 </section>
 </li>
 <li>
-<section class="detail" id="addVisionUpdate(edu.wpi.first.math.geometry.Pose2d,double)">
+<section class="detail" id="addVisionUpdate(edu.wpi.first.math.geometry.Pose2d,edu.wpi.first.math.Vector,double)">
 <h3>addVisionUpdate</h3>
 <div class="member-signature"><span class="return-type">void</span>&nbsp;<span class="element-name">addVisionUpdate</span><wbr><span class="parameters">(edu.wpi.first.math.geometry.Pose2d&nbsp;newPose,
+ edu.wpi.first.math.Vector&lt;edu.wpi.first.math.numbers.N3&gt;&nbsp;stdDevs,
  double&nbsp;timestamp)</span></div>
 <div class="block">Adds a vision update to the pose estimator</div>
 <dl class="notes">
 <dt>Parameters:</dt>
 <dd><code>newPose</code> - The estimated pose</dd>
+<dd><code>stdDevs</code> - The measurement error standard deviations [x, y, theta] [meters,meters,radians]</dd>
 <dd><code>timestamp</code> - The time at which the pose was detected</dd>
 </dl>
 </section>
