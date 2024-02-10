@@ -16,6 +16,11 @@ public class PoseEstimator {
   // https://github.com/wpilibsuite/allwpilib/blob/1db3936965bd8ed33224ad388cf9f16d12999a08/wpimath/src/main/java/edu/wpi/first/math/estimator/PoseEstimator.java
   NavigableMap<Double, PoseRecord> pastSnapshots = new TreeMap<>();
 
+  /**
+   * Adds an odometry record at the current time
+   *
+   * @param odo The change in position since the last update
+   */
   public void addOdometry(Twist2d odo) {
     addOdometry(odo, Timer.getFPGATimestamp());
   }
@@ -24,7 +29,12 @@ public class PoseEstimator {
     pastSnapshots.clear();
     pastSnapshots.put(Timer.getFPGATimestamp(), new PoseRecord(pose, new Twist2d()));
   }
-
+  /**
+   * Adds an odometry record at the given time
+   *
+   * @param odo The change in position since the last update
+   * @param timestamp The time at which the twist was measured
+   */
   public void addOdometry(Twist2d odo, double timestamp) {
     ArrayList<Object> l =
         new ArrayList<>(List.of(pastSnapshots.headMap(timestamp).keySet().toArray()));
@@ -46,6 +56,14 @@ public class PoseEstimator {
     pastSnapshots.put(timestamp, new PoseRecord(timeGuessedPose, odo));
   }
 
+  /**
+   * Adds a vision update
+   *
+   * @param estimate The pose estimate
+   * @param visionMeasurementStdDevs The measurement error standard deviations [x, y, theta]
+   *     [meters,meters,radians]
+   * @param t The time at which the camera captured the pose estimate
+   */
   public void addVision(Pose2d estimate, Vector<N3> visionMeasurementStdDevs, double t) {
     Pose2d poseAtTime =
         getPose(t).orElseThrow(() -> new IllegalArgumentException("Time given is outside bounds"));
@@ -95,10 +113,22 @@ public class PoseEstimator {
     }
   }
 
+  /**
+   * Gets the current pose
+   *
+   * @return The current pose
+   */
   public Pose2d getPose() {
     return pastSnapshots.lastEntry().getValue().poseEstimate;
   }
 
+  /**
+   * Gets the pose at a given time
+   *
+   * @param t The time
+   * @return If there has been no updates or the time is out of range, Optional.empty(). Otherwise,
+   *     the pose at the time.
+   */
   public Optional<Pose2d> getPose(double t) {
     if (pastSnapshots.isEmpty()) {
       return Optional.empty();
@@ -125,6 +155,7 @@ public class PoseEstimator {
     }
   }
 
+  /** Constructs a new pose estimator */
   public PoseEstimator() {}
 
   static class PoseRecord {
