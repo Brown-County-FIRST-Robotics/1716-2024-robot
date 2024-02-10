@@ -35,6 +35,7 @@ import frc.robot.subsystems.vision.Vision;
 import frc.robot.subsystems.vision.VisionIO;
 import frc.robot.subsystems.vision.VisionIOSecondSight;
 import frc.robot.utils.LoggedTunableNumber;
+import frc.robot.utils.Overrides;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -161,23 +162,33 @@ public class RobotContainer {
     var teleopDrive = new TeleopDrive(driveSys, driverController);
     driveSys.setDefaultCommand(teleopDrive);
 
-    driverController.leftTrigger(0.2).whileTrue(new Intake(shooter, arm));
+    driverController.leftTrigger(0.2).whileTrue(new Intake(shooter, arm, secondController.getHID()));
     LoggedTunableNumber ampPreset =
         new LoggedTunableNumber("Presets/Arm Amp", 0.15); // TODO: add value
     LoggedTunableNumber ampTop =
         new LoggedTunableNumber("Presets/Amp top", -2000); // TODO: add value
     LoggedTunableNumber ampBottom =
         new LoggedTunableNumber("Presets/Amp bottom", 2000); // TODO: add value
+
+    //Amp scoring
     secondController
         .leftTrigger(0.2)
-        .whileTrue(Commands.run(() -> arm.setAngle(Rotation2d.fromRotations(ampPreset.get())), arm))
+        .whileTrue(Commands.run(() -> {
+            if (!Overrides.disableArmAnglePresets.get()) {
+              arm.setAngle(Rotation2d.fromRotations(ampPreset.get()));
+            }
+            else {
+              arm.commandIncrement(Rotation2d.fromRotations(secondController.getLeftY() * 1)); //TODO: scale this
+            }
+        }, arm))
         .onFalse(Commands.runOnce(arm::commandNeutral, arm))
         .and(() -> secondController.getHID().getPOV() == 270)
         .onTrue(Commands.runOnce(() -> shooter.shoot(ampTop.get(), ampBottom.get()), shooter))
         .onFalse(Commands.runOnce(shooter::stop, shooter));
+
     driverController
         .rightTrigger(0.2)
-        .whileTrue(new SpeakerShoot(driveSys, arm, teleopDrive::setCustomRotation, shooter));
+        .whileTrue(new SpeakerShoot(driveSys, arm, teleopDrive::setCustomRotation, shooter, secondController.getHID()));
   }
 
   /**

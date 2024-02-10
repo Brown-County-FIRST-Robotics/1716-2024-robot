@@ -18,6 +18,7 @@
 |Left Trigger|Aim for amp|
 |Left Bumper|Aim for source|
 |Left Stick Button/Left on DPad|Shoot into amp or intake from source (Depending on trigger/bumper pressed)|
+|Left Stick Y|Change angle of arm when overriden|
 |Right Stick Y|Climb|
 |||
 |Mouse|Overrides|

@@ -13,6 +13,8 @@ import frc.robot.Constants;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.utils.DualRateLimiter;
 import frc.robot.utils.LoggedTunableNumber;
+import frc.robot.utils.Overrides;
+
 import java.util.Optional;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedDashboardNumber;
@@ -144,7 +146,7 @@ public class TeleopDrive extends Command {
           new Pose2d(drivetrain.getPosition().getTranslation(), Rotation2d.fromRotations(0.5)));
     }
     locked = controller.getHID().getXButtonPressed() || locked;
-    foc = controller.getHID().getStartButtonPressed() != foc;
+    foc = Overrides.useFieldOriented.get();
     if (locked) {
       drivetrain.lockWheels();
     }
