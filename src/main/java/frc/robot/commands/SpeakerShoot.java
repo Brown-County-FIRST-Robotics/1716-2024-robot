@@ -1,8 +1,6 @@
 package frc.robot.commands;
 
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Translation3d;
+import edu.wpi.first.math.geometry.*;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.FieldConstants;
 import frc.robot.subsystems.Drivetrain;
@@ -10,6 +8,8 @@ import frc.robot.subsystems.arm.Arm;
 import frc.robot.subsystems.shooter.Shooter;
 import frc.robot.utils.LoggedTunableNumber;
 import frc.robot.utils.ShootWhileMove;
+import org.littletonrobotics.junction.Logger;
+
 import java.util.Optional;
 import java.util.function.Consumer;
 
@@ -42,15 +42,16 @@ public class SpeakerShoot extends Command {
   @Override
   public void execute() {
     Pose2d pos = drive.getPosition();
-    Translation3d botPose = new Translation3d(pos.getX(), pos.getY(), 0);
+    Translation3d botPose = new Translation3d(pos.getX(), pos.getY(), 0.5);
+    Logger.recordOutput("Speak",new Pose3d(FieldConstants.getSpeaker(),new Rotation3d()));
     var cmd =
         ShootWhileMove.calcSimpleCommand(
             botPose.minus(FieldConstants.getSpeaker()),
             ShootWhileMove.getFieldRelativeSpeeds(
                 drive.getVelocity(), drive.getPosition().getRotation()));
     shooter.commandSpeed(cmd.shooterSpeedMPS);
-    rotationCommander.accept(Optional.of(cmd.botAngle));
-    arm.setAngle(cmd.shooterAngle);
+    rotationCommander.accept(Optional.of(cmd.botAngle.unaryMinus()));
+    arm.setAngle(cmd.shooterAngle.times(0.8));
     shooter.setFiringBlocked(
         botAngleThreshold.get()
                 < Math.abs(cmd.botAngle.minus(drive.getPosition().getRotation()).getRotations())
