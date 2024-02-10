@@ -3,6 +3,7 @@ package frc.robot.utils;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.Nat;
 import edu.wpi.first.math.VecBuilder;
+import edu.wpi.first.math.Vector;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Twist2d;
 import edu.wpi.first.math.numbers.N1;
@@ -45,13 +46,11 @@ public class PoseEstimator {
     pastSnapshots.put(timestamp, new PoseRecord(timeGuessedPose, odo));
   }
 
-  public void addVision(Pose2d estimate, double t) {
+  public void addVision(Pose2d estimate, Vector<N3> visionMeasurementStdDevs, double t) {
     Pose2d poseAtTime =
         getPose(t).orElseThrow(() -> new IllegalArgumentException("Time given is outside bounds"));
     Twist2d proposedUpdate = poseAtTime.log(estimate);
-    // TEMP: Add Kalman matrix code
     var stateStdDevs = VecBuilder.fill(0.1, 0.1, 0.1);
-    var visionMeasurementStdDevs = VecBuilder.fill(0.9, 0.9, 0.9);
 
     Matrix<N3, N1> m_q = new Matrix<>(Nat.N3(), Nat.N1());
     Matrix<N3, N3> m_visionK = new Matrix<>(Nat.N3(), Nat.N3());
@@ -80,7 +79,8 @@ public class PoseEstimator {
 
     Twist2d resultantTwist =
         new Twist2d(k_times_twist.get(0, 0), k_times_twist.get(1, 0), k_times_twist.get(2, 0));
-    pastSnapshots.put(t, new PoseRecord(poseAtTime.exp(resultantTwist), estimate));
+    pastSnapshots.put(
+        t, new PoseRecord(poseAtTime.exp(resultantTwist), estimate, visionMeasurementStdDevs));
     var updatesAfter = pastSnapshots.tailMap(t, false).entrySet().toArray();
     while (pastSnapshots.lastKey() > t) {
       pastSnapshots.remove(pastSnapshots.lastKey());
@@ -90,7 +90,7 @@ public class PoseEstimator {
       if (update.getValue().isOdometryRecord) {
         addOdometry(update.getValue().odometryData, update.getKey());
       } else {
-        addVision(update.getValue().visionData, update.getKey());
+        addVision(update.getValue().visionData, update.getValue().visionStdDevs, update.getKey());
       }
     }
   }
@@ -132,14 +132,16 @@ public class PoseEstimator {
     public boolean isOdometryRecord = false;
     public Twist2d odometryData;
     public Pose2d visionData;
+    public Vector<N3> visionStdDevs;
 
     public PoseRecord(Pose2d poseEstimate) {
       this.poseEstimate = poseEstimate;
     }
 
-    public PoseRecord(Pose2d poseEstimate, Pose2d visionData) {
+    public PoseRecord(Pose2d poseEstimate, Pose2d visionData, Vector<N3> visionStdDevs) {
       this.poseEstimate = poseEstimate;
       this.visionData = visionData;
+      this.visionStdDevs = visionStdDevs;
     }
 
     public PoseRecord(Pose2d poseEstimate, Twist2d odometryData) {

@@ -1,9 +1,11 @@
 package frc.robot.subsystems.swerve;
 
+import edu.wpi.first.math.Vector;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.*;
 import edu.wpi.first.math.kinematics.*;
+import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import edu.wpi.first.math.trajectory.TrajectoryGenerator;
@@ -214,8 +216,8 @@ public class SwerveDrivetrain implements Drivetrain {
   }
 
   @Override
-  public void addVisionUpdate(Pose2d newPose, double timestamp) {
-    poseEstimator.addVision(newPose, timestamp);
+  public void addVisionUpdate(Pose2d newPose, Vector<N3> stdDevs, double timestamp) {
+    poseEstimator.addVision(newPose, stdDevs, timestamp);
   }
 
   @Override

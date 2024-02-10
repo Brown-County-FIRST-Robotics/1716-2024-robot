@@ -2,6 +2,7 @@ package frc.robot.subsystems.vision;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
+import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.*;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.vision.VisionIO.VisionIOInputs;
@@ -90,7 +91,8 @@ public class Vision extends PeriodicRunnable {
           }
           Pose3d poseOfBot = outPose.plus(camPoses[i].inverse());
           Logger.recordOutput("Vision/EstPose_" + i, poseOfBot);
-          drivetrain.addVisionUpdate(poseOfBot.toPose2d(), inputs[i].timestamp.get());
+          drivetrain.addVisionUpdate(
+              poseOfBot.toPose2d(), VecBuilder.fill(0.9, 0.9, 0.9), inputs[i].timestamp.get());
         }
       }
     }

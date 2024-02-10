@@ -1,5 +1,6 @@
 package frc.robot.subsystems.mecanum;
 
+import edu.wpi.first.math.Vector;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.estimator.MecanumDrivePoseEstimator;
@@ -8,6 +9,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.*;
+import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import edu.wpi.first.math.trajectory.TrajectoryGenerator;
@@ -166,7 +168,7 @@ public class MecanumDrivetrain implements Drivetrain {
   }
 
   @Override
-  public void addVisionUpdate(Pose2d newPose, double timestamp) {
-    poseEstimator.addVisionMeasurement(newPose, timestamp);
+  public void addVisionUpdate(Pose2d newPose, Vector<N3> stdDevs, double timestamp) {
+    poseEstimator.addVisionMeasurement(newPose, timestamp); // TEMP: use the new pose estimator
   }
 }
