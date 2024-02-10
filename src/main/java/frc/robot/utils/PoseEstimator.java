@@ -11,6 +11,7 @@ import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.wpilibj.Timer;
 import java.util.*;
 
+/** A pose estimator that fuses vision and odometry updates */
 public class PoseEstimator {
   // Ship of Theseused from
   // https://github.com/wpilibsuite/allwpilib/blob/1db3936965bd8ed33224ad388cf9f16d12999a08/wpimath/src/main/java/edu/wpi/first/math/estimator/PoseEstimator.java
@@ -25,6 +26,11 @@ public class PoseEstimator {
     addOdometry(odo, Timer.getFPGATimestamp());
   }
 
+  /**
+   * Resets the pose, and clears all the updates
+   *
+   * @param pose The pose to set it to
+   */
   public void setPose(Pose2d pose) {
     pastSnapshots.clear();
     pastSnapshots.put(Timer.getFPGATimestamp(), new PoseRecord(pose, new Twist2d()));
