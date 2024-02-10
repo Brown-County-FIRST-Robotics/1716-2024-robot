@@ -66,8 +66,8 @@ public class Vision extends PeriodicRunnable {
                         .getPosition()
                         .relativeTo(tagpose.toPose2d())
                         .getRotation()
-                        .rotateBy(Rotation2d.fromDegrees(180))
-                        .interpolate(r1.toRotation2d(), 0.1)
+//                        .rotateBy(Rotation2d.fromDegrees(180))
+                        .interpolate(r1.toRotation2d(), 0.5)
                         .getRadians());
 
             Transform3d as =
