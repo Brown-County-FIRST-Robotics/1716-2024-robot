@@ -42,14 +42,14 @@ public class SpeakerShoot extends Command {
   @Override
   public void execute() {
     Pose2d pos = drive.getPosition();
-    Translation3d botPose = new Translation3d(pos.getX(), pos.getY(), 0);
+    Translation3d botPose = new Translation3d(pos.getX(), pos.getY(), 0.5);
     var cmd =
         ShootWhileMove.calcSimpleCommand(
             botPose.minus(FieldConstants.getSpeaker()),
             ShootWhileMove.getFieldRelativeSpeeds(
                 drive.getVelocity(), drive.getPosition().getRotation()));
     shooter.commandSpeed(cmd.shooterSpeedMPS);
-    rotationCommander.accept(Optional.of(cmd.botAngle));
+    rotationCommander.accept(Optional.of(cmd.botAngle.unaryMinus()));
     arm.setAngle(cmd.shooterAngle);
     shooter.setFiringBlocked(
         botAngleThreshold.get()
