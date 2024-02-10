@@ -25,7 +25,7 @@ public class TeleopDrive extends Command {
       new ProfiledPIDController(0, 0, 0, new TrapezoidProfile.Constraints(3, 3));
   LoggedTunableNumber p = new LoggedTunableNumber("drP", -100);
   LoggedTunableNumber i = new LoggedTunableNumber("drI", 0);
-  LoggedTunableNumber d = new LoggedTunableNumber("drD", 0);
+  LoggedTunableNumber d = new LoggedTunableNumber("drD", -1);
   boolean foc = true;
   boolean locked = false;
   DualRateLimiter xVelLimiter = new DualRateLimiter(4, 100);
