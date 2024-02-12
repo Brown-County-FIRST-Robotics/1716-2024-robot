@@ -6,7 +6,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 
 public class FieldConstants {
   public static Translation3d getSpeaker() {
-    return flip(new Translation3d(0.458597, 5.544566, 2.1105114));
+    return flip(new Translation3d(0.458597-32*0.0254, 5.544566, 2.1105114+0.2));
   }
 
   public static Translation2d getGamePiece(int ind) {

@@ -23,7 +23,7 @@ public class TeleopDrive extends Command {
   private final CommandXboxController controller;
   private final ProfiledPIDController ppc =
       new ProfiledPIDController(0, 0, 0, new TrapezoidProfile.Constraints(3, 3));
-  LoggedTunableNumber p = new LoggedTunableNumber("drP", -100);
+  LoggedTunableNumber p = new LoggedTunableNumber("drP", -50);
   LoggedTunableNumber i = new LoggedTunableNumber("drI", 0);
   LoggedTunableNumber d = new LoggedTunableNumber("drD", 0);
   boolean foc = true;

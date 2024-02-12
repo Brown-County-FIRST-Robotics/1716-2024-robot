@@ -3,6 +3,8 @@ package frc.robot.subsystems.shooter;
 import org.littletonrobotics.junction.AutoLog;
 
 public interface FeederIO {
+  default void setVel(double vel){}
+
   @AutoLog
   public static class FeederIOInputs {
     public double position = 0.0;
@@ -13,5 +15,4 @@ public interface FeederIO {
 
   default void updateInputs(FeederIOInputs inputs) {}
 
-  default void setPosition(double position) {}
 }
