@@ -9,13 +9,9 @@ import org.littletonrobotics.junction.networktables.LoggedDashboardNumber;
 public class Shooter extends SubsystemBase {
   ShooterIO shooterIO;
   FeederIO feederIO;
-  double lastFeederCMD = 0.0;
   FeederIOInputsAutoLogged feederInputs = new FeederIOInputsAutoLogged();
 
   ShooterIOInputsAutoLogged shooterInputs = new ShooterIOInputsAutoLogged();
-  LoggedTunableNumber preset_HOLD = new LoggedTunableNumber("Shooter/HOLDING_preset", 0.0);
-  LoggedTunableNumber preset_INTAKE_OR_SHOOT =
-      new LoggedTunableNumber("Shooter/FEEDING_TO_SHOOTER_preset", 4.0);
   // TEMP CODE
   LoggedDashboardNumber topShootingSpeed = new LoggedDashboardNumber("Top Shooting RPM", 6500);
   LoggedDashboardNumber bottomShootingSpeed =
@@ -28,6 +24,8 @@ public class Shooter extends SubsystemBase {
 
   boolean isShooting = false;
   boolean isFiring = false;
+  double feedCmd=0.0;
+  private LoggedTunableNumber ltn=new LoggedTunableNumber("shoor fac",4000);
 
   public boolean isHolding() {
     return holding;
@@ -42,7 +40,6 @@ public class Shooter extends SubsystemBase {
   boolean firingBlocked = false;
 
   double firingStartTime;
-  FeederPreset currentPreset = FeederPreset.INTAKE_OR_SHOOT;
 
   public Shooter(ShooterIO io, FeederIO feederIO) {
     this.shooterIO = io;
@@ -73,28 +70,20 @@ public class Shooter extends SubsystemBase {
       isFiring = true;
       firingStartTime = Timer.getFPGATimestamp();
     }
+    System.out.println(isFiring);
     if (isFiring) {
-      cmdFeeder(FeederPreset.INTAKE_OR_SHOOT);
-      currentPreset = FeederPreset.INTAKE_OR_SHOOT;
+      cmdFeeder(8000);
       if (firingStartTime + firingTime.get() < Timer.getFPGATimestamp()) {
         isFiring = false;
         isShooting = false;
         holding = false;
+        cmdFeeder(0);
       }
     }
 
-    checkFeeder();
   }
 
-  // Checks the feeder position to see if a note has been inserted and bumped the feeder
-  public void checkFeeder() {
-    if (currentPreset == FeederPreset.INTAKE_OR_SHOOT
-        && feederInputs.beamBroken) { // TODO: DOES THIS NEED A DELAY?
-      cmdFeeder(FeederPreset.HOLD);
-      holding = true;
-      currentPreset = FeederPreset.HOLD;
-    }
-  }
+
 
   public void cmdVel(double v1, double v2) {
     shooterIO.setVelocity(v1, v2);
@@ -107,7 +96,7 @@ public class Shooter extends SubsystemBase {
   public void commandSpeed(double exitVel) {
     isShooting = true;
     holding = true;
-    double factor = 4000 / 9.88;
+    double factor = ltn.get() / 9.88;
     cmdTopSpeed = -factor * exitVel;
     cmdBottomSpeed = factor * exitVel;
   }
@@ -123,33 +112,18 @@ public class Shooter extends SubsystemBase {
     cmdBottomSpeed = bvel;
   }
 
-  public void cmdFeeder(FeederPreset preset) {
-    switch (preset) {
-      case INTAKE_OR_SHOOT:
-        cmdFeeder(preset_INTAKE_OR_SHOOT.get());
-        currentPreset = FeederPreset.INTAKE_OR_SHOOT;
-        break;
-      case HOLD:
-        cmdFeeder(preset_HOLD.get());
-        currentPreset = FeederPreset.HOLD;
-        break;
-    }
-  }
 
   public void stop() {
     setFiringBlocked(false);
     isShooting = false;
     isFiring = false;
-    cmdFeeder(FeederPreset.HOLD);
+    feederIO.setVel(0);
+  }
+  public void cmdFeeder(double vel){
+    feedCmd=vel;
+    feederIO.setVel(feedCmd);
   }
 
-  private void cmdFeeder(double cmd) {
-    lastFeederCMD = cmd;
-    feederIO.setPosition(cmd);
-  }
 
-  public static enum FeederPreset {
-    INTAKE_OR_SHOOT,
-    HOLD
-  }
+
 }
