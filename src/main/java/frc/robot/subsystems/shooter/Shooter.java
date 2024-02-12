@@ -28,6 +28,7 @@ public class Shooter extends SubsystemBase {
 
   boolean isShooting = false;
   boolean isFiring = false;
+  private LoggedTunableNumber ltn=new LoggedTunableNumber("shoor fac",4000);
 
   public boolean isHolding() {
     return holding;
@@ -107,7 +108,7 @@ public class Shooter extends SubsystemBase {
   public void commandSpeed(double exitVel) {
     isShooting = true;
     holding = true;
-    double factor = 4000 / 9.88;
+    double factor = ltn.get() / 9.88;
     cmdTopSpeed = -factor * exitVel;
     cmdBottomSpeed = factor * exitVel;
   }
