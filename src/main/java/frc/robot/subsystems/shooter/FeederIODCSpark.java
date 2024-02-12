@@ -7,7 +7,7 @@ import frc.robot.utils.LoggedTunableNumber;
 
 public class FeederIODCSpark implements FeederIO {
   CANSparkMax motor;
-  SparkAnalogSensor encoder;
+  RelativeEncoder encoder;
   SparkPIDController pid;
   DigitalInput photoelectricSensor = new DigitalInput(0); // light-based proximity sensor from SICK
 
@@ -15,31 +15,28 @@ public class FeederIODCSpark implements FeederIO {
   LoggedTunableNumber feederP = new LoggedTunableNumber("Feeder P", 0);
   LoggedTunableNumber feederI = new LoggedTunableNumber("Feeder I", 0);
   LoggedTunableNumber feederD = new LoggedTunableNumber("Feeder D", 0);
-  LoggedTunableNumber feederKV = new LoggedTunableNumber("Feeder KV", 1.0 / 300.0);
+  LoggedTunableNumber feederKV = new LoggedTunableNumber("Feeder KV", 1.0 / 11000.0);
   // END TEMP CODE
 
   public FeederIODCSpark(int motorId) {
-    motor = new CANSparkMax(motorId, CANSparkLowLevel.MotorType.kBrushed);
+    motor = new CANSparkMax(motorId, CANSparkLowLevel.MotorType.kBrushless);
     motor.restoreFactoryDefaults();
-    motor.setSmartCurrentLimit(Constants.CurrentLimits.GENERIC_BRUSHED);
+    motor.setSmartCurrentLimit(Constants.CurrentLimits.NEO550);
     motor.setIdleMode(CANSparkBase.IdleMode.kCoast);
     motor.setInverted(true);
 
-    encoder = motor.getAnalog(SparkAnalogSensor.Mode.kAbsolute);
-    encoder.setPositionConversionFactor(1 / 3.3);
+    encoder = motor.getEncoder();
 
     pid = motor.getPIDController();
     pid.setFeedbackDevice(encoder);
 
     // TEMP CODE
     pid.setOutputRange(-1, 1);
-    pid.setSmartMotionMaxVelocity(300, 0);
+    pid.setSmartMotionMaxVelocity(11000, 0);
     pid.setSmartMotionMinOutputVelocity(0, 0);
-    pid.setSmartMotionMaxAccel(1200, 0);
-    pid.setSmartMotionAllowedClosedLoopError(0.01, 0);
-    pid.setPositionPIDWrappingEnabled(true);
-    pid.setPositionPIDWrappingMaxInput(1);
-    pid.setPositionPIDWrappingMinInput(0);
+    pid.setSmartMotionMaxAccel(11000/0.5, 0);
+    pid.setSmartMotionAllowedClosedLoopError(10, 0);
+
     // END TEMP CODE
 
     feederKV.attach(pid::setFF);
@@ -59,7 +56,7 @@ public class FeederIODCSpark implements FeederIO {
   }
 
   @Override
-  public void setPosition(double position) {
-    pid.setReference(position, CANSparkMax.ControlType.kSmartMotion);
+  public void setVel(double vel) {
+    pid.setReference(vel, CANSparkMax.ControlType.kVelocity);
   }
 }
