@@ -10,6 +10,9 @@ public class LEDs extends PeriodicRunnable {
   int counter = 0;
   int brightness = 25;
   int x = 5;
+  int y = 0;
+  int a = 15;
+  int time = 0;
 
   public LEDs() {
     super(); // Super call adds it to the registry, which calls the periodic method every tick
@@ -23,21 +26,44 @@ public class LEDs extends PeriodicRunnable {
 
   @Override
   public void periodic() { 
-    brightness = 25;
-   x = x + 1 % ledBuff.getLength();
+     time++;
+  time = time % 2;
+
+    brightness =(a - 15) * (a - 15);
     
+  a++;
+  a = a % 30;
+  
+  if(time == 1)
+  {
+   x = x + y % ledBuff.getLength();
+  }
+     if(x==44)
+     {
+     y= -1;
+     }
+     
+     if(x == 5)
+     {
+      y = 1;
+     }
+     
    /*  for (var i = 0; i < 50; i++) { //mode 1
       ledBuff.setHSV(i, (counter + i * 2) % 180, 255, brightness);
 
     }
     counter += 2; */
 
-    ledBuff.setHSV((x - 5), 7 % 180, 255, 0);
+    ledBuff.setHSV((x - (y * 5)), 7 % 180, 255, 0);
   
-  ledBuff.setHSV(x, 7 % 180, 255, brightness);
+    ledBuff.setHSV(x, counter % 180, 255, brightness);
    
+    ledBuff.setHSV((50 + -x) + (-y * 5), counter % 180, 255, brightness);
+  
+    ledBuff.setHSV(50 + -x, 7 % 180, 255, 0);
 
-    counter += 2;
+
+    counter += 5;
 
     leds.setData(ledBuff);
   }
