@@ -19,8 +19,8 @@ public class SpeakerShoot extends Command {
   Consumer<Optional<Rotation2d>> rotationCommander;
   Shooter shooter;
   boolean firing = false;
-  LoggedTunableNumber shooterAngleThreshold = new LoggedTunableNumber("ang threshold", 0.05);
-  LoggedTunableNumber botAngleThreshold = new LoggedTunableNumber("bot ang threshold", 0.05);
+  LoggedTunableNumber shooterAngleThreshold = new LoggedTunableNumber("ang threshold", 0.01);
+  LoggedTunableNumber botAngleThreshold = new LoggedTunableNumber("bot ang threshold", 0.02);
   LoggedTunableNumber botAngleThresho2ld = new LoggedTunableNumber("shoot fac2222", 0.8);
 
   public SpeakerShoot(
@@ -44,21 +44,26 @@ public class SpeakerShoot extends Command {
   public void execute() {
     Pose2d pos = drive.getPosition();
     Translation3d botPose = new Translation3d(pos.getX(), pos.getY(), 0.5);
-    Logger.recordOutput("Speak",new Pose3d(FieldConstants.getSpeaker(),new Rotation3d()));
-    var cmd =
-        ShootWhileMove.calcSimpleCommand(
-            botPose.minus(FieldConstants.getSpeaker()),
-            ShootWhileMove.getFieldRelativeSpeeds(
-                drive.getVelocity(), drive.getPosition().getRotation()));
-    shooter.commandSpeed(cmd.shooterSpeedMPS);
-    Logger.recordOutput("Drive/CMDState",new Pose2d(pos.getTranslation(),cmd.botAngle));
-    rotationCommander.accept(Optional.of(cmd.botAngle));
-    arm.setAngle(cmd.shooterAngle.times(botAngleThresho2ld.get()));
+    var botAngle=FieldConstants.getSpeaker().minus(botPose).toTranslation2d().getAngle();
+    var shooterAngle=new Rotation2d(FieldConstants.getSpeaker().minus(botPose).toTranslation2d().getNorm(),FieldConstants.getSpeaker().minus(botPose).getZ());
+    shooter.commandSpeed(9.88);
+    rotationCommander.accept(Optional.of(botAngle));
+    arm.setAngle(shooterAngle);
+//    Bad Shooting While Moving Code
+//    var cmd =
+//        ShootWhileMove.calcSimpleCommand(
+//            botPose.minus(FieldConstants.getSpeaker()),
+//            ShootWhileMove.getFieldRelativeSpeeds(
+//                drive.getVelocity(), drive.getPosition().getRotation()));
+//    shooter.commandSpeed(cmd.shooterSpeedMPS);
+//    Logger.recordOutput("Drive/CMDState",new Pose2d(pos.getTranslation(),cmd.botAngle));
+//    rotationCommander.accept(Optional.of(cmd.botAngle));
+//    arm.setAngle(cmd.shooterAngle.times(botAngleThresho2ld.get()));
     shooter.setFiringBlocked(
         botAngleThreshold.get()
-                < Math.abs(cmd.botAngle.minus(drive.getPosition().getRotation()).getRotations())
+                < Math.abs(botAngle.minus(drive.getPosition().getRotation()).getRotations())
             || shooterAngleThreshold.get()
-                < Math.abs(cmd.shooterAngle.minus(arm.getAngle()).getRotations()));
+                < Math.abs(shooterAngle.minus(arm.getAngle()).getRotations()));
   }
 
   @Override
