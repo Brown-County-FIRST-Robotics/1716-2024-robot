@@ -58,7 +58,7 @@ public class ModuleIOSparkFX implements ModuleIO {
     thrust.getConfigurator().refresh(config.CustomParams);
     offsetTun = new LoggedTunableNumber(name + "_offset");
     if (steerID == 10) {
-      off = 0.824;
+      off = 0.724;
     } else if (steerID == 11) {
       off = 0;
     } else if (steerID == 12) {
@@ -91,7 +91,7 @@ public class ModuleIOSparkFX implements ModuleIO {
     pid.setSmartMotionMaxVelocity(300, 0);
     pid.setSmartMotionMinOutputVelocity(0, 0);
     pid.setSmartMotionMaxAccel(1200, 0);
-    pid.setSmartMotionAllowedClosedLoopError(0.01, 0);
+    pid.setSmartMotionAllowedClosedLoopError(0.0025, 0);
     pid.setPositionPIDWrappingEnabled(true);
     pid.setPositionPIDWrappingMaxInput(1);
     pid.setPositionPIDWrappingMinInput(0);
