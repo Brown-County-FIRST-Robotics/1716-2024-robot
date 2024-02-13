@@ -91,7 +91,7 @@ public class ModuleIOSparkFX implements ModuleIO {
     pid.setSmartMotionMaxVelocity(300, 0);
     pid.setSmartMotionMinOutputVelocity(0, 0);
     pid.setSmartMotionMaxAccel(1200, 0);
-    pid.setSmartMotionAllowedClosedLoopError(0.01, 0);
+    pid.setSmartMotionAllowedClosedLoopError(0.0025, 0);
     pid.setPositionPIDWrappingEnabled(true);
     pid.setPositionPIDWrappingMaxInput(1);
     pid.setPositionPIDWrappingMinInput(0);
