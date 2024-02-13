@@ -23,7 +23,7 @@ public class Intake extends Command {
   public void initialize() {
     arm.setAngle(Rotation2d.fromRotations(armPreset.get()));
     shooter.cmdVel(topSpeed.get(), bottomSpeed.get());
-    shooter.cmdFeeder(Shooter.FeederPreset.INTAKE_OR_SHOOT);
+    shooter.cmdFeeder(-8000);
   }
 
   @Override
@@ -40,6 +40,6 @@ public class Intake extends Command {
 
   @Override
   public boolean isFinished() {
-    return !shooter.isHolding();
+    return false;
   }
 }
