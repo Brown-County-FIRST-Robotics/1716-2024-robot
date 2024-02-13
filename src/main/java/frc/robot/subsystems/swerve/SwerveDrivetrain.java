@@ -130,7 +130,7 @@ public class SwerveDrivetrain implements Drivetrain {
   }
 
   private SwerveModuleState[] getWheelSpeeds() {
-    return new SwerveModuleState[] {flInputs.vel, frInputs.vel, blInputs.vel, brInputs.vel};
+    return new SwerveModuleState[] {new SwerveModuleState(flInputs.vel.speedMetersPerSecond,getPositions()[0].angle), new SwerveModuleState(frInputs.vel.speedMetersPerSecond,getPositions()[1].angle), new SwerveModuleState(blInputs.vel.speedMetersPerSecond,getPositions()[2].angle), new SwerveModuleState(brInputs.vel.speedMetersPerSecond,getPositions()[3].angle)};
   }
 
   @Override
