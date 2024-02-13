@@ -21,11 +21,8 @@ import org.littletonrobotics.junction.networktables.LoggedDashboardNumber;
 public class TeleopDrive extends Command {
   private final Drivetrain drivetrain;
   private final CommandXboxController controller;
-  private final ProfiledPIDController ppc =
-      new ProfiledPIDController(0, 0, 0, new TrapezoidProfile.Constraints(3, 3));
-  LoggedTunableNumber p = new LoggedTunableNumber("drP", -50);
-  LoggedTunableNumber i = new LoggedTunableNumber("drI", 0);
-  LoggedTunableNumber d = new LoggedTunableNumber("drD", 0);
+  private final TrapezoidProfile.Constraints constraints =new TrapezoidProfile.Constraints(10, 40);
+  LoggedTunableNumber deadban2=new LoggedTunableNumber("Allowed Err",3);
   boolean foc = true;
   boolean locked = false;
   DualRateLimiter xVelLimiter = new DualRateLimiter(4, 100);
@@ -52,9 +49,6 @@ public class TeleopDrive extends Command {
     this.drivetrain = drivetrain;
     this.controller = controller;
     addRequirements(this.drivetrain);
-    p.attach(ppc::setP);
-    i.attach(ppc::setI);
-    d.attach(ppc::setD);
   }
 
   /** The initial subroutine of a command. Called once when the command is initially scheduled. */
@@ -69,9 +63,9 @@ public class TeleopDrive extends Command {
   public void execute() {
     double ext = 0;
     if (customRotation.isPresent()) {
-      ext =
-          ppc.calculate(
-              customRotation.get().minus(drivetrain.getPosition().getRotation()).getRotations(), 0);
+      if (Math.abs(customRotation.get().minus(drivetrain.getPosition().getRotation()).getDegrees())>deadban2.get()){
+        ext = new TrapezoidProfile(constraints).calculate(0.02, new TrapezoidProfile.State(drivetrain.getPosition().getRotation().getRadians(), drivetrain.getVelocity().omegaRadiansPerSecond), new TrapezoidProfile.State(customRotation.get().getRadians(), 0)).velocity;
+      }
     }
     // TEMP CODE
     //    if (controller.getHID().getRightTriggerAxis() > 0.2) {
