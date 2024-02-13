@@ -130,7 +130,7 @@ public class SwerveDrivetrain implements Drivetrain {
   }
 
   private SwerveModuleState[] getWheelSpeeds() {
-    return new SwerveModuleState[] {flInputs.vel, frInputs.vel, blInputs.vel, brInputs.vel};
+    return new SwerveModuleState[] {new SwerveModuleState(flInputs.vel.speedMetersPerSecond,getPositions()[0].angle), new SwerveModuleState(frInputs.vel.speedMetersPerSecond,getPositions()[1].angle), new SwerveModuleState(blInputs.vel.speedMetersPerSecond,getPositions()[2].angle), new SwerveModuleState(brInputs.vel.speedMetersPerSecond,getPositions()[3].angle)};
   }
 
   @Override
@@ -142,16 +142,16 @@ public class SwerveDrivetrain implements Drivetrain {
     SwerveDriveKinematics.desaturateWheelSpeeds(states, MAX_WHEEL_SPEED);
     states[0] =
         SwerveModuleState.optimize(
-            states[0], getPositions()[0].angle.plus(Rotation2d.fromRotations(1.0)));
+            states[0], getPositions()[0].angle);
     states[1] =
         SwerveModuleState.optimize(
-            states[1], getPositions()[1].angle.plus(Rotation2d.fromRotations(1.0)));
+            states[1], getPositions()[1].angle);
     states[2] =
         SwerveModuleState.optimize(
-            states[2], getPositions()[2].angle.plus(Rotation2d.fromRotations(1.0)));
+            states[2], getPositions()[2].angle);
     states[3] =
         SwerveModuleState.optimize(
-            states[3], getPositions()[3].angle.plus(Rotation2d.fromRotations(1.0)));
+            states[3], getPositions()[3].angle);
     Logger.recordOutput("Drive/CmdStates", states);
     fl.setCmdState(
         new SwerveModuleState(
