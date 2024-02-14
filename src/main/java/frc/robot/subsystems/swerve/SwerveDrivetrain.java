@@ -1,5 +1,6 @@
 package frc.robot.subsystems.swerve;
 
+import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
@@ -109,6 +110,7 @@ public class SwerveDrivetrain implements Drivetrain {
     poseEstimator =
         new SwerveDrivePoseEstimator(
             KINEMATICS, getGyro().toRotation2d(), getPositions(), Constants.INIT_POSE);
+    poseEstimator.setVisionMeasurementStdDevs(VecBuilder.fill(0.9,0.9,0.9));
   }
 
   @Override
@@ -130,7 +132,7 @@ public class SwerveDrivetrain implements Drivetrain {
   }
 
   private SwerveModuleState[] getWheelSpeeds() {
-    return new SwerveModuleState[] {flInputs.vel, frInputs.vel, blInputs.vel, brInputs.vel};
+    return new SwerveModuleState[] {new SwerveModuleState(flInputs.vel.speedMetersPerSecond,getPositions()[0].angle), new SwerveModuleState(frInputs.vel.speedMetersPerSecond,getPositions()[1].angle), new SwerveModuleState(blInputs.vel.speedMetersPerSecond,getPositions()[2].angle), new SwerveModuleState(brInputs.vel.speedMetersPerSecond,getPositions()[3].angle)};
   }
 
   @Override
@@ -142,16 +144,20 @@ public class SwerveDrivetrain implements Drivetrain {
     SwerveDriveKinematics.desaturateWheelSpeeds(states, MAX_WHEEL_SPEED);
     states[0] =
         SwerveModuleState.optimize(
-            states[0], getPositions()[0].angle.plus(Rotation2d.fromRotations(1.0)));
+            states[0], getPositions()[0].angle);
     states[1] =
         SwerveModuleState.optimize(
-            states[1], getPositions()[1].angle.plus(Rotation2d.fromRotations(1.0)));
+            states[1], getPositions()[1].angle);
     states[2] =
         SwerveModuleState.optimize(
-            states[2], getPositions()[2].angle.plus(Rotation2d.fromRotations(1.0)));
+            states[2], getPositions()[2].angle);
     states[3] =
         SwerveModuleState.optimize(
-            states[3], getPositions()[3].angle.plus(Rotation2d.fromRotations(1.0)));
+            states[3], getPositions()[3].angle);
+    states[0].speedMetersPerSecond*=getPositions()[0].angle.minus(states[0].angle).getCos();
+    states[1].speedMetersPerSecond*=getPositions()[1].angle.minus(states[1].angle).getCos();
+    states[2].speedMetersPerSecond*=getPositions()[2].angle.minus(states[2].angle).getCos();
+    states[3].speedMetersPerSecond*=getPositions()[3].angle.minus(states[3].angle).getCos();
     Logger.recordOutput("Drive/CmdStates", states);
     fl.setCmdState(
         new SwerveModuleState(
@@ -215,6 +221,12 @@ public class SwerveDrivetrain implements Drivetrain {
   }
 
   @Override
+  public void addVisionUpdate(Pose2d newPose, double timestamp, int tags) {
+    poseEstimator.setVisionMeasurementStdDevs(tags>1?VecBuilder.fill(0.9,0.9,0.9):VecBuilder.fill(20,20,20));
+    poseEstimator.addVisionMeasurement(newPose, timestamp);
+  }
+
+  @Override
   public Command getDriveToPointCmd(Pose2d pose) {
     return getDriveToPointCmd(pose, 0, 0);
   }
@@ -258,6 +270,7 @@ public class SwerveDrivetrain implements Drivetrain {
   @Override
   public void humanDrive(ChassisSpeeds cmd) {
     SwerveModuleState[] states = KINEMATICS.toSwerveModuleStates(cmd);
+    Logger.recordOutput("TeleopStates",states);
     setModuleStates(states);
   }
 
