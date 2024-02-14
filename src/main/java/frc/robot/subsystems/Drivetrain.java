@@ -31,6 +31,9 @@ public interface Drivetrain extends Subsystem {
    * @param timestamp The time at which the pose was detected
    */
   void addVisionUpdate(Pose2d newPose, double timestamp);
+
+  void addVisionUpdate(Pose2d newPose, double timestamp, int tags);
+
   /**
    * Returns a command that drives to a point
    *
