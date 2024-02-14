@@ -83,14 +83,14 @@ public class ModuleIOSparkFX implements ModuleIO {
     pid = steer.getPIDController();
     encoder = steer.getAnalog(SparkAnalogSensor.Mode.kAbsolute);
 
-    encoder.setPositionConversionFactor(1 / 3.3);
+    encoder.setPositionConversionFactor(1 / 3.33);
     encoder.setInverted(true);
     pid.setFeedbackDevice(encoder);
 
     pid.setOutputRange(-1, 1);
     pid.setSmartMotionMaxVelocity(300, 0);
     pid.setSmartMotionMinOutputVelocity(0, 0);
-    pid.setSmartMotionMaxAccel(1200, 0);
+    pid.setSmartMotionMaxAccel(1800, 0);
     pid.setSmartMotionAllowedClosedLoopError(0.01, 0);
     pid.setPositionPIDWrappingEnabled(true);
     pid.setPositionPIDWrappingMaxInput(1);
