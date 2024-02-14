@@ -169,4 +169,9 @@ public class MecanumDrivetrain implements Drivetrain {
   public void addVisionUpdate(Pose2d newPose, double timestamp) {
     poseEstimator.addVisionMeasurement(newPose, timestamp);
   }
+
+  @Override
+  public void addVisionUpdate(Pose2d newPose, double timestamp, int tags) {
+
+  }
 }
