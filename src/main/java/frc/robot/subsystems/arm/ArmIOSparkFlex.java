@@ -15,7 +15,7 @@ public class ArmIOSparkFlex implements ArmIO {
   LoggedTunableNumber pTuner = new LoggedTunableNumber("Arm/p_tuner", 0.0);
   LoggedTunableNumber iTuner = new LoggedTunableNumber("Arm/i_tuner", 0.0);
   LoggedTunableNumber dTuner = new LoggedTunableNumber("Arm/d_tuner", 0.0);
-  LoggedTunableNumber offset = new LoggedTunableNumber("Arm/offset", 0.72);
+  LoggedTunableNumber offset = new LoggedTunableNumber("Arm/offset", 0.70333);
 
   public ArmIOSparkFlex(int id) {
     controller = new CANSparkFlex(id, CANSparkLowLevel.MotorType.kBrushless);
@@ -28,9 +28,9 @@ public class ArmIOSparkFlex implements ArmIO {
     controller.setSmartCurrentLimit(Constants.CurrentLimits.NEO_VORTEX);
     pid.setFeedbackDevice(encoder);
     pid.setOutputRange(-1, 1);
-    pid.setSmartMotionMaxVelocity(0.2 * FREE_RPM / GEAR_RATIO, 0);
+    pid.setSmartMotionMaxVelocity(0.6 * FREE_RPM / GEAR_RATIO, 0);
     pid.setSmartMotionMinOutputVelocity(0, 0);
-    pid.setSmartMotionMaxAccel(300 / 100, 0);
+    pid.setSmartMotionMaxAccel(6, 0);
     pid.setSmartMotionAllowedClosedLoopError(0.008, 0);
     ffTuner.attach(pid::setFF);
     pTuner.attach(pid::setP);
