@@ -91,7 +91,7 @@ public class Vision extends PeriodicRunnable {
           }
           Pose3d poseOfBot = outPose.plus(camPoses[i].inverse());
           Logger.recordOutput("Vision/EstPose_" + i, poseOfBot);
-          drivetrain.addVisionUpdate(poseOfBot.toPose2d(), inputs[i].timestamp.get());
+          drivetrain.addVisionUpdate(poseOfBot.toPose2d(), inputs[i].timestamp.get(),inputs[i].ids.get().length);
         }
       }
     }
