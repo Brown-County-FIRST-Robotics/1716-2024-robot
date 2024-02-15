@@ -8,6 +8,7 @@ package frc.robot;
 import edu.wpi.first.math.geometry.*;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.commands.TeleopDrive;
@@ -41,9 +42,8 @@ public class RobotContainer {
   private final CommandXboxController driverController =
       new CommandXboxController(Constants.Driver.DRIVER_CONTROLLER_PORT);
   private final Drivetrain driveSys;
-  private Arm arm; 
+  private Arm arm;
   private LEDs leds;
-
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
@@ -146,7 +146,10 @@ public class RobotContainer {
    * PS4} controllers or {@link edu.wpi.first.wpilibj2.command.button.CommandJoystick Flight
    * joysticks}.
    */
-  private void configureBindings() {}
+  private void configureBindings() {
+    driverController.b().onTrue(new StartEndCommand(() -> leds.setRed(), () -> {}));
+    driverController.a().onTrue(new StartEndCommand(() -> leds.setGreen(), () -> {}));
+  }
 
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.
