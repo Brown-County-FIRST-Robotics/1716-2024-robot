@@ -61,6 +61,9 @@ public class Arm extends SubsystemBase {
   public Rotation2d getAngle() {
     return inputs.angle;
   }
+  public double getOmega(){
+    return inputs.omega;
+  }
 
   /**
    * Increments the angle of the arm. This commands an angle based on the current angle of the arm,
