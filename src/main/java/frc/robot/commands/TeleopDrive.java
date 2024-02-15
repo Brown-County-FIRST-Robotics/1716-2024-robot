@@ -64,6 +64,9 @@ public class TeleopDrive extends Command {
   static boolean deadband(double x) {
     return Math.abs(x) < 0.1;
   }
+  static double deadscale(double x){
+    return deadband(x)?0:(x>0? (x - 0.1) /0.9:(x+0.1)/0.9);
+  }
 
   @Override
   public void execute() {
@@ -116,9 +119,9 @@ public class TeleopDrive extends Command {
       locked = false;
       ChassisSpeeds cmd =
           new ChassisSpeeds(
-              controller.getLeftY() * Constants.Driver.MAX_X_SPEED * slow,
-              controller.getLeftX() * Constants.Driver.MAX_Y_SPEED * slow,
-              controller.getRightX() * Constants.Driver.MAX_THETA_SPEED * slow + ext);
+              deadscale(controller.getLeftY()) * Constants.Driver.MAX_X_SPEED * slow,
+              deadscale(controller.getLeftX()) * Constants.Driver.MAX_Y_SPEED * slow,
+              deadscale(controller.getRightX()) * Constants.Driver.MAX_THETA_SPEED * slow + ext);
 
       ChassisSpeeds sp =
           new ChassisSpeeds(
