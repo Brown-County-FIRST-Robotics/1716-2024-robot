@@ -1,9 +1,11 @@
 package frc.robot.subsystems;
 
+import edu.wpi.first.math.Vector;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import java.util.List;
@@ -28,11 +30,10 @@ public interface Drivetrain extends Subsystem {
    * Adds a vision update to the pose estimator
    *
    * @param newPose The estimated pose
+   * @param stdDevs The measurement error standard deviations [x, y, theta] [meters,meters,radians]
    * @param timestamp The time at which the pose was detected
    */
-  void addVisionUpdate(Pose2d newPose, double timestamp);
-
-  void addVisionUpdate(Pose2d newPose, double timestamp, int tags);
+  void addVisionUpdate(Pose2d newPose, Vector<N3> stdDevs, double timestamp);
 
   /**
    * Returns a command that drives to a point
