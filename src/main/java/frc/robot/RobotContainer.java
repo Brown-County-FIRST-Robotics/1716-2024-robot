@@ -12,6 +12,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.commands.Intake;
+import frc.robot.commands.SimpleSpeakerShoot;
 import frc.robot.commands.SpeakerShoot;
 import frc.robot.commands.TeleopDrive;
 import frc.robot.subsystems.Drivetrain;
@@ -181,7 +182,12 @@ public class RobotContainer {
         .onFalse(Commands.runOnce(shooter::stop, shooter));
     driverController
         .rightTrigger(0.2)
+        .and(driverController.a())
         .whileTrue(new SpeakerShoot(driveSys, arm, teleopDrive::setCustomRotation, shooter));
+    driverController
+        .rightTrigger(0.2)
+        .and(driverController.a().negate())
+        .whileTrue(new SimpleSpeakerShoot(driveSys, arm, teleopDrive::setCustomRotation, shooter));
   }
 
   /**
