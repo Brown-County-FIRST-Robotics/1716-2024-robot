@@ -24,8 +24,8 @@ public class Shooter extends SubsystemBase {
 
   boolean isShooting = false;
   boolean isFiring = false;
-  double feedCmd=0.0;
-  private LoggedTunableNumber ltn=new LoggedTunableNumber("shoor fac",4000);
+  double feedCmd = 0.0;
+  private LoggedTunableNumber ltn = new LoggedTunableNumber("shoor fac", 4000);
 
   public boolean isHolding() {
     return holding;
@@ -70,7 +70,7 @@ public class Shooter extends SubsystemBase {
       isFiring = true;
       firingStartTime = Timer.getFPGATimestamp();
     }
-    System.out.println(firingBlocked);
+    //    System.out.println(firingBlocked);
     if (isFiring) {
       cmdFeeder(8000);
       if (firingStartTime + firingTime.get() < Timer.getFPGATimestamp()) {
@@ -80,10 +80,7 @@ public class Shooter extends SubsystemBase {
         cmdFeeder(0);
       }
     }
-
   }
-
-
 
   public void cmdVel(double v1, double v2) {
     shooterIO.setVelocity(v1, v2);
@@ -112,18 +109,15 @@ public class Shooter extends SubsystemBase {
     cmdBottomSpeed = bvel;
   }
 
-
   public void stop() {
     setFiringBlocked(false);
     isShooting = false;
     isFiring = false;
     feederIO.setVel(0);
   }
-  public void cmdFeeder(double vel){
-    feedCmd=vel;
+
+  public void cmdFeeder(double vel) {
+    feedCmd = vel;
     feederIO.setVel(feedCmd);
   }
-
-
-
 }

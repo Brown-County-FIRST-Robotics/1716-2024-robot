@@ -62,6 +62,10 @@ public class Arm extends SubsystemBase {
     return inputs.angle;
   }
 
+  public double getOmega() {
+    return inputs.omega;
+  }
+
   /**
    * Increments the angle of the arm. This commands an angle based on the current angle of the arm,
    * to prevent windup.

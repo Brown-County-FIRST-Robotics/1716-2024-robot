@@ -34,7 +34,7 @@ public class FeederIODCSpark implements FeederIO {
     pid.setOutputRange(-1, 1);
     pid.setSmartMotionMaxVelocity(11000, 0);
     pid.setSmartMotionMinOutputVelocity(0, 0);
-    pid.setSmartMotionMaxAccel(11000/0.5, 0);
+    pid.setSmartMotionMaxAccel(11000 / 0.5, 0);
     pid.setSmartMotionAllowedClosedLoopError(10, 0);
 
     // END TEMP CODE

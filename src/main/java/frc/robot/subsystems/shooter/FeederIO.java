@@ -3,7 +3,7 @@ package frc.robot.subsystems.shooter;
 import org.littletonrobotics.junction.AutoLog;
 
 public interface FeederIO {
-  default void setVel(double vel){}
+  default void setVel(double vel) {}
 
   @AutoLog
   public static class FeederIOInputs {
@@ -14,5 +14,4 @@ public interface FeederIO {
   }
 
   default void updateInputs(FeederIOInputs inputs) {}
-
 }
