@@ -5,7 +5,6 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Constants;
@@ -14,23 +13,18 @@ import frc.robot.utils.DualRateLimiter;
 import frc.robot.utils.LoggedTunableNumber;
 import java.util.Optional;
 import org.littletonrobotics.junction.Logger;
-import org.littletonrobotics.junction.networktables.LoggedDashboardNumber;
 
 /** A command for manual control */
 public class TeleopDrive extends Command {
   private final Drivetrain drivetrain;
   private final CommandXboxController controller;
   private final TrapezoidProfile.Constraints constraints = new TrapezoidProfile.Constraints(10, 40);
-  LoggedTunableNumber deadban2 = new LoggedTunableNumber("Allowed Err", 3);
+  LoggedTunableNumber allowedErr = new LoggedTunableNumber("Rotation Allowed Err", 3);
   boolean foc = true;
   boolean locked = false;
   DualRateLimiter xVelLimiter = new DualRateLimiter(4, 100);
   DualRateLimiter yVelLimiter = new DualRateLimiter(4, 100);
   DualRateLimiter omegaLimiter = new DualRateLimiter(6, 100);
-
-  // TEMP CODE
-  LoggedDashboardNumber armSetpoint = new LoggedDashboardNumber("Arm Setpoint", 0.0);
-  // END TEMP
 
   public void setCustomRotation(Optional<Rotation2d> customRotation) {
     this.customRotation = customRotation;
@@ -42,7 +36,6 @@ public class TeleopDrive extends Command {
    * Constructs a new command with a given controller and drivetrain
    *
    * @param drivetrain The drivetrain subsystem
-   * @param arm The arm subsystem
    * @param controller The driver controller
    */
   public TeleopDrive(Drivetrain drivetrain, CommandXboxController controller) {
@@ -68,7 +61,7 @@ public class TeleopDrive extends Command {
     double ext = 0;
     if (customRotation.isPresent()) {
       if (Math.abs(customRotation.get().minus(drivetrain.getPosition().getRotation()).getDegrees())
-          > deadban2.get()) {
+          > allowedErr.get()) {
         ext =
             new TrapezoidProfile(constraints)
                 .calculate(
@@ -80,37 +73,7 @@ public class TeleopDrive extends Command {
                 .velocity;
       }
     }
-    // TEMP CODE
-    //    if (controller.getHID().getRightTriggerAxis() > 0.2) {
-    //      if (deadband(controller.getRightX())) {
-    //        ext =
-    //            ppc.calculate(
-    //                drivetrain
-    //                    .getPosition()
-    //                    .getRotation()
-    //                    .minus(
-    //                        drivetrain
-    //                            .getPosition()
-    //                            .getTranslation()
-    //                            .minus(FieldConstants.getSpeaker().toTranslation2d())
-    //                            .getAngle())
-    //                    .getRotations(),
-    //                0);
-    //      }
-    //      arm.setAngle(
-    //          new Rotation2d(
-    //              drivetrain
-    //                  .getPosition()
-    //                  .getTranslation()
-    //                  .minus(FieldConstants.getSpeaker().toTranslation2d())
-    //                  .getNorm(),
-    //              FieldConstants.getSpeaker().getZ()));
-    //    } else {
-    //      arm.setAngle(Rotation2d.fromRotations(0.7));
-    //    }
-    // END TEMP
 
-    controller.getHID().setRumble(GenericHID.RumbleType.kRightRumble, Math.abs(ext / 3.0));
     Logger.recordOutput("TeleopDrive/ext", ext);
     double slow =
         controller.getHID().getLeftBumper() || controller.getHID().getRightBumper() ? 0.2 : 1.0;
