@@ -57,8 +57,9 @@ public class TeleopDrive extends Command {
   static boolean deadband(double x) {
     return Math.abs(x) < 0.1;
   }
-  static double deadscale(double x){
-    return deadband(x)?0:(x>0? (x - 0.1) /0.9:(x+0.1)/0.9);
+
+  static double deadscale(double x) {
+    return deadband(x) ? 0 : (x > 0 ? (x - 0.1) / 0.9 : (x + 0.1) / 0.9);
   }
 
   @Override

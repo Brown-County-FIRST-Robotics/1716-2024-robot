@@ -1,5 +1,6 @@
 package frc.robot.subsystems.swerve;
 
+import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
@@ -109,6 +110,7 @@ public class SwerveDrivetrain implements Drivetrain {
     poseEstimator =
         new SwerveDrivePoseEstimator(
             KINEMATICS, getGyro().toRotation2d(), getPositions(), Constants.INIT_POSE);
+    poseEstimator.setVisionMeasurementStdDevs(VecBuilder.fill(0.9, 0.9, 0.9));
   }
 
   @Override
@@ -212,6 +214,13 @@ public class SwerveDrivetrain implements Drivetrain {
 
   @Override
   public void addVisionUpdate(Pose2d newPose, double timestamp) {
+    poseEstimator.addVisionMeasurement(newPose, timestamp);
+  }
+
+  @Override
+  public void addVisionUpdate(Pose2d newPose, double timestamp, int tags) {
+    poseEstimator.setVisionMeasurementStdDevs(
+        tags > 1 ? VecBuilder.fill(0.9, 0.9, 0.9) : VecBuilder.fill(20, 20, 20));
     poseEstimator.addVisionMeasurement(newPose, timestamp);
   }
 

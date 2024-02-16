@@ -7,11 +7,9 @@ import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.arm.Arm;
 import frc.robot.subsystems.shooter.Shooter;
 import frc.robot.utils.LoggedTunableNumber;
-import frc.robot.utils.ShootWhileMove;
-import org.littletonrobotics.junction.Logger;
-
 import java.util.Optional;
 import java.util.function.Consumer;
+import org.littletonrobotics.junction.Logger;
 
 public class SpeakerShoot extends Command {
   Drivetrain drive;
