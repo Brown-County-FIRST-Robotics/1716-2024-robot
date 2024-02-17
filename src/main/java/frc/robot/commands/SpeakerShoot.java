@@ -1,12 +1,17 @@
 package frc.robot.commands;
 
 import edu.wpi.first.math.geometry.*;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation3d;
+import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.FieldConstants;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.arm.Arm;
 import frc.robot.subsystems.shooter.Shooter;
 import frc.robot.utils.LoggedTunableNumber;
+import frc.robot.utils.Overrides;
 import java.util.Optional;
 import java.util.function.Consumer;
 import org.littletonrobotics.junction.Logger;
@@ -19,16 +24,19 @@ public class SpeakerShoot extends Command {
   boolean firing = false;
   LoggedTunableNumber shooterAngleThreshold = new LoggedTunableNumber("ang threshold", 0.01);
   LoggedTunableNumber botAngleThreshold = new LoggedTunableNumber("bot ang threshold", 0.02);
+  XboxController controller;
 
   public SpeakerShoot(
       Drivetrain drive,
       Arm arm,
       Consumer<Optional<Rotation2d>> rotationCommander,
-      Shooter shooter) {
+      Shooter shooter,
+      XboxController overrideController) {
     this.drive = drive;
     this.arm = arm;
     this.rotationCommander = rotationCommander;
     this.shooter = shooter;
+    controller = overrideController;
     addRequirements(arm, shooter); // DO NOT add drive
   }
 
@@ -100,6 +108,6 @@ public class SpeakerShoot extends Command {
 
   @Override
   public boolean isFinished() {
-    return firing && !shooter.isHolding();
+    return !Overrides.disableAutoAiming.get() && (firing && !shooter.isHolding());
   }
 }

@@ -7,6 +7,7 @@ import edu.wpi.first.math.geometry.*;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.vision.VisionIO.VisionIOInputs;
 import frc.robot.utils.LoggedTunableNumber;
+import frc.robot.utils.Overrides;
 import frc.robot.utils.PeriodicRunnable;
 import org.littletonrobotics.junction.Logger;
 
@@ -100,19 +101,21 @@ public class Vision extends PeriodicRunnable {
           }
           Pose3d poseOfBot = outPose.plus(camPoses[i].inverse());
           Logger.recordOutput("Vision/EstPose_" + i, poseOfBot);
-          drivetrain.addVisionUpdate(
-              poseOfBot.toPose2d(),
-              VecBuilder.fill(
-                  inputs[i].ids.get().length > 1
-                      ? multiTagTranslationStdDev.get()
-                      : oneTagTranslationStdDev.get(),
-                  inputs[i].ids.get().length > 1
-                      ? multiTagTranslationStdDev.get()
-                      : oneTagTranslationStdDev.get(),
-                  inputs[i].ids.get().length > 1
-                      ? multiTagRotationStdDev.get()
-                      : oneTagRotationStdDev.get()),
-              inputs[i].timestamp.get());
+          if (!Overrides.disableVision.get()) {
+            drivetrain.addVisionUpdate(
+                poseOfBot.toPose2d(),
+                VecBuilder.fill(
+                    inputs[i].ids.get().length > 1
+                        ? multiTagTranslationStdDev.get()
+                        : oneTagTranslationStdDev.get(),
+                    inputs[i].ids.get().length > 1
+                        ? multiTagTranslationStdDev.get()
+                        : oneTagTranslationStdDev.get(),
+                    inputs[i].ids.get().length > 1
+                        ? multiTagRotationStdDev.get()
+                        : oneTagRotationStdDev.get()),
+                inputs[i].timestamp.get());
+          }
         }
       }
     }

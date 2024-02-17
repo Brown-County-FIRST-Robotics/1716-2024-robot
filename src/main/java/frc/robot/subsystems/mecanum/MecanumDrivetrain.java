@@ -16,6 +16,7 @@ import edu.wpi.first.wpilibj2.command.MecanumControllerCommand;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import frc.robot.Constants;
 import frc.robot.subsystems.*;
+import frc.robot.utils.Overrides;
 import frc.robot.utils.PoseEstimator;
 import java.util.List;
 import java.util.Set;
@@ -73,11 +74,24 @@ public class MecanumDrivetrain implements Drivetrain {
         new SwerveModuleState(
             driveInputs.vel.rearRightMetersPerSecond, Rotation2d.fromDegrees(-45)));
     Twist2d odoTwist = KINEMATICS.toTwist2d(driveInputs.pos, lastPositions);
-    odoTwist =
-        new Twist2d(odoTwist.dx, odoTwist.dy, getGyro().toRotation2d().minus(lastIMU).getRadians());
+    if (!Overrides.disableIMU.get()) {
+      odoTwist =
+          new Twist2d(
+              odoTwist.dx, odoTwist.dy, getGyro().toRotation2d().minus(lastIMU).getRadians());
+    }
     poseEstimator.addOdometry(odoTwist);
     lastIMU = getGyro().toRotation2d();
     lastPositions = driveInputs.pos;
+
+    checkForYawReset();
+  }
+
+  private void checkForYawReset() {
+    if (Overrides.resetYaw.get()) {
+      poseEstimator.setPose(
+          new Pose2d(getPosition().getTranslation(), Constants.INIT_POSE.getRotation()));
+      Overrides.resetYaw.set(false);
+    }
   }
 
   @Override

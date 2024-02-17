@@ -1,12 +1,14 @@
 package frc.robot.commands;
 
 import edu.wpi.first.math.geometry.*;
+import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.FieldConstants;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.arm.Arm;
 import frc.robot.subsystems.shooter.Shooter;
 import frc.robot.utils.LoggedTunableNumber;
+import frc.robot.utils.Overrides;
 import java.util.Optional;
 import java.util.function.Consumer;
 
@@ -18,16 +20,19 @@ public class SimpleSpeakerShoot extends Command {
   boolean firing = false;
   LoggedTunableNumber shooterAngleThreshold = new LoggedTunableNumber("ang threshold", 0.01);
   LoggedTunableNumber botAngleThreshold = new LoggedTunableNumber("bot ang threshold", 0.02);
+  XboxController overrideController;
 
   public SimpleSpeakerShoot(
       Drivetrain drive,
       Arm arm,
       Consumer<Optional<Rotation2d>> rotationCommander,
-      Shooter shooter) {
+      Shooter shooter,
+      XboxController overrideController) {
     this.drive = drive;
     this.arm = arm;
     this.rotationCommander = rotationCommander;
     this.shooter = shooter;
+    this.overrideController = overrideController;
     addRequirements(arm, shooter); // DO NOT add drive
   }
 
@@ -47,18 +52,30 @@ public class SimpleSpeakerShoot extends Command {
                     new Rotation3d(0, -arm.getAngle().getRadians(), 0)))
             .transformBy(new Transform3d(new Translation3d(0.3, 0, 0.18), new Rotation3d()))
             .getTranslation();
-
     var botAngle = FieldConstants.getSpeaker().minus(botPose).toTranslation2d().getAngle();
     shooter.commandSpeed(9.88);
-    rotationCommander.accept(Optional.of(botAngle));
-    Rotation2d shooterAngle = Rotation2d.fromRadians(1);
-    arm.setAngle(shooterAngle);
-    boolean blocked =
-        botAngleThreshold.get()
-                < Math.abs(botAngle.minus(drive.getPosition().getRotation()).getRotations())
-            || shooterAngleThreshold.get()
-                < Math.abs(shooterAngle.minus(arm.getAngle()).getRadians())
-            || shooterAngleThreshold.get() < Math.abs(arm.getOmega());
+    boolean blocked = false;
+    if (!Overrides.disableAutoAlign.get()) {
+      rotationCommander.accept(Optional.of(botAngle));
+      blocked =
+          botAngleThreshold.get()
+              < Math.abs(botAngle.minus(drive.getPosition().getRotation()).getRotations());
+    } else {
+      rotationCommander.accept(Optional.empty());
+    }
+    if (!Overrides.disableArmAnglePresets.get()) {
+      Rotation2d shooterAngle = Rotation2d.fromRadians(1);
+      arm.setAngle(shooterAngle);
+      blocked =
+          blocked
+              || shooterAngleThreshold.get()
+                  < Math.abs(shooterAngle.minus(arm.getAngle()).getRotations());
+    } else {
+      arm.commandIncrement(
+          Rotation2d.fromRotations(
+              overrideController.getLeftY() * Overrides.armAngleOverrideIncrementScale.get()));
+      blocked = blocked || (!overrideController.getAButton());
+    }
     shooter.setFiringBlocked(blocked);
   }
 

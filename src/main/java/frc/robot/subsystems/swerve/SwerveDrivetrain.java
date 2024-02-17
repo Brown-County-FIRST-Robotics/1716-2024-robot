@@ -16,6 +16,7 @@ import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
 import frc.robot.Constants;
 import frc.robot.subsystems.*;
+import frc.robot.utils.Overrides;
 import frc.robot.utils.PoseEstimator;
 import java.util.List;
 import java.util.Set;
@@ -127,12 +128,25 @@ public class SwerveDrivetrain implements Drivetrain {
         KINEMATICS.toTwist2d(
             new SwerveDriveWheelPositions(lastPositions),
             new SwerveDriveWheelPositions(getPositions()));
-    odoTwist =
-        new Twist2d(odoTwist.dx, odoTwist.dy, getGyro().toRotation2d().minus(lastIMU).getRadians());
+    if (!Overrides.disableIMU.get()) {
+      odoTwist =
+          new Twist2d(
+              odoTwist.dx, odoTwist.dy, getGyro().toRotation2d().minus(lastIMU).getRadians());
+    }
     poseEstimator.addOdometry(odoTwist);
     lastPositions = getPositions();
     lastIMU = getGyro().toRotation2d();
     Logger.recordOutput("Drive/Pose", getPosition());
+
+    checkForYawReset();
+  }
+
+  private void checkForYawReset() {
+    if (Overrides.resetYaw.get()) {
+      poseEstimator.setPose(
+          new Pose2d(getPosition().getTranslation(), Constants.INIT_POSE.getRotation()));
+      Overrides.resetYaw.set(false);
+    }
   }
 
   private SwerveModuleState[] getWheelSpeeds() {
