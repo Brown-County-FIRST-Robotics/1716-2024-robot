@@ -66,6 +66,15 @@ public class RobotContainer {
                   new ModuleIOSim(2),
                   new ModuleIOSim(3),
                   new IMUIOSim());
+                  var visi5on =
+              new Vision(
+                  driveSys,
+                  new Transform3d[] {
+                    new Transform3d(
+                        new Translation3d(0 * 0.0254, 0 * 0.0254, 0 * 0.0254),
+                        new Rotation3d(0, -12 * Math.PI / 180, 0))
+                  },
+                  new VisionIO[] {new VisionIOSecondSight("SS_LAPTOP", "0")});
           break;
         case SWERVEBASE:
           driveSys =
