@@ -77,14 +77,14 @@ public class Vision extends PeriodicRunnable {
                         .getPosition()
                         .relativeTo(tagpose.toPose2d())
                         .getRotation()
-                        .interpolate(r1.toRotation2d(), 0.02)
+                        .interpolate(r1.toRotation2d(), 0.2)
                         .getRadians());
 
             Transform3d as =
                 new Transform3d(
                     new Translation3d(
                         inputs[i].pose.get()[0], inputs[i].pose.get()[1], inputs[i].pose.get()[2]),
-                    rot);
+                    rot.unaryMinus());
             outPose = tagpose.plus(as);
           } else if (inputs[i].ids.get().length > 1) {
             outPose =
