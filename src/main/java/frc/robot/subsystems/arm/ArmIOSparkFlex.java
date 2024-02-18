@@ -15,7 +15,7 @@ public class ArmIOSparkFlex implements ArmIO {
   LoggedTunableNumber pTuner = new LoggedTunableNumber("Arm/p_tuner", 0.0);
   LoggedTunableNumber iTuner = new LoggedTunableNumber("Arm/i_tuner", 0.0);
   LoggedTunableNumber dTuner = new LoggedTunableNumber("Arm/d_tuner", 0.0);
-  LoggedTunableNumber offset = new LoggedTunableNumber("Arm/offset", 0.70333);
+  LoggedTunableNumber offset = new LoggedTunableNumber("Arm/offset", 0.766);
 
   public ArmIOSparkFlex(int id) {
     controller = new CANSparkFlex(id, CANSparkLowLevel.MotorType.kBrushless);
@@ -23,6 +23,7 @@ public class ArmIOSparkFlex implements ArmIO {
     encoder = controller.getAbsoluteEncoder(SparkAbsoluteEncoder.Type.kDutyCycle);
     controller.restoreFactoryDefaults();
     encoder.setInverted(true);
+    controller.setInverted(true);
 
     controller.setIdleMode(CANSparkBase.IdleMode.kBrake);
     controller.setSmartCurrentLimit(Constants.CurrentLimits.NEO_VORTEX);
