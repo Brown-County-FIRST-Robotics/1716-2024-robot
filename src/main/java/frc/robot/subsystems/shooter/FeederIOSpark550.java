@@ -5,11 +5,12 @@ import edu.wpi.first.wpilibj.DigitalInput;
 import frc.robot.Constants;
 import frc.robot.utils.LoggedTunableNumber;
 
-public class FeederIODCSpark implements FeederIO {
+public class FeederIOSpark550 implements FeederIO {
   CANSparkMax motor;
   RelativeEncoder encoder;
   SparkPIDController pid;
-  DigitalInput photoelectricSensor = new DigitalInput(0); // light-based proximity sensor from SICK
+  DigitalInput openContact;
+  DigitalInput closedContact;
 
   // TEMP CODE
   LoggedTunableNumber feederP = new LoggedTunableNumber("Feeder P", 0);
@@ -18,7 +19,9 @@ public class FeederIODCSpark implements FeederIO {
   LoggedTunableNumber feederKV = new LoggedTunableNumber("Feeder KV", 1.0 / 11000.0);
   // END TEMP CODE
 
-  public FeederIODCSpark(int motorId) {
+  public FeederIOSpark550(int motorId, int openContactPin, int closedContactPin) {
+    openContact = new DigitalInput(openContactPin);
+    closedContact = new DigitalInput(closedContactPin);
     motor = new CANSparkMax(motorId, CANSparkLowLevel.MotorType.kBrushless);
     motor.restoreFactoryDefaults();
     motor.setSmartCurrentLimit(Constants.CurrentLimits.NEO550);
@@ -52,7 +55,8 @@ public class FeederIODCSpark implements FeederIO {
     inputs.position = encoder.getPosition();
     inputs.velocity = encoder.getVelocity();
     inputs.current = motor.getOutputCurrent();
-    inputs.beamBroken = photoelectricSensor.get(); // TODO: ENSURE THIS DOESN'T NEED INVERTING
+    inputs.closedContact = closedContact.get();
+    inputs.openContact = openContact.get();
   }
 
   @Override

@@ -1,7 +1,6 @@
 package frc.robot.subsystems.shooter;
 
 import com.revrobotics.*;
-import edu.wpi.first.wpilibj.DigitalInput;
 import frc.robot.Constants;
 import frc.robot.utils.LoggedTunableNumber;
 
@@ -11,7 +10,6 @@ public class ShooterIOSparkFlexes implements ShooterIO {
 
   CANSparkFlex motor1;
   CANSparkFlex motor2;
-  DigitalInput beamBreakSensor;
   RelativeEncoder encoder1;
   RelativeEncoder encoder2;
   LoggedTunableNumber ffTuner = new LoggedTunableNumber("Shooter FF", 1.0 / 6500);
@@ -19,7 +17,7 @@ public class ShooterIOSparkFlexes implements ShooterIO {
   LoggedTunableNumber iTuner = new LoggedTunableNumber("Shooter I", 0);
   LoggedTunableNumber dTuner = new LoggedTunableNumber("Shooter D", 0);
 
-  public ShooterIOSparkFlexes(int motorID1, int motorID2, int beamBreakID) {
+  public ShooterIOSparkFlexes(int motorID1, int motorID2) {
     motor1 = new CANSparkFlex(motorID1, CANSparkLowLevel.MotorType.kBrushless);
     motor2 = new CANSparkFlex(motorID2, CANSparkLowLevel.MotorType.kBrushless);
     encoder1 = motor1.getEncoder();

@@ -7,7 +7,6 @@ public interface ShooterIO {
 
   @AutoLog
   public static class ShooterIOInputs {
-    boolean beamBroke = false;
     double[] motorTemperature = new double[] {0, 0};
     double[] motorCurrent = new double[] {0, 0};
     double[] motorOutput = new double[] {0, 0};

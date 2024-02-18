@@ -10,7 +10,8 @@ public interface FeederIO {
     public double position = 0.0;
     public double velocity = 0.0;
     public double current = 0.0;
-    public boolean beamBroken = false;
+    public boolean openContact = false;
+    public boolean closedContact = true;
   }
 
   default void updateInputs(FeederIOInputs inputs) {}

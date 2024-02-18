@@ -24,6 +24,7 @@ public class Shooter extends SubsystemBase {
 
   boolean isShooting = false;
   boolean isFiring = false;
+  boolean intaking = false;
   double feedCmd = 0.0;
   private LoggedTunableNumber ltn = new LoggedTunableNumber("shoor fac", 4000);
 
@@ -70,7 +71,20 @@ public class Shooter extends SubsystemBase {
       isFiring = true;
       firingStartTime = Timer.getFPGATimestamp();
     }
-    //    System.out.println(firingBlocked);
+    // The open and closed should always be opposite, and anything else would be an electrical fault
+    if (intaking && (feederInputs.closedContact == feederInputs.openContact)) {
+      intaking = false;
+      // Shut down to prevent damage to ring
+      cmdFeeder(0);
+      cmdVel(0, 0);
+      System.out.println("Feeder limit switch disconnected!!");
+    }
+    if (intaking && feederInputs.openContact) {
+      cmdFeeder(0);
+      cmdVel(0, 0);
+      holding = true;
+      intaking = false;
+    }
     if (isFiring) {
       cmdFeeder(8000);
       if (firingStartTime + firingTime.get() < Timer.getFPGATimestamp()) {

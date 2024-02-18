@@ -37,12 +37,13 @@ public class Intake extends Command {
   @Override
   public void end(boolean interrupted) {
     shooter.cmdVel(0, 0);
+    shooter.cmdFeeder(0);
     arm.commandNeutral();
   }
 
   @Override
   public boolean isFinished() {
-    return false;
+    return shooter.isHolding();
   }
 
   private void setSpeedsAndPositions() {
