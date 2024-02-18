@@ -70,17 +70,17 @@ public class RobotContainer {
         case SWERVEBASE:
           driveSys =
               new SwerveDrivetrain(
-                  new ModuleIOSparkFX(20, 10, "FL"),
-                  new ModuleIOSparkFX(22, 12, "FR"),
-                  new ModuleIOSparkFX(23, 13, "BL"),
-                  new ModuleIOSparkFX(21, 11, "BR"),
+                  new ModuleIOSparkFX(22, 10, "FL"),
+                  new ModuleIOSparkFX(23, 12, "FR"),
+                  new ModuleIOSparkFX(21, 13, "BL"), // now FR
+                  new ModuleIOSparkFX(20, 11, "BR"),
                   new IMUIONavx());
           var vision =
               new Vision(
                   driveSys,
                   new Transform3d[] {
                     new Transform3d(
-                        new Translation3d(3 * 0.0254, 10 * 0.0254, 22 * 0.0254),
+                        new Translation3d(-5 * 0.0254, 2  * 0.0254, 22 * 0.0254),
                         new Rotation3d(0, -12 * Math.PI / 180, 0))
                   },
                   new VisionIO[] {new VisionIOSecondSight("SS_LAPTOP", "0")});
@@ -98,7 +98,7 @@ public class RobotContainer {
             break;
           case SHOOTER:
             shooter =
-                new Shooter(new ShooterIOSparkFlexes(58, 57), new FeederIOSpark550(41, -1, -1));
+                new Shooter(new ShooterIOSparkFlexes(58, 57), new FeederIOSpark550(41, 0, 1));
             break;
         }
       }

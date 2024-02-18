@@ -14,6 +14,7 @@ import java.util.Scanner;
 import org.littletonrobotics.junction.LogFileUtil;
 import org.littletonrobotics.junction.LoggedRobot;
 import org.littletonrobotics.junction.Logger;
+import org.littletonrobotics.junction.networktables.LoggedDashboardBoolean;
 import org.littletonrobotics.junction.networktables.NT4Publisher;
 import org.littletonrobotics.junction.wpilog.WPILOGReader;
 import org.littletonrobotics.junction.wpilog.WPILOGWriter;
@@ -27,7 +28,7 @@ import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 public class Robot extends LoggedRobot {
   private Command autonomousCommand;
   int ct = 0;
-
+  LoggedDashboardBoolean resetPos=new LoggedDashboardBoolean("reset pos", false);
   private RobotContainer robotContainer;
 
   /**
@@ -103,6 +104,10 @@ public class Robot extends LoggedRobot {
     // commands, running already-scheduled commands, removing finished or interrupted commands,
     // and running subsystem periodic() methods.  This must be called from the robot's periodic
     // block in order for anything in the Command-based framework to work.
+    if(resetPos.get()){
+      resetPos.set(false);
+      robotContainer.useAlliance();
+    }
     CommandScheduler.getInstance().run();
     PeriodicRunnable.runPeriodic();
     if (ct == 3) {
