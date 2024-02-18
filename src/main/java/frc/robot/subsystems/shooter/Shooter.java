@@ -86,7 +86,7 @@ public class Shooter extends SubsystemBase {
       intaking = false;
     }
     if (isFiring) {
-      cmdFeeder(8000);
+      cmdFeeder(-8000);
       if (firingStartTime + firingTime.get() < Timer.getFPGATimestamp()) {
         isFiring = false;
         isShooting = false;
