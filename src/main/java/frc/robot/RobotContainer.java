@@ -98,7 +98,7 @@ public class RobotContainer {
             break;
           case SHOOTER:
             shooter =
-                new Shooter(new ShooterIOSparkFlexes(58, 57), new FeederIOSpark550(41, -1, -1));
+                new Shooter(new ShooterIOSparkFlexes(58, 57), new FeederIOSpark550(41, 0, 1));
             break;
         }
       }
