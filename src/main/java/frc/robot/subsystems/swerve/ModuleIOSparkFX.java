@@ -66,6 +66,7 @@ public class ModuleIOSparkFX implements ModuleIO {
     } else if (steerID == 13) {
       off = 0.5;
     }
+    offsetTun.initDefault(off);
     config.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RotorSensor;
     config.MotorOutput.NeutralMode = NeutralModeValue.Brake;
     thrust.getConfigurator().apply(config);
@@ -117,7 +118,7 @@ public class ModuleIOSparkFX implements ModuleIO {
     inputs.steerTempC = steer.getMotorTemperature();
     inputs.thrustErr = errSignal.getValue();
     inputs.thrustTempC = tempSignal.getValue();
-    inputs.offset = off;
+    inputs.offset = offsetTun.get();
   }
 
   @Override
