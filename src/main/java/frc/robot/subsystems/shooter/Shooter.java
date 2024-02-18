@@ -77,6 +77,7 @@ public class Shooter extends SubsystemBase {
       // Shut down to prevent damage to ring
       cmdFeeder(0);
       cmdVel(0, 0);
+      holding=true;
       System.out.println("Feeder limit switch disconnected!!");
     }
     if (intaking && feederInputs.openContact) {
@@ -86,7 +87,7 @@ public class Shooter extends SubsystemBase {
       intaking = false;
     }
     if (isFiring) {
-      cmdFeeder(8000);
+      cmdFeeder(-8000);
       if (firingStartTime + firingTime.get() < Timer.getFPGATimestamp()) {
         isFiring = false;
         isShooting = false;

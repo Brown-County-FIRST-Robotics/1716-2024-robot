@@ -26,7 +26,7 @@ public class Intake extends Command {
   @Override
   public void initialize() {
     setSpeedsAndPositions();
-    shooter.cmdFeeder(-8000);
+    shooter.cmdFeeder(8000);
   }
 
   @Override
