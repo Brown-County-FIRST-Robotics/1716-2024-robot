@@ -169,10 +169,6 @@ public class SwerveDrivetrain implements Drivetrain {
     states[1] = SwerveModuleState.optimize(states[1], getPositions()[1].angle);
     states[2] = SwerveModuleState.optimize(states[2], getPositions()[2].angle);
     states[3] = SwerveModuleState.optimize(states[3], getPositions()[3].angle);
-    states[0].speedMetersPerSecond *= getPositions()[0].angle.minus(states[0].angle).getCos();
-    states[1].speedMetersPerSecond *= getPositions()[1].angle.minus(states[1].angle).getCos();
-    states[2].speedMetersPerSecond *= getPositions()[2].angle.minus(states[2].angle).getCos();
-    states[3].speedMetersPerSecond *= getPositions()[3].angle.minus(states[3].angle).getCos();
     Logger.recordOutput("Drive/CmdStates", states);
     fl.setCmdState(
         new SwerveModuleState(

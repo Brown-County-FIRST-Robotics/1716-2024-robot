@@ -12,7 +12,7 @@ public class Intake extends Command {
   Shooter shooter;
   Arm arm;
   XboxController controller;
-  LoggedTunableNumber armPreset = new LoggedTunableNumber("Presets/Intake_Arm", -0.2);
+  LoggedTunableNumber armPreset = new LoggedTunableNumber("Presets/Intake_Arm", -0.14);
   LoggedTunableNumber topSpeed = new LoggedTunableNumber("Presets/Intake_Top", 1700);
   LoggedTunableNumber bottomSpeed = new LoggedTunableNumber("Presets/Intake_Bottom", -2000);
 
@@ -25,8 +25,10 @@ public class Intake extends Command {
 
   @Override
   public void initialize() {
+    shooter.intaking = true;
+    shooter.setHolding(false);
     setSpeedsAndPositions();
-    shooter.cmdFeeder(-8000);
+    shooter.cmdFeeder(8000);
   }
 
   @Override

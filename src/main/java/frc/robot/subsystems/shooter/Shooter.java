@@ -23,13 +23,17 @@ public class Shooter extends SubsystemBase {
   LoggedTunableNumber firingTime = new LoggedTunableNumber("Firing Time", 0.5);
 
   boolean isShooting = false;
-  boolean isFiring = false;
-  boolean intaking = false;
+  public boolean isFiring = false;
+  public boolean intaking = false;
   double feedCmd = 0.0;
   private LoggedTunableNumber ltn = new LoggedTunableNumber("shoor fac", 4000);
 
   public boolean isHolding() {
     return holding;
+  }
+
+  public void setHolding(boolean holding) {
+    this.holding = holding;
   }
 
   boolean holding = false;
@@ -77,16 +81,17 @@ public class Shooter extends SubsystemBase {
       // Shut down to prevent damage to ring
       cmdFeeder(0);
       cmdVel(0, 0);
+      holding = true;
       System.out.println("Feeder limit switch disconnected!!");
     }
-    if (intaking && feederInputs.openContact) {
+    if (intaking && feederInputs.closedContact) {
       cmdFeeder(0);
       cmdVel(0, 0);
       holding = true;
       intaking = false;
     }
     if (isFiring) {
-      cmdFeeder(8000);
+      cmdFeeder(-8000);
       if (firingStartTime + firingTime.get() < Timer.getFPGATimestamp()) {
         isFiring = false;
         isShooting = false;
