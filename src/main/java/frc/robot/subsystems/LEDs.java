@@ -3,6 +3,7 @@ package frc.robot.subsystems;
 import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
 import frc.robot.utils.PeriodicRunnable;
+import java.util.Random;
 
 public class LEDs extends PeriodicRunnable {
   AddressableLED leds;
@@ -11,18 +12,21 @@ public class LEDs extends PeriodicRunnable {
   int colour = 0;
   int brightness = 25;
   int x = 5;
-  int x2 = 45;
+  int x2 = 44;
   int y = 0;
+  int y2 = 0;
   int a = 15;
   int time = 0;
-  int timespeed = 2;
+  int timespeed = 3;   //bigger value makes stuff slower
   boolean mode1 = false;
   boolean mode2 = false;
+  boolean mode3 = false;
+  Random random = new Random();
 
   public LEDs() {
     super(); // Super call adds it to the registry, which calls the periodic method every tick
     leds = new AddressableLED(5);
-    ledBuff = new AddressableLEDBuffer(50); // something around 280 length for LED
+    ledBuff = new AddressableLEDBuffer(100); // something around 280 length for LED
     leds.setLength(ledBuff.getLength());
     leds.setData(ledBuff);
     leds.start();
@@ -31,7 +35,7 @@ public class LEDs extends PeriodicRunnable {
 
   @Override
   public void periodic() {
-    timespeed = 3; //bigger value makes stuff slower
+  
 
     time++;
     time = time % timespeed;
@@ -46,44 +50,60 @@ public class LEDs extends PeriodicRunnable {
 
     if (time == 1) {
       x = x + y % ledBuff.getLength();
-      x2 = x + -y % ledBuff.getLength();
+      x2 = x2 + y2 % ledBuff.getLength();
     }
     if (x == 44) {
-      y = -1;
+     y = -1;
+      y2 = 1;
     }
 
     if (x == 5) {
       y = 1;
+      y2 = -1;
     }
 
-    if(mode1 == true)
-    {  for (var i = 0; i < 50; i++) { //mode 1
+
+
+    if(mode1 == true)   //MODE 1
+    {  for (var i = 0; i < 50; i++) { 
       ledBuff.setHSV(i, colour, 255, brightness);
 
     }
     colour = (colour + 1) % 180;
-
   }
 
-
-
-    if(mode2 == true)
+    if(mode2 == true)  //MODE 2
     {
      ledBuff.setHSV((x - (y * 5)), 7, 255, 0);
 
      ledBuff.setHSV(x, colour, 255, brightness);
 
-   // ledBuff.setHSV((50 + -x) + (-y * 5), colour, 255, 255);
+      ledBuff.setHSV((x2 - (y2 * 5)), 7, 255, 0);
+
+     ledBuff.setHSV(x2, colour + 50, 255, brightness);
     
-  //  ledBuff.setHSV(50 + -x, colour, 255, 0);
-
-      ledBuff.setHSV((x2 - (-y * 5)), 7, 255, 0);
-
-     ledBuff.setHSV(x2, colour, 255, brightness);
-    
-
-    colour = (colour + 1) % 180;
+     colour = (colour + 1) % 180;
   }
+
+  if(mode3 == true)    //MODE 3
+  {
+    if(time == 1)
+    {
+    for(var i = 0; i < 100; i++)
+    {
+    ledBuff.setHSV(i, colour, 255, 25);
+    
+  
+      colour = random.nextInt(180);
+    
+  }
+}
+
+  }
+
+
+
+
 
     leds.setData(ledBuff);
   }
@@ -91,11 +111,20 @@ public class LEDs extends PeriodicRunnable {
   public void mode1() {
     mode1 = true;
     mode2 = false;
+    mode3 = false;
   }
   public void mode2() {
     mode2 = true;
     mode1 = false;
+    mode3 = false;
   }
+
+public void mode3() {
+mode3 = true;
+mode1 = false;
+mode2 = false;
+}
+
 
   public void intakelight() {
     colour = 1;
@@ -110,5 +139,21 @@ public class LEDs extends PeriodicRunnable {
       brightness = 0;
     }
   } */
+
+  // public void getControllerInput(double left, double right) {
+  //   timespeed+= left;
+  //   if(timespeed != 0)
+  //   {
+  //   timespeed-= right;
+  // }
+  // }
+
+  public void increaseSpeed() {
+    timespeed-=2;
+  }
+  public void decreaseSpeed() {
+timespeed+=2;
+
+  }
 
 }

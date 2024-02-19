@@ -9,6 +9,7 @@ import edu.wpi.first.math.geometry.*;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -150,6 +151,10 @@ public class RobotContainer {
   private void configureBindings() {
     driverController.b().onTrue(new InstantCommand(() -> leds.mode1()));
     driverController.a().onTrue(new InstantCommand(() -> leds.mode2()));
+    driverController.x().onTrue(new InstantCommand(() -> leds.mode3()));
+    // driverController.rightTrigger().onTrue(new RunCommand(() -> leds.getControllerInput(driverController.getLeftTriggerAxis(), driverController.getRightTriggerAxis())));
+    driverController.rightBumper().onTrue(new InstantCommand(() -> leds.increaseSpeed()));
+    driverController.leftBumper().onTrue(new InstantCommand(() -> leds.decreaseSpeed()));
   }
 
   /**
