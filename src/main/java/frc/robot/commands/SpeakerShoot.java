@@ -94,8 +94,7 @@ public class SpeakerShoot extends Command {
         botAngleThreshold.get()
                 < Math.abs(botAngle.minus(drive.getPosition().getRotation()).getRotations())
             || shooterAngleThreshold.get()
-                < Math.abs(shooterAngle.minus(arm.getAngle()).getRadians())
-            || shooterAngleThreshold.get() < Math.abs(arm.getOmega());
+                < Math.abs(shooterAngle.minus(arm.getAngle()).getRadians());
     shooter.setFiringBlocked(blocked);
   }
 
