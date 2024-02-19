@@ -213,6 +213,8 @@ public class RobotContainer {
         .whileTrue(
             new SimpleSpeakerShoot(
                 driveSys, arm, teleopDrive::setCustomRotation, shooter, secondController.getHID()));
+    // Rapid eject
+    secondController.a().whileTrue(Commands.runEnd(()->{shooter.cmdFeeder(-8000);shooter.cmdVel(-1000,1000);},()->{shooter.cmdFeeder(0);},shooter));
   }
 
   /**
