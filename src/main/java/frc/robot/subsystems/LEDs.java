@@ -18,6 +18,7 @@ public class LEDs extends PeriodicRunnable {
   int a = 15;
   int time = 0;
   int timespeed = 3;   //bigger value makes stuff slower
+  int raindrop[] = new int[180];
   boolean mode1 = false;
   boolean mode2 = false;
   boolean mode3 = false;
@@ -31,6 +32,12 @@ public class LEDs extends PeriodicRunnable {
     leds.setData(ledBuff);
     leds.start();
     // resetLeds();
+
+    for(var i = 0; i != ledBuff.getLength(); i++)
+    {
+      raindrop[i] = random.nextInt(255);;
+    }
+
   }
 
   @Override
@@ -63,9 +70,10 @@ public class LEDs extends PeriodicRunnable {
     }
 
 
+    
 
     if(mode1 == true)   //MODE 1
-    {  for (var i = 0; i < 50; i++) { 
+    {  for (var i = 0; i < ledBuff.getLength(); i++) { 
       ledBuff.setHSV(i, colour, 255, brightness);
 
     }
@@ -87,16 +95,24 @@ public class LEDs extends PeriodicRunnable {
 
   if(mode3 == true)    //MODE 3
   {
+   
     if(time == 1)
     {
     for(var i = 0; i < 100; i++)
     {
-    ledBuff.setHSV(i, colour, 255, 25);
-    
-  
+    ledBuff.setHSV(i, colour, 255, raindrop[i]);
+    raindrop[i]--;
+     // brightness = raindrop[i];
+     /*  if(time == 0)
+    {
       colour = random.nextInt(180);
+    } */
+     
     
   }
+
+
+
 }
 
   }
