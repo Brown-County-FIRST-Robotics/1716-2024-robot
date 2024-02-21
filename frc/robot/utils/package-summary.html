@@ -15,7 +15,11 @@
 <script type="text/javascript" src="../../../script-dir/jquery-ui.min.js"></script>
 </head>
 <body class="package-declaration-page">
-<script type="text/javascript">var pathtoroot = "../../../";
+<script type="text/javascript">var evenRowColor = "even-row-color";
+var oddRowColor = "odd-row-color";
+var tableTab = "table-tab";
+var activeTableTab = "active-table-tab";
+var pathtoroot = "../../../";
 loadScripts(document, 'script');</script>
 <noscript>
 <div>JavaScript is disabled on your browser.</div>
@@ -78,8 +82,9 @@ loadScripts(document, 'script');</script>
 </li>
 <li>
 <div id="class-summary">
-<div class="caption"><span>Classes</span></div>
-<div class="summary-table two-column-summary">
+<div class="table-tabs" role="tablist" aria-orientation="horizontal"><button id="class-summary-tab0" role="tab" aria-selected="true" aria-controls="class-summary.tabpanel" tabindex="0" onkeydown="switchTab(event)" onclick="show('class-summary', 'class-summary', 2)" class="active-table-tab">All Classes and Interfaces</button><button id="class-summary-tab1" role="tab" aria-selected="false" aria-controls="class-summary.tabpanel" tabindex="-1" onkeydown="switchTab(event)" onclick="show('class-summary', 'class-summary-tab1', 2)" class="table-tab">Interfaces</button><button id="class-summary-tab2" role="tab" aria-selected="false" aria-controls="class-summary.tabpanel" tabindex="-1" onkeydown="switchTab(event)" onclick="show('class-summary', 'class-summary-tab2', 2)" class="table-tab">Classes</button></div>
+<div id="class-summary.tabpanel" role="tabpanel">
+<div class="summary-table two-column-summary" aria-labelledby="class-summary-tab0">
 <div class="table-header col-first">Class</div>
 <div class="table-header col-last">Description</div>
 <div class="col-first even-row-color class-summary class-summary-tab2"><a href="DualRateLimiter.html" title="class in frc.robot.utils">DualRateLimiter</a></div>
@@ -91,13 +96,32 @@ loadScripts(document, 'script');</script>
 <div class="col-last odd-row-color class-summary class-summary-tab2">
 <div class="block">A dashboard number that can be used for tunable values</div>
 </div>
-<div class="col-first even-row-color class-summary class-summary-tab2"><a href="PeriodicRunnable.html" title="class in frc.robot.utils">PeriodicRunnable</a></div>
-<div class="col-last even-row-color class-summary class-summary-tab2">
+<div class="col-first even-row-color class-summary class-summary-tab2"><a href="Overrides.html" title="class in frc.robot.utils">Overrides</a></div>
+<div class="col-last even-row-color class-summary class-summary-tab2">&nbsp;</div>
+<div class="col-first odd-row-color class-summary class-summary-tab2"><a href="PeriodicRunnable.html" title="class in frc.robot.utils">PeriodicRunnable</a></div>
+<div class="col-last odd-row-color class-summary class-summary-tab2">
 <div class="block">Like a subsystem, but just the periodic function.</div>
 </div>
-<div class="col-first odd-row-color class-summary class-summary-tab2"><a href="PoseEstimator.html" title="class in frc.robot.utils">PoseEstimator</a></div>
-<div class="col-last odd-row-color class-summary class-summary-tab2">
+<div class="col-first even-row-color class-summary class-summary-tab2"><a href="PoseEstimator.html" title="class in frc.robot.utils">PoseEstimator</a></div>
+<div class="col-last even-row-color class-summary class-summary-tab2">
 <div class="block">A pose estimator that fuses vision and odometry updates</div>
+</div>
+<div class="col-first odd-row-color class-summary class-summary-tab2"><a href="ShootWhileMove.html" title="class in frc.robot.utils">ShootWhileMove</a></div>
+<div class="col-last odd-row-color class-summary class-summary-tab2">
+<div class="block">Utility functions for calculating shooter angles</div>
+</div>
+<div class="col-first even-row-color class-summary class-summary-tab1"><a href="ShootWhileMove.ShooterKinematics.html" title="interface in frc.robot.utils">ShootWhileMove.ShooterKinematics</a></div>
+<div class="col-last even-row-color class-summary class-summary-tab1">
+<div class="block">The kinematics of the shooter</div>
+</div>
+<div class="col-first odd-row-color class-summary class-summary-tab2"><a href="ShootWhileMove.ShootingCommand.html" title="class in frc.robot.utils">ShootWhileMove.ShootingCommand</a></div>
+<div class="col-last odd-row-color class-summary class-summary-tab2">
+<div class="block">A command to give to the shooter</div>
+</div>
+<div class="col-first even-row-color class-summary class-summary-tab1"><a href="ShootWhileMove.SystemPredictor.html" title="interface in frc.robot.utils">ShootWhileMove.SystemPredictor</a></div>
+<div class="col-last even-row-color class-summary class-summary-tab1">
+<div class="block">Predictor for robot motion and shooter delays</div>
+</div>
 </div>
 </div>
 </div>

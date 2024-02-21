@@ -3,6 +3,7 @@ frc.robot.commands
 frc.robot.subsystems
 frc.robot.subsystems.arm
 frc.robot.subsystems.mecanum
+frc.robot.subsystems.shooter
 frc.robot.subsystems.swerve
 frc.robot.subsystems.vision
 frc.robot.utils
