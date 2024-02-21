@@ -7,6 +7,7 @@ import edu.wpi.first.math.geometry.*;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.vision.VisionIO.VisionIOInputs;
 import frc.robot.utils.LoggedTunableNumber;
+import frc.robot.utils.Overrides;
 import frc.robot.utils.PeriodicRunnable;
 import org.littletonrobotics.junction.Logger;
 
@@ -16,7 +17,7 @@ public class Vision extends PeriodicRunnable {
   VisionIO[] ios;
   VisionIOInputs[] inputs;
   Drivetrain drivetrain;
-  AprilTagFieldLayout layout = AprilTagFields.k2023ChargedUp.loadAprilTagLayoutField();
+  AprilTagFieldLayout layout = AprilTagFields.k2024Crescendo.loadAprilTagLayoutField();
   LoggedTunableNumber oneTagTranslationStdDev =
       new LoggedTunableNumber("Vision/One tag Translation StdDev", 0.9);
   LoggedTunableNumber oneTagRotationStdDev =
@@ -65,7 +66,9 @@ public class Vision extends PeriodicRunnable {
                             inputs[i].pose.get()[4],
                             inputs[i].pose.get()[5],
                             inputs[i].pose.get()[6]))
-                    .rotateBy(new Rotation3d(0, 0, Math.PI));
+                    .unaryMinus()
+                    .rotateBy(new Rotation3d(0, 0, Math.PI))
+                    .unaryMinus();
             Pose3d tagpose =
                 layout.getTagPose(Integer.parseInt(inputs[i].ids.get()[0])).orElse(new Pose3d());
             Rotation3d rot =
@@ -76,7 +79,8 @@ public class Vision extends PeriodicRunnable {
                         .getPosition()
                         .relativeTo(tagpose.toPose2d())
                         .getRotation()
-                        .interpolate(r1.toRotation2d(), 0.5)
+                        .unaryMinus()
+                        .interpolate(r1.toRotation2d(), 0.2)
                         .getRadians());
 
             Transform3d as =
@@ -84,7 +88,8 @@ public class Vision extends PeriodicRunnable {
                     new Translation3d(
                         inputs[i].pose.get()[0], inputs[i].pose.get()[1], inputs[i].pose.get()[2]),
                     rot);
-            outPose = tagpose.plus(as);
+
+            outPose = tagpose.plus(as.inverse());
           } else if (inputs[i].ids.get().length > 1) {
             outPose =
                 new Pose3d(
@@ -100,19 +105,21 @@ public class Vision extends PeriodicRunnable {
           }
           Pose3d poseOfBot = outPose.plus(camPoses[i].inverse());
           Logger.recordOutput("Vision/EstPose_" + i, poseOfBot);
-          drivetrain.addVisionUpdate(
-              poseOfBot.toPose2d(),
-              VecBuilder.fill(
-                  inputs[i].ids.get().length > 1
-                      ? multiTagTranslationStdDev.get()
-                      : oneTagTranslationStdDev.get(),
-                  inputs[i].ids.get().length > 1
-                      ? multiTagTranslationStdDev.get()
-                      : oneTagTranslationStdDev.get(),
-                  inputs[i].ids.get().length > 1
-                      ? multiTagRotationStdDev.get()
-                      : oneTagRotationStdDev.get()),
-              inputs[i].timestamp.get());
+          if (!Overrides.disableVision.get()) {
+            drivetrain.addVisionUpdate(
+                poseOfBot.toPose2d(),
+                VecBuilder.fill(
+                    inputs[i].ids.get().length > 1
+                        ? multiTagTranslationStdDev.get()
+                        : oneTagTranslationStdDev.get(),
+                    inputs[i].ids.get().length > 1
+                        ? multiTagTranslationStdDev.get()
+                        : oneTagTranslationStdDev.get(),
+                    inputs[i].ids.get().length > 1
+                        ? multiTagRotationStdDev.get()
+                        : oneTagRotationStdDev.get()),
+                inputs[i].timestamp.get());
+          }
         }
       }
     }

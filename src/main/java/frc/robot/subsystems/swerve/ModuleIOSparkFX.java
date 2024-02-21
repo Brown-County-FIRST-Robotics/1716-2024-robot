@@ -38,6 +38,7 @@ public class ModuleIOSparkFX implements ModuleIO {
   LoggedTunableNumber steerD = new LoggedTunableNumber("Steer D", 0);
   LoggedTunableNumber steerKV = new LoggedTunableNumber("Steer KV", 1.0 / 300.0);
   LoggedTunableNumber offsetTun;
+  double off;
 
   /**
    * Makes a new instance using CAN IDs
@@ -56,15 +57,16 @@ public class ModuleIOSparkFX implements ModuleIO {
     config.Slot0.kV = thrustKV.get();
     thrust.getConfigurator().refresh(config.CustomParams);
     offsetTun = new LoggedTunableNumber(name + "_offset");
-    if (steerID == 10) {
-      offsetTun.initDefault(0.824);
-    } else if (steerID == 11) {
-      offsetTun.initDefault(0);
-    } else if (steerID == 12) {
-      offsetTun.initDefault(0);
-    } else if (steerID == 13) {
-      offsetTun.initDefault(0.045);
+    if (thrustID == 20) {
+      off = 0.824;
+    } else if (thrustID == 21) {
+      off = 0;
+    } else if (thrustID == 22) {
+      off = 0;
+    } else if (thrustID == 23) {
+      off = 0.5;
     }
+    offsetTun.initDefault(off);
     config.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RotorSensor;
     config.MotorOutput.NeutralMode = NeutralModeValue.Brake;
     thrust.getConfigurator().apply(config);
@@ -82,14 +84,14 @@ public class ModuleIOSparkFX implements ModuleIO {
     pid = steer.getPIDController();
     encoder = steer.getAnalog(SparkAnalogSensor.Mode.kAbsolute);
 
-    encoder.setPositionConversionFactor(1 / 3.3);
+    encoder.setPositionConversionFactor(1 / 3.33);
     encoder.setInverted(true);
     pid.setFeedbackDevice(encoder);
 
     pid.setOutputRange(-1, 1);
     pid.setSmartMotionMaxVelocity(300, 0);
     pid.setSmartMotionMinOutputVelocity(0, 0);
-    pid.setSmartMotionMaxAccel(1200, 0);
+    pid.setSmartMotionMaxAccel(1800, 0);
     pid.setSmartMotionAllowedClosedLoopError(0.01, 0);
     pid.setPositionPIDWrappingEnabled(true);
     pid.setPositionPIDWrappingMaxInput(1);

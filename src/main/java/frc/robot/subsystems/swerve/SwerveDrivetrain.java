@@ -16,6 +16,7 @@ import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
 import frc.robot.Constants;
 import frc.robot.subsystems.*;
+import frc.robot.utils.Overrides;
 import frc.robot.utils.PoseEstimator;
 import java.util.List;
 import java.util.Set;
@@ -127,16 +128,34 @@ public class SwerveDrivetrain implements Drivetrain {
         KINEMATICS.toTwist2d(
             new SwerveDriveWheelPositions(lastPositions),
             new SwerveDriveWheelPositions(getPositions()));
-    odoTwist =
-        new Twist2d(odoTwist.dx, odoTwist.dy, getGyro().toRotation2d().minus(lastIMU).getRadians());
+    if (!Overrides.disableIMU.get()) {
+      odoTwist =
+          new Twist2d(
+              odoTwist.dx, odoTwist.dy, getGyro().toRotation2d().minus(lastIMU).getRadians());
+    }
     poseEstimator.addOdometry(odoTwist);
     lastPositions = getPositions();
     lastIMU = getGyro().toRotation2d();
     Logger.recordOutput("Drive/Pose", getPosition());
+
+    checkForYawReset();
+  }
+
+  private void checkForYawReset() {
+    if (Overrides.resetYaw.get()) {
+      poseEstimator.setPose(
+          new Pose2d(getPosition().getTranslation(), Constants.INIT_POSE.getRotation()));
+      Overrides.resetYaw.set(false);
+    }
   }
 
   private SwerveModuleState[] getWheelSpeeds() {
-    return new SwerveModuleState[] {flInputs.vel, frInputs.vel, blInputs.vel, brInputs.vel};
+    return new SwerveModuleState[] {
+      new SwerveModuleState(flInputs.vel.speedMetersPerSecond, getPositions()[0].angle),
+      new SwerveModuleState(frInputs.vel.speedMetersPerSecond, getPositions()[1].angle),
+      new SwerveModuleState(blInputs.vel.speedMetersPerSecond, getPositions()[2].angle),
+      new SwerveModuleState(brInputs.vel.speedMetersPerSecond, getPositions()[3].angle)
+    };
   }
 
   @Override
@@ -146,18 +165,15 @@ public class SwerveDrivetrain implements Drivetrain {
 
   private void setModuleStates(SwerveModuleState[] states) {
     SwerveDriveKinematics.desaturateWheelSpeeds(states, MAX_WHEEL_SPEED);
-    states[0] =
-        SwerveModuleState.optimize(
-            states[0], getPositions()[0].angle.plus(Rotation2d.fromRotations(1.0)));
-    states[1] =
-        SwerveModuleState.optimize(
-            states[1], getPositions()[1].angle.plus(Rotation2d.fromRotations(1.0)));
-    states[2] =
-        SwerveModuleState.optimize(
-            states[2], getPositions()[2].angle.plus(Rotation2d.fromRotations(1.0)));
-    states[3] =
-        SwerveModuleState.optimize(
-            states[3], getPositions()[3].angle.plus(Rotation2d.fromRotations(1.0)));
+    states[0] = SwerveModuleState.optimize(states[0], getPositions()[0].angle);
+    states[1] = SwerveModuleState.optimize(states[1], getPositions()[1].angle);
+    states[2] = SwerveModuleState.optimize(states[2], getPositions()[2].angle);
+    states[3] = SwerveModuleState.optimize(states[3], getPositions()[3].angle);
+    states[0].speedMetersPerSecond *= getPositions()[0].angle.minus(states[0].angle).getCos();
+    states[1].speedMetersPerSecond *= getPositions()[1].angle.minus(states[1].angle).getCos();
+    states[2].speedMetersPerSecond *= getPositions()[2].angle.minus(states[2].angle).getCos();
+    states[3].speedMetersPerSecond *= getPositions()[3].angle.minus(states[3].angle).getCos();
+
     Logger.recordOutput("Drive/CmdStates", states);
     fl.setCmdState(
         new SwerveModuleState(
