@@ -12,12 +12,25 @@ public class Intake extends Command {
   Shooter shooter;
   Arm arm;
   XboxController controller;
-  LoggedTunableNumber armPreset = new LoggedTunableNumber("Presets/Intake_Arm", -0.14);
-  LoggedTunableNumber topSpeed = new LoggedTunableNumber("Presets/Intake_Top", 1700);
-  LoggedTunableNumber bottomSpeed = new LoggedTunableNumber("Presets/Intake_Bottom", -2000);
+  static LoggedTunableNumber armPreset = new LoggedTunableNumber("Presets/Intake_Arm", -0.14);
+  static LoggedTunableNumber topSpeed = new LoggedTunableNumber("Presets/Intake_Top", 1700);
+  static LoggedTunableNumber bottomSpeed = new LoggedTunableNumber("Presets/Intake_Bottom", -2000);
+  static LoggedTunableNumber armSourcePreset =
+      new LoggedTunableNumber("Presets/Intake_Arm_Source", 0.16); // TODO: find real preset
+  LoggedTunableNumber preset;
 
-  public Intake(Shooter shooter, Arm arm, XboxController overrideController) {
+  public static Intake fromFloor(Shooter shooter, Arm arm, XboxController overrideController) {
+    return new Intake(shooter, arm, overrideController, armPreset);
+  }
+
+  public static Intake fromSource(Shooter shooter, Arm arm, XboxController overrideController) {
+    return new Intake(shooter, arm, overrideController, armSourcePreset);
+  }
+
+  private Intake(
+      Shooter shooter, Arm arm, XboxController overrideController, LoggedTunableNumber preset) {
     this.shooter = shooter;
+    this.preset = preset;
     this.arm = arm;
     controller = overrideController;
     addRequirements(shooter, arm);
@@ -50,7 +63,7 @@ public class Intake extends Command {
 
   private void setSpeedsAndPositions() {
     if (!Overrides.disableArmAnglePresets.get()) {
-      arm.setAngle(Rotation2d.fromRotations(armPreset.get()));
+      arm.setAngle(Rotation2d.fromRotations(preset.get()));
     } else {
       arm.commandIncrement(
           Rotation2d.fromRotations(
