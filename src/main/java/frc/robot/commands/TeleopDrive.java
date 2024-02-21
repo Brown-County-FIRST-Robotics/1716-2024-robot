@@ -19,7 +19,7 @@ import org.littletonrobotics.junction.Logger;
 public class TeleopDrive extends Command {
   private final Drivetrain drivetrain;
   private final CommandXboxController controller;
-  private final TrapezoidProfile.Constraints constraints = new TrapezoidProfile.Constraints(10, 40);
+  private final TrapezoidProfile.Constraints constraints = new TrapezoidProfile.Constraints(3, 20);
   LoggedTunableNumber allowedErr = new LoggedTunableNumber("Rotation Allowed Err", 3);
   boolean foc = true;
   boolean locked = false;
