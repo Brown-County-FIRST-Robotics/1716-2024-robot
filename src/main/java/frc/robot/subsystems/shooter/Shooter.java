@@ -4,7 +4,6 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.utils.LoggedTunableNumber;
 import org.littletonrobotics.junction.Logger;
-import org.littletonrobotics.junction.networktables.LoggedDashboardNumber;
 
 public class Shooter extends SubsystemBase {
   ShooterIO shooterIO;
@@ -12,11 +11,6 @@ public class Shooter extends SubsystemBase {
   FeederIOInputsAutoLogged feederInputs = new FeederIOInputsAutoLogged();
 
   ShooterIOInputsAutoLogged shooterInputs = new ShooterIOInputsAutoLogged();
-  // TEMP CODE
-  LoggedDashboardNumber topShootingSpeed = new LoggedDashboardNumber("Top Shooting RPM", 6500);
-  LoggedDashboardNumber bottomShootingSpeed =
-      new LoggedDashboardNumber("Bottom Shooting RPM", -6500);
-  // END TEMP
   double cmdTopSpeed;
   double cmdBottomSpeed;
   LoggedTunableNumber speedThreshold = new LoggedTunableNumber("Shooting speed threshold", 0.05);
@@ -115,10 +109,6 @@ public class Shooter extends SubsystemBase {
     double factor = ltn.get() / 9.88;
     cmdTopSpeed = -factor * exitVel;
     cmdBottomSpeed = factor * exitVel;
-  }
-
-  public void shoot() {
-    shoot(topShootingSpeed.get(), bottomShootingSpeed.get());
   }
 
   public void shoot(double tvel, double bvel) {

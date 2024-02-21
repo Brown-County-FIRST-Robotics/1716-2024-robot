@@ -12,12 +12,10 @@ public class FeederIOSpark550 implements FeederIO {
   DigitalInput openContact;
   DigitalInput closedContact;
 
-  // TEMP CODE
   LoggedTunableNumber feederP = new LoggedTunableNumber("Feeder P", 0);
   LoggedTunableNumber feederI = new LoggedTunableNumber("Feeder I", 0);
   LoggedTunableNumber feederD = new LoggedTunableNumber("Feeder D", 0);
   LoggedTunableNumber feederKV = new LoggedTunableNumber("Feeder KV", 1.0 / 11000.0);
-  // END TEMP CODE
 
   public FeederIOSpark550(int motorId, int openContactPin, int closedContactPin) {
     openContact = new DigitalInput(openContactPin);
@@ -33,14 +31,11 @@ public class FeederIOSpark550 implements FeederIO {
     pid = motor.getPIDController();
     pid.setFeedbackDevice(encoder);
 
-    // TEMP CODE
     pid.setOutputRange(-1, 1);
     pid.setSmartMotionMaxVelocity(11000, 0);
     pid.setSmartMotionMinOutputVelocity(0, 0);
     pid.setSmartMotionMaxAccel(11000 / 0.5, 0);
     pid.setSmartMotionAllowedClosedLoopError(10, 0);
-
-    // END TEMP CODE
 
     feederKV.attach(pid::setFF);
     feederP.attach(pid::setP);
