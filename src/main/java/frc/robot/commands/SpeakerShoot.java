@@ -23,7 +23,7 @@ public class SpeakerShoot extends Command {
   Shooter shooter;
   boolean firing = false;
   LoggedTunableNumber shooterAngleThreshold = new LoggedTunableNumber("ang threshold", 0.01);
-  LoggedTunableNumber botAngleThreshold = new LoggedTunableNumber("bot ang threshold", 0.02);
+  LoggedTunableNumber botAngleThreshold = new LoggedTunableNumber("bot ang threshold", 0.013);
   XboxController controller;
 
   public SpeakerShoot(
@@ -44,7 +44,23 @@ public class SpeakerShoot extends Command {
   public void initialize() {
     shooter.setFiringBlocked(true);
   }
-
+  public static double bestAng(double d, double z, double v){
+    double g=9.8065;
+    double cside=g*d/(v*v);
+//Math.sin(ts) > sqrt(2 * g * z / (v * v))
+    double ts=Math.asin(Math.sqrt(2*g*z/(v*v)))*1.01;
+    for (int i = 0; i < 10; i++) {
+      double sqrted = Math.sqrt(Math.pow(Math.sin(ts), 2) - (2 * g * z / (v * v)));
+      if(Double.isNaN(sqrted)){
+        System.out.println(i);
+      }
+      double rside=Math.sin(ts)- sqrted;
+      double erf=rside*Math.cos(ts)-cside;
+      double dts=-rside*Math.sin(ts)+Math.cos(ts)*(Math.cos(ts)-(Math.sin(ts)*Math.cos(ts)/ sqrted));
+      ts=ts-(erf/dts);
+    }
+    return ts;
+  }
   @Override
   public void execute() {
     Pose2d pos = drive.getPosition();
@@ -52,15 +68,15 @@ public class SpeakerShoot extends Command {
         new Pose3d(pos.getX(), pos.getY(), 0, new Rotation3d(0, 0, pos.getRotation().getRadians()))
             .transformBy(
                 new Transform3d(
-                    new Translation3d(0.3, 0, 0.3),
+                    new Translation3d(11*0.0254, 0, 10*0.0254),
                     new Rotation3d(0, -arm.getAngle().getRadians(), 0)))
-            .transformBy(new Transform3d(new Translation3d(0.3, 0, 0.18), new Rotation3d()))
+            .transformBy(new Transform3d(new Translation3d(0.3, 0, 0.115), new Rotation3d()))
             .getTranslation();
 
-    var shooterAngle =
-        new Rotation2d(
-            FieldConstants.getSpeaker().minus(botPose).toTranslation2d().getNorm(),
-            FieldConstants.getSpeaker().minus(botPose).getZ());
+    var shooterAngle = Rotation2d.fromRadians(bestAng(FieldConstants.getSpeaker().minus(botPose).toTranslation2d().getNorm(),FieldConstants.getSpeaker().minus(botPose).getZ(),9.88));
+//        new Rotation2d(
+//            FieldConstants.getSpeaker().minus(botPose).toTranslation2d().getNorm(),
+//            FieldConstants.getSpeaker().minus(botPose).getZ());
 
     // Iterate to find the best shooter angle. Untested
     //    for (int i = 0; i < 10; i++) {
@@ -94,8 +110,7 @@ public class SpeakerShoot extends Command {
         botAngleThreshold.get()
                 < Math.abs(botAngle.minus(drive.getPosition().getRotation()).getRotations())
             || shooterAngleThreshold.get()
-                < Math.abs(shooterAngle.minus(arm.getAngle()).getRadians())
-            || shooterAngleThreshold.get() < Math.abs(arm.getOmega());
+                < Math.abs(shooterAngle.minus(arm.getAngle()).getRotations());
     shooter.setFiringBlocked(blocked);
   }
 
@@ -109,5 +124,9 @@ public class SpeakerShoot extends Command {
   @Override
   public boolean isFinished() {
     return !Overrides.disableAutoAiming.get() && (firing && !shooter.isHolding());
+  }
+
+  public static void main(String[] args) {
+    System.out.println(bestAng(4.27,1.5,9.88));
   }
 }
