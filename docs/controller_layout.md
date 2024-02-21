@@ -13,13 +13,13 @@
 
 ## Driver 2
 
-| Input                          | Action                                                                     |
-|--------------------------------|----------------------------------------------------------------------------|
-| Left Trigger                   | Aim for amp                                                                |
-| Left Bumper                    | Aim for source                                                             |
-| Left Stick Button/Left on DPad | Shoot into amp or intake from source (Depending on trigger/bumper pressed) |
-| Left Stick Y                   | Change angle of arm when disable presets override is activated             |
-| Right Stick Y                  | Climb                                                                      |
-| A button                       | Eject game piece                                                           |
-|                                |                                                                            |
-| Mouse                          | Overrides                                                                  |
+| Input                          | Action                                                         |
+|--------------------------------|----------------------------------------------------------------|
+| Left Trigger                   | Aim for amp                                                    |
+| Left Bumper                    | Intake from source                                             |
+| Left Stick Button/Left on DPad | Shoot into amp                                                 |
+| Left Stick Y                   | Change angle of arm when disable presets override is activated |
+| Right Stick Y                  | Climb                                                          |
+| A button                       | Eject game piece                                               |
+|                                |                                                                |
+| Mouse                          | Overrides                                                      |
