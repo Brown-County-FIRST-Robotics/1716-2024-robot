@@ -43,6 +43,7 @@ public class SimpleSpeakerShoot extends Command {
 
   @Override
   public void execute() {
+    // Calculate position of the tip of the shooter
     Pose2d pos = drive.getPosition();
     Translation3d botPose =
         new Pose3d(pos.getX(), pos.getY(), 0, new Rotation3d(0, 0, pos.getRotation().getRadians()))
@@ -55,26 +56,29 @@ public class SimpleSpeakerShoot extends Command {
     var botAngle = FieldConstants.getSpeaker().minus(botPose).toTranslation2d().getAngle();
     shooter.setSpeed(9.88);
     boolean blocked = false;
-    if (!Overrides.disableAutoAlign.get()) {
+
+    // Auto alignment code
+    if (Overrides.disableAutoAlign.get()) {
+      rotationCommander.accept(Optional.empty());
+      // Don't block firing if auto alignment is disabled
+    } else {
       rotationCommander.accept(Optional.of(botAngle));
       blocked =
           botAngleThreshold.get()
               < Math.abs(botAngle.minus(drive.getPosition().getRotation()).getRotations());
-    } else {
-      rotationCommander.accept(Optional.empty());
     }
-    if (!Overrides.disableArmAnglePresets.get()) {
+    if (Overrides.disableArmAnglePresets.get()) {
+      arm.commandIncrement(
+          Rotation2d.fromRotations(
+              overrideController.getLeftY() * Overrides.armAngleOverrideIncrementScale.get()));
+      blocked = blocked || (!overrideController.getAButton()); // Use the A button to fire
+    } else {
       Rotation2d shooterAngle = Rotation2d.fromRadians(1);
       arm.setAngle(shooterAngle);
       blocked =
           blocked
               || shooterAngleThreshold.get()
                   < Math.abs(shooterAngle.minus(arm.getAngle()).getRotations());
-    } else {
-      arm.commandIncrement(
-          Rotation2d.fromRotations(
-              overrideController.getLeftY() * Overrides.armAngleOverrideIncrementScale.get()));
-      blocked = blocked || (!overrideController.getAButton());
     }
     shooter.setFiringBlocked(blocked);
   }
