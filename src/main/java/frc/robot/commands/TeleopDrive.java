@@ -49,12 +49,24 @@ public class TeleopDrive extends Command {
   @Override
   public void initialize() {}
 
-  static boolean deadband(double x) {
-    return Math.abs(x) < 0.1;
+  /**
+   * Checks if the value is in the deadband
+   *
+   * @param val The value to check
+   * @return If it is in the deadband
+   */
+  static boolean deadband(double val) {
+    return Math.abs(val) < 0.1;
   }
 
-  static double deadscale(double x) {
-    return deadband(x) ? 0 : (x > 0 ? (x - 0.1) / 0.9 : (x + 0.1) / 0.9);
+  /**
+   * Applies a deadband, then scales the resultant value to make output continuous
+   *
+   * @param val The value
+   * @return The value with the deadband applied
+   */
+  static double deadscale(double val) {
+    return deadband(val) ? 0 : (val > 0 ? (val - 0.1) / 0.9 : (val + 0.1) / 0.9);
   }
 
   @Override
