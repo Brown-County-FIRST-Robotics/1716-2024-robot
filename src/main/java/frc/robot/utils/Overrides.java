@@ -4,7 +4,7 @@ import org.littletonrobotics.junction.networktables.LoggedDashboardBoolean;
 
 public class Overrides {
   public static LoggedDashboardBoolean useFieldOriented =
-      new LoggedDashboardBoolean("Use Field Oriented", false);
+      new LoggedDashboardBoolean("Use Field Oriented", true);
   public static LoggedDashboardBoolean resetYaw = new LoggedDashboardBoolean("Reset Yaw", false);
   public static LoggedDashboardBoolean disableIMU =
       new LoggedDashboardBoolean("Disable IMU", false);
