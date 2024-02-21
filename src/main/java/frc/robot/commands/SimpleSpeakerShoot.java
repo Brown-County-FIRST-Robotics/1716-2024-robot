@@ -53,7 +53,7 @@ public class SimpleSpeakerShoot extends Command {
             .transformBy(new Transform3d(new Translation3d(0.3, 0, 0.18), new Rotation3d()))
             .getTranslation();
     var botAngle = FieldConstants.getSpeaker().minus(botPose).toTranslation2d().getAngle();
-    shooter.commandSpeed(9.88);
+    shooter.setSpeed(9.88);
     boolean blocked = false;
     if (!Overrides.disableAutoAlign.get()) {
       rotationCommander.accept(Optional.of(botAngle));

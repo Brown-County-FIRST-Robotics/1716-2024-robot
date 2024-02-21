@@ -20,7 +20,15 @@ public class Shooter extends SubsystemBase {
   public boolean isFiring = false;
   public boolean intaking = false;
   double feedCmd = 0.0;
-  private LoggedTunableNumber ltn = new LoggedTunableNumber("shoor fac", 4000);
+
+  boolean holding = false;
+  boolean firingBlocked = false;
+
+  double firingStartTime;
+
+  public void setFiringBlocked(boolean firingBlocked) {
+    this.firingBlocked = firingBlocked;
+  }
 
   public boolean isHolding() {
     return holding;
@@ -29,16 +37,6 @@ public class Shooter extends SubsystemBase {
   public void setHolding(boolean holding) {
     this.holding = holding;
   }
-
-  boolean holding = false;
-
-  public void setFiringBlocked(boolean firingBlocked) {
-    this.firingBlocked = firingBlocked;
-  }
-
-  boolean firingBlocked = false;
-
-  double firingStartTime;
 
   public Shooter(ShooterIO io, FeederIO feederIO) {
     this.shooterIO = io;
@@ -73,24 +71,24 @@ public class Shooter extends SubsystemBase {
     if (intaking && (feederInputs.closedContact == feederInputs.openContact)) {
       intaking = false;
       // Shut down to prevent damage to ring
-      cmdFeeder(0);
+      setFeeder(0);
       cmdVel(0, 0);
       holding = true;
       System.out.println("Feeder limit switch disconnected!!");
     }
     if (intaking && feederInputs.closedContact) {
-      cmdFeeder(0);
+      setFeeder(0);
       cmdVel(0, 0);
       holding = true;
       intaking = false;
     }
     if (isFiring) {
-      cmdFeeder(-8000);
+      setFeeder(-8000);
       if (firingStartTime + firingTime.get() < Timer.getFPGATimestamp()) {
         isFiring = false;
         isShooting = false;
         holding = false;
-        cmdFeeder(0);
+        setFeeder(0);
       }
     }
   }
@@ -99,14 +97,10 @@ public class Shooter extends SubsystemBase {
     shooterIO.setVelocity(v1, v2);
   }
 
-  public void cmdVoltage(double voltage) {
-    shooterIO.setVoltage(voltage);
-  }
-
-  public void commandSpeed(double exitVel) {
+  public void setSpeed(double exitVel) {
     isShooting = true;
     holding = true;
-    double factor = ltn.get() / 9.88;
+    double factor = 4000 / 9.88;
     cmdTopSpeed = -factor * exitVel;
     cmdBottomSpeed = factor * exitVel;
   }
@@ -125,7 +119,7 @@ public class Shooter extends SubsystemBase {
     feederIO.setVel(0);
   }
 
-  public void cmdFeeder(double vel) {
+  public void setFeeder(double vel) {
     feedCmd = vel;
     feederIO.setVel(feedCmd);
   }

@@ -82,7 +82,7 @@ public class SpeakerShoot extends Command {
     var botAngle = FieldConstants.getSpeaker().minus(botPose).toTranslation2d().getAngle();
     Logger.recordOutput(
         "PredPose", new Pose3d(botPose, new Rotation3d(0, -shooterAngle.getRadians(), 0)));
-    shooter.commandSpeed(9.88);
+    shooter.setSpeed(9.88);
     rotationCommander.accept(Optional.of(botAngle));
     arm.setAngle(shooterAngle);
     boolean blocked =

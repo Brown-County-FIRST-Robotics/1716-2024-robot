@@ -222,11 +222,11 @@ public class RobotContainer {
         .whileTrue(
             Commands.runEnd(
                 () -> {
-                  shooter.cmdFeeder(-8000);
+                  shooter.setFeeder(-8000);
                   shooter.cmdVel(-1000, 1000);
                 },
                 () -> {
-                  shooter.cmdFeeder(0);
+                  shooter.setFeeder(0);
                 },
                 shooter));
   }

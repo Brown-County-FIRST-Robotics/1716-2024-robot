@@ -37,30 +37,22 @@ public class ShooterIOSparkFlexes implements ShooterIO {
     ffTuner.attach(
         (Double v) -> {
           pid1.setFF(v, 0);
-          pid1.setFF(v, 1);
           pid2.setFF(v, 0);
-          pid2.setFF(v, 1);
         });
     pTuner.attach(
         (Double v) -> {
           pid1.setP(v, 0);
-          pid1.setP(v, 1);
           pid2.setP(v, 0);
-          pid2.setP(v, 1);
         });
     iTuner.attach(
         (Double v) -> {
           pid1.setI(v, 0);
-          pid1.setI(v, 1);
           pid2.setI(v, 0);
-          pid2.setI(v, 1);
         });
     dTuner.attach(
         (Double v) -> {
           pid1.setD(v, 0);
-          pid1.setD(v, 1);
           pid2.setD(v, 0);
-          pid2.setD(v, 1);
         });
   }
 
@@ -80,11 +72,6 @@ public class ShooterIOSparkFlexes implements ShooterIO {
   }
 
   @Override
-  public void setVoltage(double voltage) {
-    motor1.setVoltage(voltage);
-  }
-
-  @Override
   public void setVelocity(double vel1, double vel2) {
     if (vel1 != 0) {
       pid1.setReference(vel1, CANSparkBase.ControlType.kVelocity, 0);
@@ -93,11 +80,5 @@ public class ShooterIOSparkFlexes implements ShooterIO {
       motor1.set(0);
       motor2.set(0);
     }
-  }
-
-  @Override
-  public void smallStepTo(double pos1, double pos2) {
-    pid1.setReference(pos1, CANSparkBase.ControlType.kSmartMotion, 1);
-    pid2.setReference(pos2, CANSparkBase.ControlType.kSmartMotion, 1);
   }
 }

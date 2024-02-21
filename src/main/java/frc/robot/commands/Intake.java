@@ -41,7 +41,7 @@ public class Intake extends Command {
     shooter.intaking = true;
     shooter.setHolding(false);
     setSpeedsAndPositions();
-    shooter.cmdFeeder(8000);
+    shooter.setFeeder(8000);
   }
 
   @Override
@@ -52,7 +52,7 @@ public class Intake extends Command {
   @Override
   public void end(boolean interrupted) {
     shooter.cmdVel(0, 0);
-    shooter.cmdFeeder(0);
+    shooter.setFeeder(0);
     arm.commandNeutral();
   }
 
