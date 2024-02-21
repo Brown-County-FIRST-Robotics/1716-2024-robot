@@ -8,6 +8,10 @@ import frc.robot.subsystems.shooter.Shooter;
 import frc.robot.utils.LoggedTunableNumber;
 import frc.robot.utils.Overrides;
 
+/**
+ * A command to Intake. Create using factory methods {@link Intake#fromFloor} and {@link
+ * Intake#fromSource} for floor and source respectively.
+ */
 public class Intake extends Command {
   Shooter shooter;
   Arm arm;
@@ -19,10 +23,26 @@ public class Intake extends Command {
       new LoggedTunableNumber("Presets/Intake_Arm_Source", 0.16); // TODO: find real preset
   LoggedTunableNumber preset;
 
+  /**
+   * Makes a new command to intake from the floor
+   *
+   * @param shooter The shooter subsystem
+   * @param arm The arm subsystem
+   * @param overrideController The override controller
+   * @return A new command that intakes from the floor
+   */
   public static Intake fromFloor(Shooter shooter, Arm arm, XboxController overrideController) {
     return new Intake(shooter, arm, overrideController, armPreset);
   }
 
+  /**
+   * Makes a new command to intake from the source
+   *
+   * @param shooter The shooter subsystem
+   * @param arm The arm subsystem
+   * @param overrideController The override controller
+   * @return A new command that intakes from the source
+   */
   public static Intake fromSource(Shooter shooter, Arm arm, XboxController overrideController) {
     return new Intake(shooter, arm, overrideController, armSourcePreset);
   }

@@ -63,6 +63,7 @@ public class SpeakerShoot extends Command {
 
   @Override
   public void execute() {
+    // Calculates position of the tip of the shooter
     Pose2d pos = drive.getPosition();
     Translation3d botPose =
         new Pose3d(pos.getX(), pos.getY(), 0, new Rotation3d(0, 0, pos.getRotation().getRadians()))
@@ -82,9 +83,10 @@ public class SpeakerShoot extends Command {
     var botAngle = FieldConstants.getSpeaker().minus(botPose).toTranslation2d().getAngle();
     Logger.recordOutput(
         "PredPose", new Pose3d(botPose, new Rotation3d(0, -shooterAngle.getRadians(), 0)));
-    shooter.setSpeed(9.88);
+    shooter.setSpeed(9.88); // Max speed
     rotationCommander.accept(Optional.of(botAngle));
     arm.setAngle(shooterAngle);
+    // Prevent firing if angles are not close enough
     boolean blocked =
         botAngleThreshold.get()
                 < Math.abs(botAngle.minus(drive.getPosition().getRotation()).getRotations())

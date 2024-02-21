@@ -167,12 +167,14 @@ public class RobotContainer {
     var teleopDrive = new TeleopDrive(driveSys, driverController);
     driveSys.setDefaultCommand(teleopDrive);
 
+    // Intake commands
     driverController
         .leftTrigger(0.2)
         .whileTrue(Intake.fromFloor(shooter, arm, secondController.getHID()));
     secondController
         .leftBumper()
         .whileTrue(Intake.fromSource(shooter, arm, secondController.getHID()));
+
     LoggedTunableNumber ampPreset =
         new LoggedTunableNumber("Presets/Arm Amp", 0.15); // TODO: add value
     LoggedTunableNumber ampTop =
@@ -201,21 +203,29 @@ public class RobotContainer {
         .onTrue(Commands.runOnce(() -> shooter.shoot(ampTop.get(), ampBottom.get()), shooter))
         .onFalse(Commands.runOnce(shooter::stop, shooter));
 
+    // Speaker scoring
     driverController
         .rightTrigger(0.2)
         .and(
             new Trigger(Overrides.disableAutoAiming::get)
                 .negate()
-                .and(new Trigger(Overrides.disableAutoAlign::get).negate()))
+                .and(
+                    new Trigger(Overrides.disableAutoAlign::get)
+                        .negate())) // Make sure no overrides have been activated
         .whileTrue(
             new SpeakerShoot(
                 driveSys, arm, teleopDrive::setCustomRotation, shooter, secondController.getHID()));
+
+    // Speaker scoring without auto-aim
     driverController
         .rightTrigger(0.2)
-        .and(new Trigger(Overrides.disableAutoAiming::get).or(Overrides.disableAutoAlign::get))
+        .and(
+            new Trigger(Overrides.disableAutoAiming::get)
+                .or(Overrides.disableAutoAlign::get)) // Use this when overrides are activated
         .whileTrue(
             new SimpleSpeakerShoot(
                 driveSys, arm, teleopDrive::setCustomRotation, shooter, secondController.getHID()));
+
     // Rapid eject
     secondController
         .a()
