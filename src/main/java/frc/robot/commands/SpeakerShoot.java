@@ -45,6 +45,14 @@ public class SpeakerShoot extends Command {
     shooter.setFiringBlocked(true);
   }
 
+  /**
+   * Calculates the best shooter angle
+   *
+   * @param d The horizontal distance to the target
+   * @param z The vertical distance to the target
+   * @param v The firing velocity
+   * @return The best shooter angle to hit the target
+   */
   public static double bestAng(double d, double z, double v) {
     double g = 9.8065;
     double cside = g * d / (v * v);
