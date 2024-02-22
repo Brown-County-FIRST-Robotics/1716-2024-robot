@@ -17,6 +17,8 @@ public class HolonomicTrajectoryFollower extends Command {
       new TrapezoidProfile.Constraints(3, 20);
   private static LoggedTunableNumber allowedErr =
       new LoggedTunableNumber("Rotation Allowed Err", 3);
+  private static LoggedTunableNumber replanErr =
+      new LoggedTunableNumber("Replanning threshold", 0.1);
 
   public static double getExt(
       Rotation2d cmdRotation, Rotation2d currentRotation, double currentVelocity) {
@@ -34,8 +36,8 @@ public class HolonomicTrajectoryFollower extends Command {
   Drivetrain drivetrain;
   Supplier<Trajectory> trajectorySupplier;
   Trajectory activeTrajectory;
-  Timer timer;
-  Optional<Rotation2d> customRotation;
+  Timer timer = new Timer();
+  Optional<Rotation2d> customRotation = Optional.empty();
 
   public void setCustomRotation(Optional<Rotation2d> customRotation) {
     this.customRotation = customRotation;
@@ -56,6 +58,16 @@ public class HolonomicTrajectoryFollower extends Command {
 
   @Override
   public void execute() {
+    if (activeTrajectory
+            .sample(timer.get())
+            .poseMeters
+            .getTranslation()
+            .getDistance(drivetrain.getPosition().getTranslation())
+        > replanErr.get()) {
+      activeTrajectory = trajectorySupplier.get();
+      timer.reset();
+      timer.start();
+    }
     var state = activeTrajectory.sample(timer.get());
     ChassisSpeeds speeds =
         new ChassisSpeeds(
@@ -81,7 +93,13 @@ public class HolonomicTrajectoryFollower extends Command {
 
   @Override
   public boolean isFinished() {
-    return timer.hasElapsed(activeTrajectory.getTotalTimeSeconds());
+    return timer.hasElapsed(activeTrajectory.getTotalTimeSeconds())
+        && (customRotation
+            .filter(
+                rotation2d ->
+                    (Math.abs(rotation2d.minus(drivetrain.getPosition().getRotation()).getDegrees())
+                        > allowedErr.get()))
+            .isPresent());
   }
 
   public Translation2d getPoseAtTime(double t) {
