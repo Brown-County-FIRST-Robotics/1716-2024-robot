@@ -3,14 +3,13 @@ package frc.robot.commands;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Constants;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.utils.DualRateLimiter;
-import frc.robot.utils.LoggedTunableNumber;
+import frc.robot.utils.HolonomicTrajectoryFollower;
 import frc.robot.utils.Overrides;
 import java.util.Optional;
 import org.littletonrobotics.junction.Logger;
@@ -19,8 +18,6 @@ import org.littletonrobotics.junction.Logger;
 public class TeleopDrive extends Command {
   private final Drivetrain drivetrain;
   private final CommandXboxController controller;
-  private final TrapezoidProfile.Constraints constraints = new TrapezoidProfile.Constraints(3, 20);
-  LoggedTunableNumber allowedErr = new LoggedTunableNumber("Rotation Allowed Err", 3);
   boolean foc = true;
   boolean locked = false;
   DualRateLimiter xVelLimiter = new DualRateLimiter(4, 100);
@@ -71,21 +68,15 @@ public class TeleopDrive extends Command {
 
   @Override
   public void execute() {
-    double ext = 0;
-    if (customRotation.isPresent()) {
-      if (Math.abs(customRotation.get().minus(drivetrain.getPosition().getRotation()).getDegrees())
-          > allowedErr.get()) {
-        ext =
-            new TrapezoidProfile(constraints)
-                .calculate(
-                    0.02,
-                    new TrapezoidProfile.State(
-                        drivetrain.getPosition().getRotation().getRadians(),
-                        drivetrain.getVelocity().omegaRadiansPerSecond),
-                    new TrapezoidProfile.State(customRotation.get().getRadians(), 0))
-                .velocity;
-      }
-    }
+    double ext =
+        customRotation
+            .map(
+                rotation2d ->
+                    HolonomicTrajectoryFollower.getExt(
+                        rotation2d,
+                        drivetrain.getPosition().getRotation(),
+                        drivetrain.getVelocity().omegaRadiansPerSecond))
+            .orElse(0.0);
 
     Logger.recordOutput("TeleopDrive/ext", ext);
     double slow =
