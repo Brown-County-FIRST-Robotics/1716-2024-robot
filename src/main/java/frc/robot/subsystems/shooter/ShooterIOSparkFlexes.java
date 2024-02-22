@@ -13,7 +13,7 @@ public class ShooterIOSparkFlexes implements ShooterIO {
   RelativeEncoder encoder1;
   RelativeEncoder encoder2;
   LoggedTunableNumber ffTuner = new LoggedTunableNumber("Shooter FF", 1.0 / 6500);
-  LoggedTunableNumber pTuner = new LoggedTunableNumber("Shooter P", 0);
+  LoggedTunableNumber pTuner = new LoggedTunableNumber("Shooter P", 1.0/6500);
   LoggedTunableNumber iTuner = new LoggedTunableNumber("Shooter I", 0);
   LoggedTunableNumber dTuner = new LoggedTunableNumber("Shooter D", 0);
 
