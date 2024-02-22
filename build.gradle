@@ -129,7 +129,13 @@ tasks.withType(JavaCompile) {
     options.compilerArgs.add '-XDstringConcat=inline'
 }
 
-
+// Check selected robot when deploying
+tasks.register('checkRobot', JavaExec) {
+    dependsOn "classes"
+    mainClass = "frc.robot.WhoAmI"
+    classpath = sourceSets.main.runtimeClasspath
+}
+deployroborio.dependsOn(checkRobot)
 
 
 def writeGitData =tasks.create("writeGitData") {
@@ -223,7 +229,7 @@ spotless {
     }
     format 'misc', {
         target fileTree('.') {
-            include '**/*.md', '**/.gitignore'
+            include '**/.gitignore'
             exclude '**/build/**', '**/build-*/**'
         }
         trimTrailingWhitespace()

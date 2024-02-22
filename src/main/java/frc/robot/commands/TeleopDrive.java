@@ -1,104 +1,132 @@
 package frc.robot.commands;
 
-import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
-import edu.wpi.first.wpilibj.GenericHID;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Constants;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.utils.DualRateLimiter;
 import frc.robot.utils.LoggedTunableNumber;
+import frc.robot.utils.Overrides;
+import java.util.Optional;
 import org.littletonrobotics.junction.Logger;
 
+/** A command for manual control */
 public class TeleopDrive extends Command {
   private final Drivetrain drivetrain;
   private final CommandXboxController controller;
-  private final Rotation2d lockBand = Rotation2d.fromDegrees(20);
-  private final Rotation2d lockRot = Rotation2d.fromDegrees(180);
-
-  private final Rotation2d minRot = lockRot.rotateBy(lockBand.times(-0.5));
-  private final Rotation2d maxRot = lockRot.rotateBy(lockBand.times(0.5));
-  private final ProfiledPIDController ppc =
-      new ProfiledPIDController(0, 0, 0, new TrapezoidProfile.Constraints(3, 3));
-  LoggedTunableNumber p = new LoggedTunableNumber("drP", -100);
-  LoggedTunableNumber i = new LoggedTunableNumber("drI", 0);
-  LoggedTunableNumber d = new LoggedTunableNumber("drD", 0);
+  private final TrapezoidProfile.Constraints constraints = new TrapezoidProfile.Constraints(3, 20);
+  LoggedTunableNumber allowedErr = new LoggedTunableNumber("Rotation Allowed Err", 3);
   boolean foc = true;
   boolean locked = false;
   DualRateLimiter xVelLimiter = new DualRateLimiter(4, 100);
   DualRateLimiter yVelLimiter = new DualRateLimiter(4, 100);
   DualRateLimiter omegaLimiter = new DualRateLimiter(6, 100);
 
+  public void setCustomRotation(Optional<Rotation2d> customRotation) {
+    this.customRotation = customRotation;
+  }
+
+  Optional<Rotation2d> customRotation = Optional.empty();
+
+  /**
+   * Constructs a new command with a given controller and drivetrain
+   *
+   * @param drivetrain The drivetrain subsystem
+   * @param controller The driver controller
+   */
   public TeleopDrive(Drivetrain drivetrain, CommandXboxController controller) {
     this.drivetrain = drivetrain;
     this.controller = controller;
     addRequirements(this.drivetrain);
-    p.attach(ppc::setP);
-    i.attach(ppc::setI);
-    d.attach(ppc::setD);
   }
 
   /** The initial subroutine of a command. Called once when the command is initially scheduled. */
   @Override
   public void initialize() {}
 
-  static boolean deadband(double x) {
-    return Math.abs(x) < 0.1;
+  /**
+   * Checks if the value is in the deadband
+   *
+   * @param val The value to check
+   * @return If it is in the deadband
+   */
+  static boolean deadband(double val) {
+    return Math.abs(val) < 0.1;
+  }
+
+  /**
+   * Applies a deadband, then scales the resultant value to make output continuous
+   *
+   * @param val The value
+   * @return The value with the deadband applied
+   */
+  static double deadscale(double val) {
+    return deadband(val) ? 0 : (val > 0 ? (val - 0.1) / 0.9 : (val + 0.1) / 0.9);
   }
 
   @Override
   public void execute() {
     double ext = 0;
-    //    if ((drivetrain.getPosition().getRotation().minus(minRot).getRotations() + 1.0) % 1.0
-    //            < lockBand.getRotations()
-    //        && !controller.getHID().getRightStickButton()) {
-    //      ext +=
-    // ppc.calculate(drivetrain.getPosition().getRotation().minus(lockRot).getRotations(), 0);
-    //    }
-    if (controller.getHID().getRightStickButton()) {
-      ext =
-          ppc.calculate(
-              drivetrain
-                  .getPosition()
-                  .getRotation()
-                  .plus(Rotation2d.fromDegrees(180))
-                  .minus(
-                      drivetrain
-                          .getPosition()
-                          .getTranslation()
-                          .minus(new Translation2d(15, 6))
-                          .getAngle())
-                  .getRotations(),
-              0);
+    if (customRotation.isPresent()) {
+      if (Math.abs(customRotation.get().minus(drivetrain.getPosition().getRotation()).getDegrees())
+          > allowedErr.get()) {
+        ext =
+            new TrapezoidProfile(constraints)
+                .calculate(
+                    0.02,
+                    new TrapezoidProfile.State(
+                        drivetrain.getPosition().getRotation().getRadians(),
+                        drivetrain.getVelocity().omegaRadiansPerSecond),
+                    new TrapezoidProfile.State(customRotation.get().getRadians(), 0))
+                .velocity;
+      }
     }
 
-    controller.getHID().setRumble(GenericHID.RumbleType.kRightRumble, Math.abs(ext / 3.0));
     Logger.recordOutput("TeleopDrive/ext", ext);
+    double slow =
+        controller.getHID().getLeftBumper() || controller.getHID().getRightBumper() ? 0.2 : 1.0;
 
     if (deadband(controller.getLeftY())
         && deadband(controller.getLeftX())
         && deadband(controller.getRightX())) {
-      drivetrain.humanDrive(new ChassisSpeeds(0, 0, ext), false);
+      drivetrain.humanDrive(new ChassisSpeeds(0, 0, ext));
     } else {
       locked = false;
-      drivetrain.humanDrive(
+      ChassisSpeeds cmd =
           new ChassisSpeeds(
-              controller.getLeftY() * Constants.Driver.MAX_X_SPEED,
-              controller.getLeftX() * Constants.Driver.MAX_Y_SPEED,
-              controller.getRightX() * Constants.Driver.MAX_THETA_SPEED + ext),
-          foc);
+              deadscale(controller.getLeftY()) * Constants.Driver.MAX_X_SPEED * slow,
+              deadscale(controller.getLeftX()) * Constants.Driver.MAX_Y_SPEED * slow,
+              deadscale(controller.getRightX()) * Constants.Driver.MAX_THETA_SPEED * slow + ext);
+
+      ChassisSpeeds sp =
+          new ChassisSpeeds(
+              -cmd.vxMetersPerSecond, -cmd.vyMetersPerSecond, -cmd.omegaRadiansPerSecond);
+      if (foc) {
+        Rotation2d rot =
+            DriverStation.getAlliance().orElse(DriverStation.Alliance.Red)
+                    == DriverStation.Alliance.Red
+                ? drivetrain.getPosition().getRotation()
+                : drivetrain.getPosition().getRotation().rotateBy(Rotation2d.fromRotations(0.5));
+        sp =
+            ChassisSpeeds.fromFieldRelativeSpeeds(
+                new ChassisSpeeds(
+                    cmd.vxMetersPerSecond, cmd.vyMetersPerSecond, -cmd.omegaRadiansPerSecond),
+                rot);
+      }
+
+      drivetrain.humanDrive(sp);
     }
     if (controller.getHID().getBackButtonPressed()) {
       drivetrain.setPosition(
           new Pose2d(drivetrain.getPosition().getTranslation(), Rotation2d.fromRotations(0.5)));
     }
     locked = controller.getHID().getXButtonPressed() || locked;
-    foc = controller.getHID().getStartButtonPressed() != foc;
+    foc = Overrides.useFieldOriented.get();
     if (locked) {
       drivetrain.lockWheels();
     }
@@ -135,6 +163,6 @@ public class TeleopDrive extends Command {
    */
   @Override
   public void end(boolean interrupted) {
-    drivetrain.humanDrive(new ChassisSpeeds(), false);
+    drivetrain.humanDrive(new ChassisSpeeds());
   }
 }

@@ -5,9 +5,9 @@ public final class WhoAmI {
   /** The mode of the robot */
   public static final Mode mode = Mode.REAL;
   /** The robot */
-  public static final RobotType bot = RobotType.MECHBASE;
+  public static final RobotType bot = RobotType.SWERVEBASE;
   /** The appendages to the robot */
-  final Appendages[] appendages = {};
+  public static final Appendages[] appendages = {Appendages.SHOOTER, Appendages.ARM};
 
   /** The robot types */
   public static enum RobotType {
@@ -20,7 +20,20 @@ public final class WhoAmI {
   }
 
   /** The appendages to the robot */
-  public static enum Appendages {}
+  public static enum Appendages {
+    /** An arm that pivots the shooter */
+    ARM,
+    /** A simulated arm that pivots the shooter */
+    SIM_ARM,
+    /** A shooter for notes */
+    SHOOTER,
+    /** A simulated shooter for notes */
+    SIM_SHOOTER,
+    /** A climber for the chain */
+    CLIMBER,
+    /** A simulated climber for the chain */
+    SIM_CLIMBER,
+  }
 
   /** The code execution mode */
   public static enum Mode {
@@ -30,5 +43,21 @@ public final class WhoAmI {
     REPLAY,
     /** Simulated */
     SIM
+  }
+
+  /**
+   * Checks the configuration
+   *
+   * @param args Not used
+   */
+  public static void main(String... args) {
+    if (mode != Mode.REAL) {
+      throw new IllegalArgumentException("Cannot deploy code in Sim mode to the robot");
+    }
+    boolean override = false; // Make true to override deploy checking
+    if (bot == RobotType.SIMSWERVEBASE && !override) {
+      throw new IllegalArgumentException(
+          "You are currently deploying code meant for the simulator to a real robot. ONLY DO THIS IF YOU ABSOLUTELY KNOW WHAT YOU ARE DOING. ");
+    }
   }
 }

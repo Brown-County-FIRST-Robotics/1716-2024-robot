@@ -1,32 +1,28 @@
 package frc.robot.subsystems.swerve;
 
+import edu.wpi.first.math.Vector;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
-import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Rotation3d;
-import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
-import edu.wpi.first.math.kinematics.SwerveModulePosition;
-import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.math.geometry.*;
+import edu.wpi.first.math.kinematics.*;
+import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import edu.wpi.first.math.trajectory.TrajectoryGenerator;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.DeferredCommand;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
 import frc.robot.Constants;
 import frc.robot.subsystems.*;
+import frc.robot.utils.Overrides;
+import frc.robot.utils.PoseEstimator;
 import java.util.List;
 import java.util.Set;
 import org.littletonrobotics.junction.Logger;
 
+/** The swerve drivetrain subsystem */
 public class SwerveDrivetrain implements Drivetrain {
   private static final double D = 21.125 * 0.0254; // TODO: Rename this
   private static final SwerveDriveKinematics KINEMATICS =
@@ -44,12 +40,12 @@ public class SwerveDrivetrain implements Drivetrain {
   ModuleIOInputsAutoLogged frInputs = new ModuleIOInputsAutoLogged();
   ModuleIOInputsAutoLogged blInputs = new ModuleIOInputsAutoLogged();
   ModuleIOInputsAutoLogged brInputs = new ModuleIOInputsAutoLogged();
+  Rotation2d lastIMU;
+  SwerveModulePosition[] lastPositions;
+  PoseEstimator poseEstimator;
 
   IMUIO imu;
   IMUIOInputsAutoLogged imuInputs = new IMUIOInputsAutoLogged();
-
-  SwerveDrivePoseEstimator poseEstimator;
-  Field2d field;
 
   private SwerveModulePosition[] getPositions() {
 
@@ -89,20 +85,29 @@ public class SwerveDrivetrain implements Drivetrain {
     };
   }
 
+  /**
+   * Creates a SwerveDrivetrain from IO
+   *
+   * @param fl Front left module IO
+   * @param fr Front right module IO
+   * @param bl Back left module IO
+   * @param br Back right module IO
+   * @param imu IMU IO
+   */
   public SwerveDrivetrain(ModuleIO fl, ModuleIO fr, ModuleIO bl, ModuleIO br, IMUIO imu) {
     this.imu = imu;
     this.fl = fl;
     this.fr = fr;
     this.bl = bl;
     this.br = br;
-    field = new Field2d();
     fl.updateInputs(flInputs);
     fr.updateInputs(frInputs);
     bl.updateInputs(blInputs);
     br.updateInputs(brInputs);
-    poseEstimator =
-        new SwerveDrivePoseEstimator(
-            KINEMATICS, getNavxRotation(), getPositions(), Constants.INIT_POSE);
+    poseEstimator = new PoseEstimator();
+    poseEstimator.setPose(Constants.INIT_POSE);
+    lastIMU = getGyro().toRotation2d();
+    lastPositions = getPositions();
   }
 
   @Override
@@ -119,38 +124,56 @@ public class SwerveDrivetrain implements Drivetrain {
     Logger.processInputs("Drive/BR", brInputs);
 
     Logger.recordOutput("Drive/RealStates", getWheelSpeeds());
-    poseEstimator.update(getNavxRotation(), getPositions());
+    Twist2d odoTwist =
+        KINEMATICS.toTwist2d(
+            new SwerveDriveWheelPositions(lastPositions),
+            new SwerveDriveWheelPositions(getPositions()));
+    if (!Overrides.disableIMU.get()) {
+      odoTwist =
+          new Twist2d(
+              odoTwist.dx, odoTwist.dy, getGyro().toRotation2d().minus(lastIMU).getRadians());
+    }
+    poseEstimator.addOdometry(odoTwist);
+    lastPositions = getPositions();
+    lastIMU = getGyro().toRotation2d();
     Logger.recordOutput("Drive/Pose", getPosition());
-    field.setRobotPose(getPosition());
+
+    checkForYawReset();
+  }
+
+  private void checkForYawReset() {
+    if (Overrides.resetYaw.get()) {
+      poseEstimator.setPose(
+          new Pose2d(getPosition().getTranslation(), Constants.INIT_POSE.getRotation()));
+      Overrides.resetYaw.set(false);
+    }
   }
 
   private SwerveModuleState[] getWheelSpeeds() {
-    return new SwerveModuleState[] {flInputs.vel, frInputs.vel, blInputs.vel, brInputs.vel};
+    return new SwerveModuleState[] {
+      new SwerveModuleState(flInputs.vel.speedMetersPerSecond, getPositions()[0].angle),
+      new SwerveModuleState(frInputs.vel.speedMetersPerSecond, getPositions()[1].angle),
+      new SwerveModuleState(blInputs.vel.speedMetersPerSecond, getPositions()[2].angle),
+      new SwerveModuleState(brInputs.vel.speedMetersPerSecond, getPositions()[3].angle)
+    };
   }
 
   @Override
   public Pose2d getPosition() {
-    return poseEstimator.getEstimatedPosition();
-  }
-
-  private Rotation2d getNavxRotation() {
-    return imuInputs.rotation.toRotation2d();
+    return poseEstimator.getPose();
   }
 
   private void setModuleStates(SwerveModuleState[] states) {
     SwerveDriveKinematics.desaturateWheelSpeeds(states, MAX_WHEEL_SPEED);
-    states[0] =
-        SwerveModuleState.optimize(
-            states[0], getPositions()[0].angle.plus(Rotation2d.fromRotations(1.0)));
-    states[1] =
-        SwerveModuleState.optimize(
-            states[1], getPositions()[1].angle.plus(Rotation2d.fromRotations(1.0)));
-    states[2] =
-        SwerveModuleState.optimize(
-            states[2], getPositions()[2].angle.plus(Rotation2d.fromRotations(1.0)));
-    states[3] =
-        SwerveModuleState.optimize(
-            states[3], getPositions()[3].angle.plus(Rotation2d.fromRotations(1.0)));
+    states[0] = SwerveModuleState.optimize(states[0], getPositions()[0].angle);
+    states[1] = SwerveModuleState.optimize(states[1], getPositions()[1].angle);
+    states[2] = SwerveModuleState.optimize(states[2], getPositions()[2].angle);
+    states[3] = SwerveModuleState.optimize(states[3], getPositions()[3].angle);
+    states[0].speedMetersPerSecond *= getPositions()[0].angle.minus(states[0].angle).getCos();
+    states[1].speedMetersPerSecond *= getPositions()[1].angle.minus(states[1].angle).getCos();
+    states[2].speedMetersPerSecond *= getPositions()[2].angle.minus(states[2].angle).getCos();
+    states[3].speedMetersPerSecond *= getPositions()[3].angle.minus(states[3].angle).getCos();
+
     Logger.recordOutput("Drive/CmdStates", states);
     fl.setCmdState(
         new SwerveModuleState(
@@ -205,12 +228,12 @@ public class SwerveDrivetrain implements Drivetrain {
 
   @Override
   public void setPosition(Pose2d pos) {
-    poseEstimator.resetPosition(getNavxRotation(), getPositions(), pos);
+    poseEstimator.setPose(pos);
   }
 
   @Override
-  public void addVisionUpdate(Pose2d newPose, double timestamp) {
-    poseEstimator.addVisionMeasurement(newPose, timestamp);
+  public void addVisionUpdate(Pose2d newPose, Vector<N3> stdDevs, double timestamp) {
+    poseEstimator.addVision(newPose, stdDevs, timestamp);
   }
 
   @Override
@@ -255,22 +278,8 @@ public class SwerveDrivetrain implements Drivetrain {
   }
 
   @Override
-  public void humanDrive(ChassisSpeeds cmd, boolean foc) {
-    ChassisSpeeds sp =
-        new ChassisSpeeds(
-            -cmd.vxMetersPerSecond, -cmd.vyMetersPerSecond, -cmd.omegaRadiansPerSecond);
-    if (foc) {
-      Rotation2d rot =
-          DriverStation.getAlliance().get() == DriverStation.Alliance.Red
-              ? getPosition().getRotation()
-              : getPosition().getRotation().rotateBy(Rotation2d.fromRotations(0.5));
-      sp =
-          ChassisSpeeds.fromFieldRelativeSpeeds(
-              new ChassisSpeeds(
-                  cmd.vxMetersPerSecond, cmd.vyMetersPerSecond, -cmd.omegaRadiansPerSecond),
-              rot);
-    }
-    SwerveModuleState[] states = KINEMATICS.toSwerveModuleStates(sp);
+  public void humanDrive(ChassisSpeeds cmd) {
+    SwerveModuleState[] states = KINEMATICS.toSwerveModuleStates(cmd);
     setModuleStates(states);
   }
 
