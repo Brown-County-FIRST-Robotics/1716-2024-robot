@@ -25,6 +25,7 @@ public class SpeakerShoot extends Command {
   LoggedTunableNumber shooterAngleThreshold = new LoggedTunableNumber("ang threshold", 0.007);
   LoggedTunableNumber botAngleThreshold = new LoggedTunableNumber("bot ang threshold", 0.013);
   XboxController controller;
+  LoggedTunableNumber sp = new LoggedTunableNumber("Shooter Speed", 10);
 
   public SpeakerShoot(
       Drivetrain drive,
@@ -87,7 +88,7 @@ public class SpeakerShoot extends Command {
             bestAng(
                 FieldConstants.getSpeaker().minus(botPose).toTranslation2d().getNorm(),
                 FieldConstants.getSpeaker().minus(botPose).getZ(),
-                9.88));
+                sp.get()));
     var botAngle = FieldConstants.getSpeaker().minus(botPose).toTranslation2d().getAngle();
     Logger.recordOutput(
         "PredPose", new Pose3d(botPose, new Rotation3d(0, -shooterAngle.getRadians(), 0)));
