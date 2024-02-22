@@ -43,6 +43,12 @@ public class HolonomicTrajectoryFollower extends Command {
     this.customRotation = customRotation;
   }
 
+  public HolonomicTrajectoryFollower(
+      Drivetrain drive, Supplier<Trajectory> trajectorySupplier, Rotation2d targetRotation) {
+    this(drive, trajectorySupplier);
+    setCustomRotation(Optional.of(targetRotation));
+  }
+
   public HolonomicTrajectoryFollower(Drivetrain drive, Supplier<Trajectory> trajectorySupplier) {
     this.drivetrain = drive;
     this.trajectorySupplier = trajectorySupplier;
