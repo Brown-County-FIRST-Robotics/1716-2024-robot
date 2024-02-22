@@ -29,11 +29,11 @@ public class ModuleIOSparkFX implements ModuleIO {
   double offset;
 
   String name;
-  LoggedTunableNumber thrustP = new LoggedTunableNumber("Thrust P", 0);
+  LoggedTunableNumber thrustP = new LoggedTunableNumber("Thrust P", 30.0/6380.0);
   LoggedTunableNumber thrustI = new LoggedTunableNumber("Thrust I", 0);
   LoggedTunableNumber thrustD = new LoggedTunableNumber("Thrust D", 0);
   LoggedTunableNumber thrustKV = new LoggedTunableNumber("Thrust KV", 60.0 / 6380.0);
-  LoggedTunableNumber steerP = new LoggedTunableNumber("Steer P", 0);
+  LoggedTunableNumber steerP = new LoggedTunableNumber("Steer P", 1.0/600.0);
   LoggedTunableNumber steerI = new LoggedTunableNumber("Steer I", 0);
   LoggedTunableNumber steerD = new LoggedTunableNumber("Steer D", 0);
   LoggedTunableNumber steerKV = new LoggedTunableNumber("Steer KV", 1.0 / 300.0);
@@ -62,9 +62,9 @@ public class ModuleIOSparkFX implements ModuleIO {
     } else if (thrustID == 21) {
       off = 0;
     } else if (thrustID == 22) {
-      off = 0;
+      off = -0.05;
     } else if (thrustID == 23) {
-      off = 0.5;
+      off = 0.45;
     }
     offsetTun.initDefault(off);
     config.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RotorSensor;
@@ -92,7 +92,7 @@ public class ModuleIOSparkFX implements ModuleIO {
     pid.setSmartMotionMaxVelocity(300, 0);
     pid.setSmartMotionMinOutputVelocity(0, 0);
     pid.setSmartMotionMaxAccel(1800, 0);
-    pid.setSmartMotionAllowedClosedLoopError(0.01, 0);
+    pid.setSmartMotionAllowedClosedLoopError(0.007, 0);
     pid.setPositionPIDWrappingEnabled(true);
     pid.setPositionPIDWrappingMaxInput(1);
     pid.setPositionPIDWrappingMinInput(0);
