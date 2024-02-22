@@ -6,6 +6,8 @@
 package frc.robot;
 
 import edu.wpi.first.math.geometry.*;
+import edu.wpi.first.math.trajectory.TrajectoryConfig;
+import edu.wpi.first.math.trajectory.TrajectoryGenerator;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -35,8 +37,12 @@ import frc.robot.subsystems.swerve.SwerveDrivetrain;
 import frc.robot.subsystems.vision.Vision;
 import frc.robot.subsystems.vision.VisionIO;
 import frc.robot.subsystems.vision.VisionIOSecondSight;
+import frc.robot.utils.HolonomicTrajectoryFollower;
 import frc.robot.utils.LoggedTunableNumber;
 import frc.robot.utils.Overrides;
+import frc.robot.utils.ShootWhileMove;
+
+import java.util.List;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -248,6 +254,16 @@ public class RobotContainer {
    */
   public Command getAutonomousCommand() {
     // An example command will be run in autonomous
-    return driveSys.getDriveToPointCmd(new Pose2d(2, 0, Rotation2d.fromRotations(0)), 0, 0);
+    return new HolonomicTrajectoryFollower(driveSys,()->{
+      var conf=new TrajectoryConfig(3,1);
+      var target=FieldConstants.getGamePiece(0);
+      var startRot=driveSys.getPosition().getTranslation().minus(target).getAngle();
+      var startSpeed= ShootWhileMove.getFieldRelativeSpeeds(driveSys.getVelocity(),driveSys.getPosition().getRotation());
+      if(startSpeed.getNorm()>0.1){
+        startRot=startSpeed.getAngle();
+        conf=conf.setStartVelocity(startSpeed.getNorm());
+      }
+      return TrajectoryGenerator.generateTrajectory(new Pose2d(driveSys.getPosition().getTranslation(),startRot), List.of(),new Pose2d(target,new Rotation2d()),conf);
+    },Rotation2d.fromRotations(0));
   }
 }
