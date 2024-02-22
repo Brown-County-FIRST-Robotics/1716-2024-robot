@@ -64,7 +64,7 @@ public class ModuleIOSparkFX implements ModuleIO {
     } else if (thrustID == 22) {
       off = 0;
     } else if (thrustID == 23) {
-      off = 0.5;
+      off = 0.45;
     }
     offsetTun.initDefault(off);
     config.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RotorSensor;
@@ -92,7 +92,7 @@ public class ModuleIOSparkFX implements ModuleIO {
     pid.setSmartMotionMaxVelocity(300, 0);
     pid.setSmartMotionMinOutputVelocity(0, 0);
     pid.setSmartMotionMaxAccel(1800, 0);
-    pid.setSmartMotionAllowedClosedLoopError(0.01, 0);
+    pid.setSmartMotionAllowedClosedLoopError(0.003, 0);
     pid.setPositionPIDWrappingEnabled(true);
     pid.setPositionPIDWrappingMaxInput(1);
     pid.setPositionPIDWrappingMinInput(0);
