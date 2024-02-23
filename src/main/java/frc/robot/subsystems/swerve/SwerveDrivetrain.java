@@ -24,7 +24,7 @@ import org.littletonrobotics.junction.Logger;
 
 /** The swerve drivetrain subsystem */
 public class SwerveDrivetrain implements Drivetrain {
-  private static final double D = 21.125 * 0.0254; // TODO: Rename this
+  private static final double D = 21 * 0.0254; // TODO: Rename this
   private static final SwerveDriveKinematics KINEMATICS =
       new SwerveDriveKinematics(
           new Translation2d(D / 2, D / 2),
