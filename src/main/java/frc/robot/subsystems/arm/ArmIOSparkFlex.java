@@ -31,7 +31,7 @@ public class ArmIOSparkFlex implements ArmIO {
     pid.setOutputRange(-1, 1);
     pid.setSmartMotionMaxVelocity(0.6 * FREE_RPM / GEAR_RATIO, 0);
     pid.setSmartMotionMinOutputVelocity(0, 0);
-    pid.setSmartMotionMaxAccel(6, 0);
+    pid.setSmartMotionMaxAccel(16, 0);
     pid.setSmartMotionAllowedClosedLoopError(0.004, 0);
     ffTuner.attach(pid::setFF);
     pTuner.attach(pid::setP);
