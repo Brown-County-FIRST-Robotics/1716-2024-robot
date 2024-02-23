@@ -15,7 +15,7 @@ import org.littletonrobotics.junction.Logger;
 public class HolonomicTrajectoryFollower extends Command {
   private static final TrapezoidProfile.Constraints constraints =
       new TrapezoidProfile.Constraints(3, 20);
-  private static LoggedTunableNumber allowedErr =
+  public static LoggedTunableNumber allowedErr =
       new LoggedTunableNumber("Rotation Allowed Err", 3);
   private static LoggedTunableNumber replanErr =
       new LoggedTunableNumber("Replanning threshold", 0.1);
@@ -41,6 +41,12 @@ public class HolonomicTrajectoryFollower extends Command {
 
   public void setCustomRotation(Optional<Rotation2d> customRotation) {
     this.customRotation = customRotation;
+  }
+
+  public HolonomicTrajectoryFollower(
+      Drivetrain drive, Supplier<Trajectory> trajectorySupplier, Rotation2d targetRotation) {
+    this(drive, trajectorySupplier);
+    setCustomRotation(Optional.of(targetRotation));
   }
 
   public HolonomicTrajectoryFollower(Drivetrain drive, Supplier<Trajectory> trajectorySupplier) {
@@ -81,13 +87,14 @@ public class HolonomicTrajectoryFollower extends Command {
                             drivetrain.getPosition().getRotation(),
                             drivetrain.getVelocity().omegaRadiansPerSecond))
                 .orElse(0.0));
-    var discreteSpeeds = ChassisSpeeds.discretize(speeds, 0.02);
+    var discreteSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(speeds,drivetrain.getPosition().getRotation());
     drivetrain.humanDrive(discreteSpeeds);
     Logger.recordOutput("Follower/CurrentTrajectory", activeTrajectory);
   }
 
   @Override
   public void end(boolean interrupted) {
+    drivetrain.humanDrive(new ChassisSpeeds());
     timer.stop();
   }
 
@@ -98,8 +105,8 @@ public class HolonomicTrajectoryFollower extends Command {
             .filter(
                 rotation2d ->
                     (Math.abs(rotation2d.minus(drivetrain.getPosition().getRotation()).getDegrees())
-                        > allowedErr.get()))
-            .isPresent());
+                        < allowedErr.get()))
+            .isEmpty());
   }
 
   public Translation2d getPoseAtTime(double t) {
