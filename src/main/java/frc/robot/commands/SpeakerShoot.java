@@ -22,9 +22,10 @@ public class SpeakerShoot extends Command {
   Consumer<Optional<Rotation2d>> rotationCommander;
   Shooter shooter;
   boolean firing = false;
-  LoggedTunableNumber shooterAngleThreshold = new LoggedTunableNumber("ang threshold", 0.007);
-  LoggedTunableNumber botAngleThreshold = new LoggedTunableNumber("bot ang threshold", 0.013);
+  LoggedTunableNumber shooterAngleThreshold = new LoggedTunableNumber("ang threshold", 0.01);
+  LoggedTunableNumber botAngleThreshold = new LoggedTunableNumber("bot ang threshold", 0.02);
   XboxController controller;
+  LoggedTunableNumber sp = new LoggedTunableNumber("Shooter Speed", 11.3);
 
   public SpeakerShoot(
       Drivetrain drive,
@@ -43,6 +44,7 @@ public class SpeakerShoot extends Command {
   @Override
   public void initialize() {
     shooter.setFiringBlocked(true);
+    shooter.shoot(-4000,4000);
   }
 
   /**
@@ -87,7 +89,7 @@ public class SpeakerShoot extends Command {
             bestAng(
                 FieldConstants.getSpeaker().minus(botPose).toTranslation2d().getNorm(),
                 FieldConstants.getSpeaker().minus(botPose).getZ(),
-                9.88));
+                sp.get()));
     var botAngle = FieldConstants.getSpeaker().minus(botPose).toTranslation2d().getAngle();
     Logger.recordOutput(
         "PredPose", new Pose3d(botPose, new Rotation3d(0, -shooterAngle.getRadians(), 0)));
@@ -99,8 +101,9 @@ public class SpeakerShoot extends Command {
         botAngleThreshold.get()
                 < Math.abs(botAngle.minus(drive.getPosition().getRotation()).getRotations())
             || shooterAngleThreshold.get()
-                < Math.abs(shooterAngle.minus(arm.getAngle()).getRotations());
+                < Math.abs(shooterAngle.minus(arm.getAngle()).getRotations()) || drive.getVelocity().omegaRadiansPerSecond>0.2;
     shooter.setFiringBlocked(blocked);
+    firing=firing||(!blocked);
   }
 
   @Override
