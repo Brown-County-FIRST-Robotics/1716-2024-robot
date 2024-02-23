@@ -16,7 +16,7 @@ public class Intake extends Command {
   Shooter shooter;
   Arm arm;
   XboxController controller;
-  static LoggedTunableNumber armPreset = new LoggedTunableNumber("Presets/Intake_Arm", -0.14);
+  static LoggedTunableNumber armPreset = new LoggedTunableNumber("Presets/Intake_Arm", -0.16);
   static LoggedTunableNumber topSpeed = new LoggedTunableNumber("Presets/Intake_Top", 1700);
   static LoggedTunableNumber bottomSpeed = new LoggedTunableNumber("Presets/Intake_Bottom", -2000);
   static LoggedTunableNumber armSourcePreset =
