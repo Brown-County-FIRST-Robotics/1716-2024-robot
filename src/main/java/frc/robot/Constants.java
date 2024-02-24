@@ -61,6 +61,18 @@ public final class Constants {
     public static final int DRIVER_CONTROLLER_PORT = 0;
   }
 
+  /** Current limits for different motors */
+  public static final class CurrentLimits {
+    /** Current limit for NEO 550 */
+    public static final int NEO550 = 20;
+    /** Current limit for NEO v1.1 */
+    public static final int NEO = 50;
+    /** Current limit for NEO vortex */
+    public static final int NEO_VORTEX = 80;
+    /** Current limit for brushed motors */
+    public static final int GENERIC_BRUSHED = 20;
+  }
+
   /** The initial pose of the robot */
   public static final Pose2d INIT_POSE = new Pose2d(0, 0, Rotation2d.fromDegrees(180));
   /** The initial pose of the robot when it is on the red alliance */
