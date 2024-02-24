@@ -177,6 +177,7 @@ public class RobotContainer {
     secondController
         .leftBumper()
         .whileTrue(Intake.fromSource(shooter, arm, secondController.getHID()));
+    secondController.b().whileTrue(Intake.fromFloor(shooter, arm, secondController.getHID()));
 
     LoggedTunableNumber ampPreset =
         new LoggedTunableNumber("Presets/Arm Amp", 0.15); // TODO: add value

@@ -82,9 +82,9 @@ public class Intake extends Command {
   }
 
   private void setSpeedsAndPositions() {
-    if (!Overrides.disableArmAnglePresets.get()) {
+    if (!Overrides.disableArmAnglePresets.get() && !controller.getBButton()) {
       arm.setAngle(Rotation2d.fromRotations(preset.get()));
-    } else {
+    } else if (Overrides.disableArmAnglePresets.get()) {
       arm.commandIncrement(
           Rotation2d.fromRotations(
               controller.getLeftY() * Overrides.armAngleOverrideIncrementScale.get()));
