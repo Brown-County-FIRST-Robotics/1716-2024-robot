@@ -1,12 +1,25 @@
 package frc.robot.subsystems.climber;
 
 import com.revrobotics.CANSparkMax;
+import edu.wpi.first.wpilibj.DigitalInput;
 
 public class ClimberIOSparkMaxes implements ClimberIO {
   CANSparkMax leftMotor;
   CANSparkMax rightMotor;
 
-  public ClimberIOSparkMaxes(int leftID, int rightID) {
+  //magnetic limit sensors
+  DigitalInput leftBottomLimit;
+  DigitalInput leftTopLimit;
+  DigitalInput rightBottomLimit;
+  DigitalInput rightTopLimit;
+
+  public ClimberIOSparkMaxes(
+      int leftID,
+      int rightID,
+      int leftBottomLimitID,
+      int leftTopLimitID,
+      int rightBottomLimitID,
+      int rightTopLimitID) {
     leftMotor = new CANSparkMax(leftID, CANSparkMax.MotorType.kBrushless);
     rightMotor = new CANSparkMax(rightID, CANSparkMax.MotorType.kBrushless);
 
@@ -21,6 +34,11 @@ public class ClimberIOSparkMaxes implements ClimberIO {
 
     leftMotor.burnFlash();
     rightMotor.burnFlash();
+
+    leftBottomLimit = new DigitalInput(leftBottomLimitID);
+    leftTopLimit = new DigitalInput(leftTopLimitID);
+    rightBottomLimit = new DigitalInput(rightBottomLimitID);
+    rightTopLimit = new DigitalInput(rightTopLimitID);
   }
 
   @Override
@@ -36,6 +54,11 @@ public class ClimberIOSparkMaxes implements ClimberIO {
 
     inputs.leftOut = leftMotor.getAppliedOutput();
     inputs.rightOut = rightMotor.getAppliedOutput();
+
+    inputs.leftBottomSensor = leftBottomLimit.get();
+    inputs.leftTopSensor = leftTopLimit.get();
+    inputs.rightBottomSensor = rightBottomLimit.get();
+    inputs.rightTopSensor = rightTopLimit.get();
   }
 
   @Override

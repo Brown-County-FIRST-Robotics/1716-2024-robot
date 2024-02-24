@@ -5,40 +5,48 @@ import frc.robot.subsystems.climber.Climber;
 import java.util.function.DoubleSupplier;
 
 public class Climb extends Command {
-    private final Climber climber;
-    private final DoubleSupplier roll;
+  private final Climber climber;
+  private final DoubleSupplier movement;
+  private final DoubleSupplier roll;
 
-    public Climb(Climber climber, DoubleSupplier roll) {
-        this.climber = climber;
-        this.roll = roll;
-        addRequirements(climber);
+  double leftVoltage;
+  double rightVoltage;
+
+  public Climb(Climber climber, DoubleSupplier movement, DoubleSupplier roll) {
+    this.climber = climber;
+    this.movement = movement;
+    this.roll = roll;
+    addRequirements(climber);
+  }
+
+  @Override
+  public void execute() {
+    // ADD MAGNET SENSORS
+    leftVoltage = movement.getAsDouble() + levelVoltageModifier(false);
+    rightVoltage = movement.getAsDouble() + levelVoltageModifier(true);
+
+    climber.setVoltage(leftVoltage, rightVoltage);
+  }
+
+  @Override
+  public void end(boolean interrupted) {
+    climber.setVoltage(0, 0);
+  }
+
+  // takes the roll of the function and returns the voltage of the motor
+  private double levelVoltageModifier(boolean rightSide) {
+    double roll = this.roll.getAsDouble();
+    if (rightSide) { // TODO: DETERMINE IF THIS IS THE CORRECT SIDE
+      roll = -roll;
     }
 
-    @Override
-    public void execute() {
-        climber.setVoltage(voltageFunction(false), voltageFunction(true));
+    // https://www.desmos.com/calculator/4lzmqs1sj1
+    double voltage = Math.pow(2.0, roll); // TODO: MANIPULATE THIS FUNCTION TO WORK BETTER
+
+    if (!rightSide) { // TODO: DETERMINE IF THIS IS THE CORRECT SIDE
+      return voltage;
+    } else {
+      return -voltage;
     }
-
-    @Override
-    public void end(boolean interrupted) {
-        climber.setVoltage(0, 0);
-    }
-
-    //takes the roll of the function and returns the voltage of the motor
-    private double voltageFunction(boolean rightSide) {
-        double roll = this.roll.getAsDouble();
-        if (rightSide) { //TODO: DETERMINE IF THIS IS THE CORRECT SIDE
-            roll = -roll;
-        }
-
-        //https://www.desmos.com/calculator/4lzmqs1sj1
-        double voltage = Math.pow(2.0, roll); //TODO: MANIPULATE THIS FUNCTION TO WORK BETTER
-
-        if (!rightSide) { //TODO: DETERMINE IF THIS IS THE CORRECT SIDE
-            return voltage;
-        }
-        else {
-            return -voltage;
-        }
-    }
+  }
 }

@@ -16,6 +16,11 @@ public interface ClimberIO {
 
     double leftOut = 0;
     double rightOut = 0;
+
+    boolean leftBottomSensor = false;
+    boolean leftTopSensor = false;
+    boolean rightBottomSensor = false;
+    boolean rightTopSensor = false;
   }
 
   public default void updateInputs(ClimberIOInputs inputs) {}

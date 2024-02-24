@@ -4,20 +4,29 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import org.littletonrobotics.junction.Logger;
 
 public class Climber extends SubsystemBase {
-  ClimberIO io;
+  ClimberIO climberIO;
   ClimberIOInputsAutoLogged inputs = new ClimberIOInputsAutoLogged();
 
   public Climber(ClimberIO io) {
-    this.io = io;
+    climberIO = io;
   }
 
   @Override
   public void periodic() {
-    io.updateInputs(inputs);
+    climberIO.updateInputs(inputs);
     Logger.processInputs("Climber/Inputs", inputs);
   }
 
   public void setVoltage(double leftVoltage, double rightVoltage) {
-    io.setVoltage(leftVoltage, rightVoltage);
+    climberIO.setVoltage(leftVoltage, rightVoltage);
+  }
+
+  /**
+   * Get the values of the magnet sensors.
+   *
+   * @return an array containing the sensor values, it goes bottom left, top left, bottom right, top right
+   */
+  public boolean[] getSensors() {
+    return new boolean[] {inputs.leftBottomSensor, inputs.leftTopSensor, inputs.rightBottomSensor, inputs.rightTopSensor};
   }
 }
