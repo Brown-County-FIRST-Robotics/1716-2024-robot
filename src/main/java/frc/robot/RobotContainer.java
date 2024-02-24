@@ -236,7 +236,7 @@ public class RobotContainer {
             Commands.runEnd(
                 () -> {
                   shooter.setFeeder(-8000);
-                  shooter.cmdVel(-1000, 1000);
+                  shooter.cmdVel(-2000, 2000);
                 },
                 () -> {
                   shooter.setFeeder(0);

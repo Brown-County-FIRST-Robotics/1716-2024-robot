@@ -12,8 +12,8 @@ public class ShooterIOSparkFlexes implements ShooterIO {
   CANSparkFlex motor2;
   RelativeEncoder encoder1;
   RelativeEncoder encoder2;
-  LoggedTunableNumber ffTuner = new LoggedTunableNumber("Shooter FF", 1.0 / 6500);
-  LoggedTunableNumber pTuner = new LoggedTunableNumber("Shooter P", 0);
+  LoggedTunableNumber ffTuner = new LoggedTunableNumber("Shooter FF", 1.0 / 6784);
+  LoggedTunableNumber pTuner = new LoggedTunableNumber("Shooter P", 2.0 / 6784);
   LoggedTunableNumber iTuner = new LoggedTunableNumber("Shooter I", 0);
   LoggedTunableNumber dTuner = new LoggedTunableNumber("Shooter D", 0);
 
