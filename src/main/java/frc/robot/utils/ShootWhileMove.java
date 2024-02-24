@@ -100,6 +100,53 @@ public class ShootWhileMove {
     return a.getX() * b.getX() + a.getY() * b.getY();
   }
 
+  public static ShootingCommand newShooting(
+      Translation3d target, Translation3d botPose, Translation2d botVel) {
+    double g = 9.8065;
+    double v = 11.3;
+    var pbmt = target.minus(botPose);
+    double px = pbmt.getX();
+    double py = pbmt.getY();
+    double pz = pbmt.getZ();
+    double bx = botVel.getX();
+    double by = botVel.getY();
+
+    double theta_s = Math.asin(Math.sqrt(2 * g * pz) / v) * 1.01;
+    double theta_b = Math.atan2(py, px);
+    for (int i = 0; i < 20; i++) {
+      double vz = v * Math.sin(theta_s);
+      double vground = v * Math.cos(theta_s);
+      double vx = vground * Math.cos(theta_b) + bx;
+      double vy = vground * Math.sin(theta_b) + by;
+      double t = (vz - Math.sqrt(vz * vz - 2 * g * pz)) / g;
+
+      double ex = vx * t - px;
+      double ey = vy * t - py;
+      double dtdts =
+          (vground - (v * vground * Math.sin(theta_s) / Math.sqrt(vz * vz - 2 * g * pz))) / g;
+
+      double dexdtb = -t * vground * Math.sin(theta_b);
+      double deydtb = t * vground * Math.cos(theta_b);
+
+      double dexdts = dtdts * vx - t * vz * Math.cos(theta_b);
+      double deydts = dtdts * vy - t * vz * Math.sin(theta_b);
+
+      double det = dexdtb * deydts - dexdts * deydtb;
+      double deltb = (deydts * ex - dexdts * ey) / det;
+      double delts = (-deydtb * ex + dexdtb * ey) / det;
+      if (Math.abs(delts) + Math.abs(deltb) < 0.001) {
+        System.out.println(i);
+        break;
+      }
+      theta_s = theta_s - delts;
+      theta_b = theta_b - deltb;
+    }
+
+    System.out.println(theta_b);
+    System.out.println("ts:" + theta_s);
+    return new ShootingCommand(Rotation2d.fromRadians(theta_b), Rotation2d.fromRadians(theta_s), v);
+  }
+
   /**
    * Checks if the difference between the two commands if enough to stop iteration
    *
