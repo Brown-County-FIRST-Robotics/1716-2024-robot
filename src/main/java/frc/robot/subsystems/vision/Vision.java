@@ -23,9 +23,9 @@ public class Vision extends PeriodicRunnable {
   LoggedTunableNumber oneTagRotationStdDev =
       new LoggedTunableNumber("Vision/One tag Rotation StdDev", 0.9);
   LoggedTunableNumber multiTagTranslationStdDev =
-      new LoggedTunableNumber("Vision/Multi tag Translation StdDev", 0.9);
+      new LoggedTunableNumber("Vision/Multi tag Translation StdDev", 0.3);
   LoggedTunableNumber multiTagRotationStdDev =
-      new LoggedTunableNumber("Vision/Multi tag Rotation StdDev", 0.9);
+      new LoggedTunableNumber("Vision/Multi tag Rotation StdDev", 0.3);
 
   /**
    * Constructs a <code>Vision</code> subsystem
