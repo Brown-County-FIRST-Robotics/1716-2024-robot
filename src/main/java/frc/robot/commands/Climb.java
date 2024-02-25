@@ -30,7 +30,10 @@ public class Climb extends Command {
 
   @Override
   public void end(boolean interrupted) {
-    climber.setVoltage(0, 0);
+    climber.setVoltage(0, 0); 
+      //With this functionality, the robot might drift downwards after the command ends...
+      //This might be mitigated by the springs on the climber
+      //TODO: TEST THIS
   }
 
   // takes the roll of the function and returns the voltage of the motor

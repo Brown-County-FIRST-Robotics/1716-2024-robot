@@ -149,8 +149,6 @@ public class RobotContainer {
       shooter = new Shooter(new ShooterIO() {}, new FeederIO() {});
     }
 
-    climber.setDefaultCommand(new Climb(climber, () -> -secondController.getRightY()));
-
     useAlliance();
     configureBindings();
   }
@@ -249,6 +247,9 @@ public class RobotContainer {
                   shooter.setFeeder(0);
                 },
                 shooter));
+
+    // Climb
+    secondController.rightStick().toggleOnTrue(new Climb(climber, () -> -secondController.getRightY(), driveSys.getRoll()));
   }
 
   /**
