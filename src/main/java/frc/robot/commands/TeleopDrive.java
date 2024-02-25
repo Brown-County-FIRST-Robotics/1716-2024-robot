@@ -2,6 +2,7 @@ package frc.robot.commands;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -20,8 +21,7 @@ public class TeleopDrive extends Command {
   private final CommandXboxController controller;
   boolean foc = true;
   boolean locked = false;
-  DualRateLimiter xVelLimiter = new DualRateLimiter(4, 100);
-  DualRateLimiter yVelLimiter = new DualRateLimiter(4, 100);
+  DualRateLimiter tVelLimiter = new DualRateLimiter(4, 100);
   DualRateLimiter omegaLimiter = new DualRateLimiter(6, 100);
 
   public void setCustomRotation(Optional<Rotation2d> customRotation) {
@@ -92,8 +92,10 @@ public class TeleopDrive extends Command {
           new ChassisSpeeds(
               deadscale(controller.getLeftY()) * Constants.Driver.MAX_X_SPEED * slow,
               deadscale(controller.getLeftX()) * Constants.Driver.MAX_Y_SPEED * slow,
-              deadscale(controller.getRightX()) * Constants.Driver.MAX_THETA_SPEED * slow + ext);
-
+              omegaLimiter.calculate(deadscale(controller.getRightX()) * Constants.Driver.MAX_THETA_SPEED * slow) + ext);
+      var cmdAsTranslation=new Translation2d(cmd.vxMetersPerSecond,cmd.vyMetersPerSecond);
+      var realNorm=tVelLimiter.calculate(cmdAsTranslation.getNorm());
+      var realCmdAsTranslation=new Translation2d(realNorm,cmdAsTranslation.getAngle());
       ChassisSpeeds sp =
           new ChassisSpeeds(
               -cmd.vxMetersPerSecond, -cmd.vyMetersPerSecond, -cmd.omegaRadiansPerSecond);

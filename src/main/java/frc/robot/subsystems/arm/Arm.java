@@ -32,6 +32,7 @@ public class Arm extends SubsystemBase {
     this.io = io;
     io.updateInputs(inputs);
     Logger.processInputs("Arm/Inputs", inputs);
+    commandNeutral();
   }
 
   /**
