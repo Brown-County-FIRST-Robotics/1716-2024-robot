@@ -98,7 +98,7 @@ public class Shooter extends SubsystemBase {
   }
 
   public void setSpeed(double exitVel) {
-    double factor = 4000 / 9.88;
+    double factor = 3500 / 9.88;
     cmdTopSpeed = -factor * exitVel;
     cmdBottomSpeed = factor * exitVel;
   }
