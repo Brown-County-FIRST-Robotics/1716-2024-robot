@@ -52,11 +52,11 @@ public final class Constants {
   /** Constants relating to manual operation */
   public static final class Driver {
     /** The maximum x velocity during manual operation */
-    public static final double MAX_X_SPEED = 4;
+    public static final double MAX_X_SPEED = 5;
     /** The maximum y velocity during manual operation */
-    public static final double MAX_Y_SPEED = 4;
+    public static final double MAX_Y_SPEED = 5;
     /** The maximum angular velocity during manual operation */
-    public static final double MAX_THETA_SPEED = 6;
+    public static final double MAX_THETA_SPEED = 10;
     /** The port the driver controller is on */
     public static final int DRIVER_CONTROLLER_PORT = 0;
   }
