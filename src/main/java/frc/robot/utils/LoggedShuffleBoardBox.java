@@ -1,4 +1,11 @@
 package frc.robot.utils;
 
-public class LoggedShuffleBoardBox {
+import org.littletonrobotics.junction.networktables.LoggedDashboardInput;
+
+public class LoggedShuffleBoardBox implements LoggedDashboardInput {
+
+  @Override
+  public void periodic() {
+
+  }
 }
