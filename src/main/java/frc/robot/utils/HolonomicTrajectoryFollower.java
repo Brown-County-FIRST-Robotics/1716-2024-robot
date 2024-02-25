@@ -14,14 +14,13 @@ import org.littletonrobotics.junction.Logger;
 
 public class HolonomicTrajectoryFollower extends Command {
   private static final TrapezoidProfile.Constraints constraints =
-      new TrapezoidProfile.Constraints(3, 20);
+      new TrapezoidProfile.Constraints(3, 15);
   public static LoggedTunableNumber allowedErr = new LoggedTunableNumber("Rotation Allowed Err", 3);
   private static LoggedTunableNumber replanErr =
       new LoggedTunableNumber("Replanning threshold", 0.1);
 
   public static double getExt(
       Rotation2d cmdRotation, Rotation2d currentRotation, double currentVelocity) {
-    if (Math.abs(cmdRotation.minus(currentRotation).getDegrees()) > allowedErr.get()) {
       double goal = cmdRotation.getRadians();
       if (Math.abs(currentRotation.getRadians() - goal) > Math.PI) {
         goal -= 2 * Math.PI;
@@ -29,14 +28,14 @@ public class HolonomicTrajectoryFollower extends Command {
           goal += 4 * Math.PI;
         }
       }
-      return new TrapezoidProfile(constraints)
-          .calculate(
+      var tp= new TrapezoidProfile(constraints);
+          double fvel=tp.calculate(
               0.02,
               new TrapezoidProfile.State(currentRotation.getRadians(), currentVelocity),
-              new TrapezoidProfile.State(goal, 0))
-          .velocity;
-    }
-    return 0;
+              new TrapezoidProfile.State(goal, 0)).velocity;
+
+
+    return tp.totalTime()>0.02?fvel:0;
   }
 
   Drivetrain drivetrain;

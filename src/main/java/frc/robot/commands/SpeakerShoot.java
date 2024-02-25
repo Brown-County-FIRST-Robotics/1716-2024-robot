@@ -10,6 +10,7 @@ import frc.robot.FieldConstants;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.arm.Arm;
 import frc.robot.subsystems.shooter.Shooter;
+import frc.robot.utils.HolonomicTrajectoryFollower;
 import frc.robot.utils.LoggedTunableNumber;
 import frc.robot.utils.Overrides;
 import frc.robot.utils.ShootWhileMove;
@@ -22,8 +23,8 @@ public class SpeakerShoot extends Command {
   Consumer<Optional<Rotation2d>> rotationCommander;
   Shooter shooter;
   boolean firing = false;
-  LoggedTunableNumber shooterAngleThreshold = new LoggedTunableNumber("ang threshold", 0.005);
-  LoggedTunableNumber botAngleThreshold = new LoggedTunableNumber("bot ang threshold", 0.02);
+  LoggedTunableNumber shooterAngleThreshold = new LoggedTunableNumber("ang threshold", 0.003);
+  LoggedTunableNumber botAngleThreshold = new LoggedTunableNumber("bot ang threshold", 0.008);
   XboxController controller;
   LoggedTunableNumber sp = new LoggedTunableNumber("Shooter Speed", 11.3);
 
@@ -104,8 +105,10 @@ public class SpeakerShoot extends Command {
     arm.setAngle(cmd.shooterAngle);
     // Prevent firing if angles are not close enough
     boolean blocked =
-        botAngleThreshold.get()
-                < Math.abs(cmd.botAngle.minus(drive.getPosition().getRotation()).getRotations())
+            (                HolonomicTrajectoryFollower.getExt(
+                        cmd.botAngle,
+                        drive.getPosition().getRotation(),
+                        drive.getVelocity().omegaRadiansPerSecond)!=0)
             || shooterAngleThreshold.get()
                 < Math.abs(cmd.shooterAngle.minus(arm.getAngle()).getRotations())
             || drive.getVelocity().omegaRadiansPerSecond > 0.2;
