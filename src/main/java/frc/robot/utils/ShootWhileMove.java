@@ -103,7 +103,7 @@ public class ShootWhileMove {
   public static ShootingCommand newShooting(
       Translation3d target, Translation3d botPose, Translation2d botVel) {
     double g = 9.8065;
-    double v = 11.3;
+    double v = 12;
     var pbmt = target.minus(botPose);
     double px = pbmt.getX();
     double py = pbmt.getY();
