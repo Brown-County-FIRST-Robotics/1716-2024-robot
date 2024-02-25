@@ -103,13 +103,13 @@ public class ShootWhileMove {
   public static ShootingCommand newShooting(
       Translation3d target, Translation3d botPose, Translation2d botVel) {
     double g = 9.8065;
-    double v = 11.3;
+    double v = 12;
     var pbmt = target.minus(botPose);
     double px = pbmt.getX();
     double py = pbmt.getY();
     double pz = pbmt.getZ();
-    double bx = botVel.getX();
-    double by = botVel.getY();
+    double bx = 0;//botVel.getX();
+    double by = 0;//botVel.getY();
 
     double theta_s = Math.asin(Math.sqrt(2 * g * pz) / v) * 1.01;
     double theta_b = Math.atan2(py, px);
