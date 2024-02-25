@@ -22,8 +22,8 @@ public class SpeakerShoot extends Command {
   Consumer<Optional<Rotation2d>> rotationCommander;
   Shooter shooter;
   boolean firing = false;
-  LoggedTunableNumber shooterAngleThreshold = new LoggedTunableNumber("ang threshold", 0.005);
-  LoggedTunableNumber botAngleThreshold = new LoggedTunableNumber("bot ang threshold", 0.02);
+  LoggedTunableNumber shooterAngleThreshold = new LoggedTunableNumber("ang threshold", 0.003);
+  LoggedTunableNumber botAngleThreshold = new LoggedTunableNumber("bot ang threshold", 0.008);
   XboxController controller;
   LoggedTunableNumber sp = new LoggedTunableNumber("Shooter Speed", 11.3);
 
@@ -104,7 +104,7 @@ public class SpeakerShoot extends Command {
     arm.setAngle(cmd.shooterAngle);
     // Prevent firing if angles are not close enough
     boolean blocked =
-        botAngleThreshold.get()
+        0.006
                 < Math.abs(cmd.botAngle.minus(drive.getPosition().getRotation()).getRotations())
             || shooterAngleThreshold.get()
                 < Math.abs(cmd.shooterAngle.minus(arm.getAngle()).getRotations())
