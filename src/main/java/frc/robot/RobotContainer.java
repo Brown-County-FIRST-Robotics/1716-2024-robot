@@ -83,7 +83,7 @@ public class RobotContainer {
                   driveSys,
                   new Transform3d[] {
                     new Transform3d(
-                        new Translation3d(5 * 0.0254, 2 * 0.0254, 22 * 0.0254),
+                        new Translation3d(0 * 0.0254, 2 * 0.0254, 22 * 0.0254),
                         new Rotation3d(0, -12 * Math.PI / 180, 0))
                   },
                   new VisionIO[] {new VisionIOSecondSight("SS_LAPTOP", "0")});
@@ -128,7 +128,7 @@ public class RobotContainer {
                   driveSys,
                   new Transform3d[] {
                     new Transform3d(
-                        new Translation3d(3 * 0.0254, 10 * 0.0254, 22 * 0.0254),
+                        new Translation3d(-9 * 0.0254, 10 * 0.0254, 22 * 0.0254),
                         new Rotation3d(0, -12 * Math.PI / 180, 0))
                   },
                   new VisionIO[] {new VisionIO() {}});
