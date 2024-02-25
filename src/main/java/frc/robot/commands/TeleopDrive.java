@@ -2,6 +2,7 @@ package frc.robot.commands;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -20,9 +21,8 @@ public class TeleopDrive extends Command {
   private final CommandXboxController controller;
   boolean foc = true;
   boolean locked = false;
-  DualRateLimiter xVelLimiter = new DualRateLimiter(4, 100);
-  DualRateLimiter yVelLimiter = new DualRateLimiter(4, 100);
-  DualRateLimiter omegaLimiter = new DualRateLimiter(6, 100);
+  DualRateLimiter tVelLimiter = new DualRateLimiter(6, 100);
+  DualRateLimiter omegaLimiter = new DualRateLimiter(9, 100);
 
   public void setCustomRotation(Optional<Rotation2d> customRotation) {
     this.customRotation = customRotation;
@@ -45,7 +45,7 @@ public class TeleopDrive extends Command {
   /** The initial subroutine of a command. Called once when the command is initially scheduled. */
   @Override
   public void initialize() {}
-
+  private static double dbd=0.08;
   /**
    * Checks if the value is in the deadband
    *
@@ -53,7 +53,7 @@ public class TeleopDrive extends Command {
    * @return If it is in the deadband
    */
   static boolean deadband(double val) {
-    return Math.abs(val) < 0.1;
+    return Math.abs(val) < dbd;
   }
 
   /**
@@ -63,7 +63,7 @@ public class TeleopDrive extends Command {
    * @return The value with the deadband applied
    */
   static double deadscale(double val) {
-    return deadband(val) ? 0 : (val > 0 ? (val - 0.1) / 0.9 : (val + 0.1) / 0.9);
+    return deadband(val) ? 0 : (val > 0 ? (val - dbd) / (1-dbd) : (val + dbd) / (1-dbd));
   }
 
   @Override
@@ -90,13 +90,15 @@ public class TeleopDrive extends Command {
       locked = false;
       ChassisSpeeds cmd =
           new ChassisSpeeds(
-              deadscale(controller.getLeftY()) * Constants.Driver.MAX_X_SPEED * slow,
-              deadscale(controller.getLeftX()) * Constants.Driver.MAX_Y_SPEED * slow,
-              deadscale(controller.getRightX()) * Constants.Driver.MAX_THETA_SPEED * slow + ext);
-
+              deadscale(controller.getLeftY()) * Math.abs(deadscale(controller.getLeftY())) * Constants.Driver.MAX_X_SPEED * slow,
+              deadscale(controller.getLeftX()) * Math.abs(deadscale(controller.getLeftX())) * Constants.Driver.MAX_Y_SPEED * slow,
+              omegaLimiter.calculate(deadscale(controller.getRightX()) * Constants.Driver.MAX_THETA_SPEED * slow) + ext);
+      var cmdAsTranslation=new Translation2d(cmd.vxMetersPerSecond,cmd.vyMetersPerSecond);
+      var realNorm=tVelLimiter.calculate(cmdAsTranslation.getNorm());
+      var realCmdAsTranslation=new Translation2d(realNorm,cmdAsTranslation.getAngle());
       ChassisSpeeds sp =
           new ChassisSpeeds(
-              -cmd.vxMetersPerSecond, -cmd.vyMetersPerSecond, -cmd.omegaRadiansPerSecond);
+              -realCmdAsTranslation.getX(), -realCmdAsTranslation.getY(), -cmd.omegaRadiansPerSecond);
       if (foc) {
         Rotation2d rot =
             DriverStation.getAlliance().orElse(DriverStation.Alliance.Red)

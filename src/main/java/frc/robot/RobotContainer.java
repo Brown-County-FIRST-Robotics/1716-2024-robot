@@ -83,7 +83,7 @@ public class RobotContainer {
                   driveSys,
                   new Transform3d[] {
                     new Transform3d(
-                        new Translation3d(5 * 0.0254, 2 * 0.0254, 22 * 0.0254),
+                        new Translation3d(3 * 0.0254, 2 * 0.0254, 22 * 0.0254),
                         new Rotation3d(0, -12 * Math.PI / 180, 0))
                   },
                   new VisionIO[] {new VisionIOSecondSight("SS_LAPTOP", "0")});
@@ -128,7 +128,7 @@ public class RobotContainer {
                   driveSys,
                   new Transform3d[] {
                     new Transform3d(
-                        new Translation3d(3 * 0.0254, 10 * 0.0254, 22 * 0.0254),
+                        new Translation3d(-9 * 0.0254, 10 * 0.0254, 22 * 0.0254),
                         new Rotation3d(0, -12 * Math.PI / 180, 0))
                   },
                   new VisionIO[] {new VisionIO() {}});
@@ -258,13 +258,13 @@ public class RobotContainer {
     return new SpeakerShoot(
             driveSys, arm, rt::setCustomRotation, shooter, secondController.getHID())
         .raceWith(rt.repeatedly())
-        .andThen(new RotateTo(driveSys, Rotation2d.fromRotations(0.5)))
+        .andThen(new RotateTo(driveSys, Rotation2d.fromRotations(0)))
         .andThen(
             new HolonomicTrajectoryFollower(
                     driveSys,
                     () -> {
                       var conf = new TrajectoryConfig(0.5, 0.25);
-                      var target = FieldConstants.getGamePiece(1).plus(new Translation2d(0.3, 0));
+                      var target = FieldConstants.getGamePiece(1).minus(new Translation2d(0.3, 0));
                       var startRot =
                           driveSys.getPosition().getTranslation().minus(target).getAngle();
                       var startSpeed =
@@ -277,13 +277,13 @@ public class RobotContainer {
                       return TrajectoryGenerator.generateTrajectory(
                           new Pose2d(driveSys.getPosition().getTranslation(), startRot),
                           List.of(),
-                          new Pose2d(target, Rotation2d.fromRotations(0.5)),
+                          new Pose2d(target, Rotation2d.fromRotations(0)),
                           conf);
                     },
-                    Rotation2d.fromRotations(0.5))
+                    Rotation2d.fromRotations(0))
                 .repeatedly()
                 .raceWith(Intake.fromFloor(shooter, arm, secondController.getHID())))
-        .andThen(new RotateTo(driveSys, Rotation2d.fromRotations(0)))
+        .andThen(new RotateTo(driveSys, Rotation2d.fromRotations(0.5)))
         .andThen(Commands.waitSeconds(1))
         .andThen(
             new SpeakerShoot(
