@@ -103,7 +103,7 @@ public class RobotContainer {
             shooter = new Shooter(new ShooterIOSparkFlexes(58, 57), new FeederIOSpark550(41, 0, 1));
             break;
           case CLIMBER:
-            climber = new Climber(new ClimberIOSparkMaxes(-1, -1, 0, 1, 2, 3)); // TODO: UPDATE IDs
+            climber = new Climber(new ClimberIOSparkMaxes(35, 42, 0, 1, 2, 3)); // TODO: UPDATE IDs
         }
       }
     } else {
