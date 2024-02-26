@@ -21,21 +21,22 @@ public class HolonomicTrajectoryFollower extends Command {
 
   public static double getExt(
       Rotation2d cmdRotation, Rotation2d currentRotation, double currentVelocity) {
-      double goal = cmdRotation.getRadians();
+    double goal = cmdRotation.getRadians();
+    if (Math.abs(currentRotation.getRadians() - goal) > Math.PI) {
+      goal -= 2 * Math.PI;
       if (Math.abs(currentRotation.getRadians() - goal) > Math.PI) {
-        goal -= 2 * Math.PI;
-        if (Math.abs(currentRotation.getRadians() - goal) > Math.PI) {
-          goal += 4 * Math.PI;
-        }
+        goal += 4 * Math.PI;
       }
-      var tp= new TrapezoidProfile(constraints);
-          double fvel=tp.calculate(
-              0.02,
-              new TrapezoidProfile.State(currentRotation.getRadians(), currentVelocity),
-              new TrapezoidProfile.State(goal, 0)).velocity;
+    }
+    var tp = new TrapezoidProfile(constraints);
+    double fvel =
+        tp.calculate(
+                0.02,
+                new TrapezoidProfile.State(currentRotation.getRadians(), currentVelocity),
+                new TrapezoidProfile.State(goal, 0))
+            .velocity;
 
-
-    return tp.totalTime()>0.02?fvel:0;
+    return tp.totalTime() > 0.02 ? fvel : 0;
   }
 
   Drivetrain drivetrain;

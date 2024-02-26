@@ -43,10 +43,6 @@ public class RotateTo extends Command {
 
   @Override
   public boolean isFinished() {
-    System.out.println(
-        customRotation
-            .map(d -> Math.abs(d.minus(drivetrain.getPosition().getRotation()).getDegrees()))
-            .orElse(-10000.0));
     return customRotation
         .map(
             rotation2d ->

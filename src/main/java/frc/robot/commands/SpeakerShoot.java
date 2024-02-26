@@ -10,7 +10,6 @@ import frc.robot.FieldConstants;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.arm.Arm;
 import frc.robot.subsystems.shooter.Shooter;
-import frc.robot.utils.HolonomicTrajectoryFollower;
 import frc.robot.utils.LoggedTunableNumber;
 import frc.robot.utils.Overrides;
 import frc.robot.utils.ShootWhileMove;
@@ -105,8 +104,7 @@ public class SpeakerShoot extends Command {
     arm.setAngle(cmd.shooterAngle);
     // Prevent firing if angles are not close enough
     boolean blocked =
-        0.006
-                < Math.abs(cmd.botAngle.minus(drive.getPosition().getRotation()).getRotations())
+        0.006 < Math.abs(cmd.botAngle.minus(drive.getPosition().getRotation()).getRotations())
             || shooterAngleThreshold.get()
                 < Math.abs(cmd.shooterAngle.minus(arm.getAngle()).getRotations())
             || drive.getVelocity().omegaRadiansPerSecond > 0.2;

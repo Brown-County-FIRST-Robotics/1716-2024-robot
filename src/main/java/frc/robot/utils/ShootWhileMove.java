@@ -108,8 +108,8 @@ public class ShootWhileMove {
     double px = pbmt.getX();
     double py = pbmt.getY();
     double pz = pbmt.getZ();
-    double bx = 0;//botVel.getX();
-    double by = 0;//botVel.getY();
+    double bx = 0; // botVel.getX();
+    double by = 0; // botVel.getY();
 
     double theta_s = Math.asin(Math.sqrt(2 * g * pz) / v) * 1.01;
     double theta_b = Math.atan2(py, px);
@@ -135,15 +135,12 @@ public class ShootWhileMove {
       double deltb = (deydts * ex - dexdts * ey) / det;
       double delts = (-deydtb * ex + dexdtb * ey) / det;
       if (Math.abs(delts) + Math.abs(deltb) < 0.001) {
-        System.out.println(i);
         break;
       }
       theta_s = theta_s - delts;
       theta_b = theta_b - deltb;
     }
 
-    System.out.println(theta_b);
-    System.out.println("ts:" + theta_s);
     return new ShootingCommand(Rotation2d.fromRadians(theta_b), Rotation2d.fromRadians(theta_s), v);
   }
 

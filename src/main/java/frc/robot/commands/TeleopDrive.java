@@ -45,7 +45,8 @@ public class TeleopDrive extends Command {
   /** The initial subroutine of a command. Called once when the command is initially scheduled. */
   @Override
   public void initialize() {}
-  private static double dbd=0.08;
+
+  private static double dbd = 0.08;
   /**
    * Checks if the value is in the deadband
    *
@@ -63,7 +64,7 @@ public class TeleopDrive extends Command {
    * @return The value with the deadband applied
    */
   static double deadscale(double val) {
-    return deadband(val) ? 0 : (val > 0 ? (val - dbd) / (1-dbd) : (val + dbd) / (1-dbd));
+    return deadband(val) ? 0 : (val > 0 ? (val - dbd) / (1 - dbd) : (val + dbd) / (1 - dbd));
   }
 
   @Override
@@ -90,15 +91,25 @@ public class TeleopDrive extends Command {
       locked = false;
       ChassisSpeeds cmd =
           new ChassisSpeeds(
-              deadscale(controller.getLeftY()) * Math.abs(deadscale(controller.getLeftY())) * Constants.Driver.MAX_X_SPEED * slow,
-              deadscale(controller.getLeftX()) * Math.abs(deadscale(controller.getLeftX())) * Constants.Driver.MAX_Y_SPEED * slow,
-              omegaLimiter.calculate(deadscale(controller.getRightX()) * Constants.Driver.MAX_THETA_SPEED * slow) + ext);
-      var cmdAsTranslation=new Translation2d(cmd.vxMetersPerSecond,cmd.vyMetersPerSecond);
-      var realNorm=tVelLimiter.calculate(cmdAsTranslation.getNorm());
-      var realCmdAsTranslation=new Translation2d(realNorm,cmdAsTranslation.getAngle());
+              deadscale(controller.getLeftY())
+                  * Math.abs(deadscale(controller.getLeftY()))
+                  * Constants.Driver.MAX_X_SPEED
+                  * slow,
+              deadscale(controller.getLeftX())
+                  * Math.abs(deadscale(controller.getLeftX()))
+                  * Constants.Driver.MAX_Y_SPEED
+                  * slow,
+              omegaLimiter.calculate(
+                      deadscale(controller.getRightX()) * Constants.Driver.MAX_THETA_SPEED * slow)
+                  + ext);
+      var cmdAsTranslation = new Translation2d(cmd.vxMetersPerSecond, cmd.vyMetersPerSecond);
+      var realNorm = tVelLimiter.calculate(cmdAsTranslation.getNorm());
+      var realCmdAsTranslation = new Translation2d(realNorm, cmdAsTranslation.getAngle());
       ChassisSpeeds sp =
           new ChassisSpeeds(
-              -realCmdAsTranslation.getX(), -realCmdAsTranslation.getY(), -cmd.omegaRadiansPerSecond);
+              -realCmdAsTranslation.getX(),
+              -realCmdAsTranslation.getY(),
+              -cmd.omegaRadiansPerSecond);
       if (foc) {
         Rotation2d rot =
             DriverStation.getAlliance().orElse(DriverStation.Alliance.Red)
