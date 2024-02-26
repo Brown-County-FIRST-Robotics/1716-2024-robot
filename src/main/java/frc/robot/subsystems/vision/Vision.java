@@ -19,13 +19,14 @@ public class Vision extends PeriodicRunnable {
   Drivetrain drivetrain;
   AprilTagFieldLayout layout = AprilTagFields.k2024Crescendo.loadAprilTagLayoutField();
   LoggedTunableNumber oneTagTranslationStdDev =
-      new LoggedTunableNumber("Vision/One tag Translation StdDev", 0.9);
+      new LoggedTunableNumber("Vision/One tag Translation StdDev", 1);
   LoggedTunableNumber oneTagRotationStdDev =
-      new LoggedTunableNumber("Vision/One tag Rotation StdDev", 0.9);
+      new LoggedTunableNumber("Vision/One tag Rotation StdDev", 1);
   LoggedTunableNumber multiTagTranslationStdDev =
       new LoggedTunableNumber("Vision/Multi tag Translation StdDev", 0.05);
   LoggedTunableNumber multiTagRotationStdDev =
-      new LoggedTunableNumber("Vision/Multi tag Rotation StdDev", 0.1);
+      new LoggedTunableNumber("Vision/Multi tag Rotation StdDev", 1);
+  LoggedTunableNumber maxRMSError = new LoggedTunableNumber("Vision/Max RMS Error", 0.85);
 
   /**
    * Constructs a <code>Vision</code> subsystem
@@ -55,8 +56,9 @@ public class Vision extends PeriodicRunnable {
       Logger.processInputs("Vision/Inputs_" + i, inputs[i]);
       if (inputs[i].ids.isPresent()
           && inputs[i].pose.isPresent()
-          && inputs[i].timestamp.isPresent()) {
-        if (inputs[i].ids.get().length > 0) {
+          && inputs[i].timestamp.isPresent()
+          && inputs[i].errors.isPresent()) {
+        if (inputs[i].ids.get().length > 0 && inputs[i].errors.get() < maxRMSError.get()) {
           Pose3d outPose = new Pose3d();
           if (inputs[i].ids.get().length == 1) {
             Rotation3d r1 =
