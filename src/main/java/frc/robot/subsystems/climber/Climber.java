@@ -1,5 +1,6 @@
 package frc.robot.subsystems.climber;
 
+import java.lang.Math.clamp;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import org.littletonrobotics.junction.Logger;
 
@@ -8,6 +9,10 @@ public class Climber extends SubsystemBase {
   ClimberIOInputsAutoLogged inputs = new ClimberIOInputsAutoLogged();
 
   boolean[] betweenSensors = boolean[4] {false, false, false, false}; //leftBottomSensor, leftTopSensor, rightBottomSensor, rightTopSensor
+  boolean doHoldPosition = true;
+  double heldPosition = 0.0;
+
+  LoggedTunableNumber holdPostionP = new LoggedTunableNumber("Climber/Hold Position P", 0.1);
 
   public Climber(ClimberIO io) {
     climberIO = io;
@@ -19,6 +24,7 @@ public class Climber extends SubsystemBase {
     Logger.processInputs("Climber/Inputs", inputs);
     checkSensors();
     checkResetMotorPositions();
+    holdPosition();
   }
 
   /**
@@ -41,7 +47,16 @@ public class Climber extends SubsystemBase {
     else if (rightVoltage > 0 && (getSensors()[3][0] || getSensors()[3][1])) {
       rightVoltage = 0;
     }
-    climberIO.setVoltage(leftVoltage, rightVoltage);
+    climberIO.setVoltage(Math.clamp(leftVoltage, -12.0, 12.0), Math.clamp(rightVoltage, -12.0, 12.0));
+      //clamp was added in java 21, so it might not be available
+
+    if (leftVoltage == 0 && rightVoltage == 0) {
+      doHoldPosition = true;
+      heldPosition = climberIO.leftPosition;
+    }
+    else {
+      doHoldPosition = false;
+    }
   }
 
   /**
@@ -56,8 +71,26 @@ public class Climber extends SubsystemBase {
       {inputs.rightTopSensor, betweenSensors[3]} };
   }
 
+  //the same as setVoltage but does not affect doHoldPosition. Used to actually hold the position.
+  private void setVoltageInternal(double leftVoltage, double rightVoltage) {
+    if (leftVoltage < 0 && (getSensors()[0][0] || getSensors()[0][1])) {
+      leftVoltage = 0;
+    }
+    else if (leftVoltage > 0 && (getSensors()[1][0] || getSensors()[1][1])) {
+      leftVoltage = 0;
+    }
+    if (rightVoltage < 0 && (getSensors()[2][0] || getSensors()[2][1])) {
+      rightVoltage = 0;
+    }
+    else if (rightVoltage > 0 && (getSensors()[3][0] || getSensors()[3][1])) {
+      rightVoltage = 0;
+    }
+    climberIO.setVoltage(Math.clamp(leftVoltage, -12.0, 12.0), Math.clamp(rightVoltage, -12.0, 12.0));
+      //clamp was added in java 21, so it might not be available
+  }
+
   private void checkResetMotorPositions() {
-    //NOTE: This isn't going to be very accurate, since it resets at the top, bottom, and middle of the sensors
+    //NOTE: This isn't going to be very accurate, since it resets at the top, bottom, and middle of the sensors (should be good enough though)
     if (getSensors()[0][0] || getSensors()[0][1]) {
       climberIO.leftMotor.setEncoderPosition(0);
     }
@@ -73,8 +106,6 @@ public class Climber extends SubsystemBase {
     // }
   }
 
-  //TODO: MAKE THE CLIMBER HOLD POSITION WHEN IT's NOT BEING MOVED
-
   private void checkSensors() {
     if climberIO.leftBottomSensor {
       betweenSensors[0] = !betweenSensors[0];
@@ -87,6 +118,14 @@ public class Climber extends SubsystemBase {
     }
     if climberIO.rightTopSensor {
       betweenSensors[3] = !betweenSensors[3];
+    }
+  }
+
+  private void holdPosition() {
+    //TO TEST
+    if (doHoldPosition) {
+      setVoltageInternal((heldPosition - climberIO.leftPosition) * holdPostionP,
+        (heldPosition - climberIO.rightPosition) * holdPostionP);
     }
   }
 }

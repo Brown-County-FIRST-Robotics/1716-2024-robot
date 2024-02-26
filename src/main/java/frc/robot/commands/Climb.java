@@ -12,6 +12,8 @@ public class Climb extends Command {
   double leftVoltage;
   double rightVoltage;
 
+  LoggedTunableNumber voltageDeadzone = new LoggedTunableNumber("Climber/Voltage Deadzone", 0.1);
+
   public Climb(Climber climber, DoubleSupplier movement, DoubleSupplier roll) {
     this.climber = climber;
     this.movement = movement;
@@ -24,18 +26,20 @@ public class Climb extends Command {
     leftVoltage = movement.getAsDouble() + levelVoltageModifier(false);
     rightVoltage = movement.getAsDouble() + levelVoltageModifier(true);
 
-    climber.setVoltage(leftVoltage, rightVoltage);
+    if (leftVoltage < voltageDeadzone && rightVoltage < voltageDeadzone) {
+      climber.setVoltage(0, 0);
+    }
+    else {
+      climber.setVoltage(leftVoltage, rightVoltage);
+    }
   }
 
   @Override
   public void end(boolean interrupted) {
-    climber.setVoltage(0, 0); 
-      //With this functionality, the robot might drift downwards or upwards after the command ends...
-      //This might be mitigated by the springs on the climber
-      //TODO: TEST THIS
+    climber.setVoltage(0, 0);
   }
 
-  // takes the roll of the function and returns the voltage of the motor
+  //takes the roll of the robot and returns a modifier in volts
   private double levelVoltageModifier(boolean rightSide) {
     double roll = this.roll.getAsDouble();
     if (rightSide) { // TODO: DETERMINE IF THIS IS THE CORRECT SIDE
