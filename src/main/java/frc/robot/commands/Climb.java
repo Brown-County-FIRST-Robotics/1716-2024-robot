@@ -2,6 +2,7 @@ package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.climber.Climber;
+import frc.robot.utils.LoggedTunableNumber;
 import java.util.function.DoubleSupplier;
 
 public class Climb extends Command {
@@ -26,10 +27,9 @@ public class Climb extends Command {
     leftVoltage = movement.getAsDouble() + levelVoltageModifier(false);
     rightVoltage = movement.getAsDouble() + levelVoltageModifier(true);
 
-    if (leftVoltage < voltageDeadzone && rightVoltage < voltageDeadzone) {
+    if (leftVoltage < voltageDeadzone.get() && rightVoltage < voltageDeadzone.get()) {
       climber.setVoltage(0, 0);
-    }
-    else {
+    } else {
       climber.setVoltage(leftVoltage, rightVoltage);
     }
   }
@@ -39,7 +39,7 @@ public class Climb extends Command {
     climber.setVoltage(0, 0);
   }
 
-  //takes the roll of the robot and returns a modifier in volts
+  // takes the roll of the robot and returns a modifier in volts
   private double levelVoltageModifier(boolean rightSide) {
     double roll = this.roll.getAsDouble();
     if (rightSide) { // TODO: DETERMINE IF THIS IS THE CORRECT SIDE

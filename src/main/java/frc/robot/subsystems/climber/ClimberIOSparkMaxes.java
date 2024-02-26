@@ -7,7 +7,7 @@ public class ClimberIOSparkMaxes implements ClimberIO {
   CANSparkMax leftMotor;
   CANSparkMax rightMotor;
 
-  //magnetic limit sensors
+  // magnetic limit sensors
   DigitalInput leftBottomLimit;
   DigitalInput leftTopLimit;
   DigitalInput rightBottomLimit;
@@ -65,5 +65,15 @@ public class ClimberIOSparkMaxes implements ClimberIO {
   public void setVoltage(double leftVoltage, double rightVoltage) {
     leftMotor.setVoltage(leftVoltage);
     rightMotor.setVoltage(rightVoltage);
+  }
+
+  // Sets the position of the motor's encoders, to set left pass in false, to set right pass in true
+  @Override
+  public void setMotorEncoderPosition(boolean setRight, double position) {
+    if (setRight) {
+      rightMotor.getEncoder().setPosition(position);
+    } else {
+      leftMotor.getEncoder().setPosition(position);
+    }
   }
 }

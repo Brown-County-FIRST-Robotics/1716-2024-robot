@@ -26,4 +26,6 @@ public interface ClimberIO {
   public default void updateInputs(ClimberIOInputs inputs) {}
 
   public default void setVoltage(double leftVoltage, double rightVoltage) {}
+
+  public default void setMotorEncoderPosition(boolean setRight, double position) {}
 }
