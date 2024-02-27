@@ -44,6 +44,9 @@ public class PoseEstimator {
   public void addOdometry(Twist2d odo, double timestamp) {
     ArrayList<Object> l =
         new ArrayList<>(List.of(pastSnapshots.headMap(timestamp).keySet().toArray()));
+    if (l.isEmpty()) {
+      return;
+    }
     Collections.reverse(l);
     double lastOdoTime = 0.0;
     for (var i : l) {
@@ -71,8 +74,12 @@ public class PoseEstimator {
    * @param t The time at which the camera captured the pose estimate
    */
   public void addVision(Pose2d estimate, Vector<N3> visionMeasurementStdDevs, double t) {
-    Pose2d poseAtTime =
-        getPose(t).orElseThrow(() -> new IllegalArgumentException("Time given is outside bounds"));
+    Optional<Pose2d> optionalPose = getPose(t);
+    if (optionalPose.isEmpty()) {
+      System.out.println("Discarded vision update");
+      return;
+    }
+    Pose2d poseAtTime = optionalPose.get();
     Twist2d proposedUpdate = poseAtTime.log(estimate);
     var stateStdDevs = VecBuilder.fill(0.1, 0.1, 0.1);
 
