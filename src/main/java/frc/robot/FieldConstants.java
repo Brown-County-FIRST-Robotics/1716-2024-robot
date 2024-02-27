@@ -1,5 +1,7 @@
 package frc.robot;
 
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -59,6 +61,28 @@ public class FieldConstants {
             : 16.541242 - inp.getX(),
         inp.getY(),
         inp.getZ());
+  }
+
+  /**
+   * Flips the rotation based on alliance
+   *
+   * @param inp The rotation when on the blue alliance
+   * @return The rotation for the FMS alliance
+   */
+  public static Rotation2d flip(Rotation2d inp) {
+    return DriverStation.getAlliance().orElse(DriverStation.Alliance.Blue)
+            == DriverStation.Alliance.Blue
+        ? inp
+        : new Rotation2d(-inp.getCos(), inp.getSin());
+  }
+  /**
+   * Flips the pose based on alliance
+   *
+   * @param inp The pose when on the blue alliance
+   * @return The pose for the FMS alliance
+   */
+  public static Pose2d flip(Pose2d inp) {
+    return new Pose2d(flip(inp.getTranslation()), flip(inp.getRotation()));
   }
 
   /**
