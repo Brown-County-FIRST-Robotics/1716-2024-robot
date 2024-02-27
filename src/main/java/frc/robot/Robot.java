@@ -1,9 +1,12 @@
 package frc.robot;
 
 import edu.wpi.first.hal.HALUtil;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.robot.utils.LoggedShuffleBoardChooser;
 import frc.robot.utils.PeriodicRunnable;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -26,9 +29,10 @@ import org.littletonrobotics.junction.wpilog.WPILOGWriter;
  */
 public class Robot extends LoggedRobot {
   private Command autonomousCommand;
-  int ct = 0;
-
+  boolean builtPoseSetter = false;
   private RobotContainer robotContainer;
+  LoggedShuffleBoardChooser<Pose2d> poseChooser =
+      new LoggedShuffleBoardChooser<>("Pre Match", "Position chooser");
 
   /**
    * This function is run when the robot is first started up and should be used for any
@@ -105,10 +109,17 @@ public class Robot extends LoggedRobot {
     // block in order for anything in the Command-based framework to work.
     CommandScheduler.getInstance().run();
     PeriodicRunnable.runPeriodic();
-    if (ct == 3) {
-      robotContainer.useAlliance();
+    if (!builtPoseSetter) {
+      poseChooser.addDefaultOption(
+          "Front of Speaker",
+          FieldConstants.flip(new Pose2d(1.4, 5.5, Rotation2d.fromRotations(0.5))));
+      poseChooser.addOption(
+          "Source side", FieldConstants.flip(new Pose2d(0.5, 4.1, Rotation2d.fromRotations(0.25))));
+      poseChooser.addOption(
+          "Amp side", FieldConstants.flip(new Pose2d(0.5, 7, Rotation2d.fromRotations(0.75))));
+      poseChooser.attach(robotContainer::setPose);
+      builtPoseSetter = true;
     }
-    ct += 1;
   }
 
   /** This function is called once each time the robot enters Disabled mode. */

@@ -8,7 +8,6 @@ package frc.robot;
 import edu.wpi.first.math.geometry.*;
 import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import edu.wpi.first.math.trajectory.TrajectoryGenerator;
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -142,18 +141,12 @@ public class RobotContainer {
     if (shooter == null) {
       shooter = new Shooter(new ShooterIO() {}, new FeederIO() {});
     }
-
-    useAlliance();
     configureBindings();
   }
 
   /** Updates the pose estimator to use the correct initial pose */
-  public void useAlliance() {
-    driveSys.setPosition(
-        DriverStation.getAlliance().orElse(DriverStation.Alliance.Blue)
-                == DriverStation.Alliance.Blue
-            ? Constants.BLUE_INIT_POSE
-            : Constants.RED_INIT_POSE);
+  public void setPose(Pose2d pose) {
+    driveSys.setPosition(pose);
   }
 
   /**
