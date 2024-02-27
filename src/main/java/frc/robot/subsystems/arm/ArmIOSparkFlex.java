@@ -3,6 +3,7 @@ package frc.robot.subsystems.arm;
 import com.revrobotics.*;
 import edu.wpi.first.math.geometry.Rotation2d;
 import frc.robot.Constants;
+import frc.robot.utils.CustomAlerts;
 import frc.robot.utils.LoggedTunableNumber;
 
 public class ArmIOSparkFlex implements ArmIO {
@@ -38,6 +39,7 @@ public class ArmIOSparkFlex implements ArmIO {
     iTuner.attach(pid::setI);
     dTuner.attach(pid::setD);
     controller.burnFlash();
+    CustomAlerts.makeOverTempAlert(controller, 60, 50, "Arm motor");
   }
 
   @Override
