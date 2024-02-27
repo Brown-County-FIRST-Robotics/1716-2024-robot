@@ -26,8 +26,8 @@ public class LEDs extends PeriodicRunnable {
 
   public LEDs() {
     super(); // Super call adds it to the registry, which calls the periodic method every tick
-    leds = new AddressableLED(5);
-    ledBuff = new AddressableLEDBuffer(100); // something around 280 length for LED
+    leds = new AddressableLED(0);
+    ledBuff = new AddressableLEDBuffer(10); // something around 280 length for LED
     leds.setLength(ledBuff.getLength());
     leds.setData(ledBuff);
     leds.start();
