@@ -18,6 +18,7 @@ import frc.robot.subsystems.IMUIO;
 import frc.robot.subsystems.IMUIONavx;
 import frc.robot.subsystems.IMUIOPigeon;
 import frc.robot.subsystems.IMUIOSim;
+import frc.robot.subsystems.LEDs;
 import frc.robot.subsystems.arm.Arm;
 import frc.robot.subsystems.arm.ArmIO;
 import frc.robot.subsystems.arm.ArmIOSim;
@@ -51,9 +52,11 @@ public class RobotContainer {
   private final Drivetrain driveSys;
   private Arm arm;
   private Shooter shooter;
+  private LEDs leds;
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
+    leds = new LEDs();
     if (WhoAmI.mode != WhoAmI.Mode.REPLAY) {
       switch (WhoAmI.bot) {
         case MECHBASE:
