@@ -4,6 +4,7 @@ import com.kauailabs.navx.frc.AHRS;
 import edu.wpi.first.math.geometry.Quaternion;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.wpilibj.SPI;
+import frc.robot.utils.CustomAlerts;
 import org.littletonrobotics.junction.Logger;
 
 /** The abstraction for the Kauai labs Navx2 IMU */
@@ -17,6 +18,7 @@ public class IMUIONavx implements IMUIO {
       imu.isConnected();
     }
     Logger.recordMetadata("IMUFW", imu.getFirmwareVersion());
+    CustomAlerts.makeNavxFailAlerts(imu);
   }
 
   @Override

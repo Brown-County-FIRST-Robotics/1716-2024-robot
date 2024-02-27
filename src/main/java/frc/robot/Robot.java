@@ -7,6 +7,8 @@ import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.utils.LoggedShuffleBoardChooser;
+import frc.robot.utils.Alert;
+import frc.robot.utils.CustomAlerts;
 import frc.robot.utils.PeriodicRunnable;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -53,12 +55,17 @@ public class Robot extends LoggedRobot {
       reader.close();
     } catch (FileNotFoundException e) {
       tagName = "Deploy did not send git data";
+      new Alert(
+              "Git data was not included in deploy. This will make it impossible to determine what code was run from the logfile. ",
+              Alert.AlertType.WARNING)
+          .set(true);
     }
     try {
       Scanner reader = new Scanner(deployerFile);
       deployer = reader.nextLine();
       reader.close();
     } catch (FileNotFoundException e) {
+      new Alert("The identity of the deployer is unknown", Alert.AlertType.WARNING).set(true);
       deployer = "Unknown deployer";
     }
     Logger.recordMetadata("Tag Name", tagName);
@@ -89,6 +96,7 @@ public class Robot extends LoggedRobot {
     }
     // Start AdvantageKit logger
     Logger.start();
+    CustomAlerts.makeCANFailAlerts(0.9);
     robotContainer = new RobotContainer();
     // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
     // autonomous chooser on the dashboard.

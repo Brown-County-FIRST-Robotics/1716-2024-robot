@@ -12,6 +12,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import frc.robot.Constants;
+import frc.robot.utils.CustomAlerts;
 import frc.robot.utils.LoggedTunableNumber;
 import org.littletonrobotics.junction.Logger;
 
@@ -106,6 +107,7 @@ public class ModuleIOSparkFX implements ModuleIO {
     steer.burnFlash();
     Logger.recordOutput("Firmware/" + name + "_Steer", steer.getFirmwareString());
     Logger.recordOutput("Firmware/" + name + "_Thrust", thrust.getVersion().getValue());
+    CustomAlerts.makeOverTempAlert(steer, 60, 50, name + " steer motor");
   }
 
   @Override
