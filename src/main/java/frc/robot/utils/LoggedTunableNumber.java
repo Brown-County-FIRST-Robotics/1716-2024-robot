@@ -23,7 +23,7 @@ public class LoggedTunableNumber extends PeriodicRunnable {
    */
   public LoggedTunableNumber(String name) {
     super();
-    this.name=name;
+    this.name = name;
     key = tableKey + "/" + name;
   }
 
@@ -47,7 +47,14 @@ public class LoggedTunableNumber extends PeriodicRunnable {
     if (!hasDefault) {
       hasDefault = true;
       this.defaultValue = defaultValue;
-      changedAlert=new Alert("Tunable number \""+name+"\" is not at its default ("+ defaultValue +"). This could impair robot functions. ", Alert.AlertType.WARNING);
+      changedAlert =
+          new Alert(
+              "Tunable number \""
+                  + name
+                  + "\" is not at its default ("
+                  + defaultValue
+                  + "). This could impair robot functions. ",
+              Alert.AlertType.WARNING);
       dashboardNumber = new LoggedDashboardNumber(key, defaultValue);
     }
   }
@@ -94,6 +101,6 @@ public class LoggedTunableNumber extends PeriodicRunnable {
       lastPeriodicValue = currentVal;
       handler.accept(currentVal);
     }
-    changedAlert.set(currentVal!=defaultValue);
+    changedAlert.set(currentVal != defaultValue);
   }
 }
