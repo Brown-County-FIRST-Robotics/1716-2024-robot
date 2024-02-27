@@ -43,7 +43,6 @@ public class LEDs extends PeriodicRunnable {
 
     for (var i = 0; i != ledBuff.getLength(); i++) {
       raindrop[i] = random.nextInt(255);
-      ;
     }
   }
 
@@ -74,7 +73,7 @@ public class LEDs extends PeriodicRunnable {
       y2 = -1;
     }
 
-    if (mode1 == true) // MODE 1
+    if (mode1) // MODE 1
     {
       for (var i = 0; i < ledBuff.getLength(); i++) {
         ledBuff.setHSV(i, colour, 255, brightness);
@@ -82,7 +81,7 @@ public class LEDs extends PeriodicRunnable {
       colour = (colour + 1) % 180;
     }
 
-    if (mode2 == true) // MODE 2
+    if (mode2) // MODE 2
     {
       ledBuff.setHSV((x - (y * 5)), 7, 255, 0);
 
@@ -95,7 +94,7 @@ public class LEDs extends PeriodicRunnable {
       colour = (colour + 1) % 180;
     }
 
-    if (mode3 == true) // MODE 3
+    if (mode3) // MODE 3
     {
 
       if (time == 1) {
@@ -134,6 +133,10 @@ public class LEDs extends PeriodicRunnable {
   }
 
   public void intakelight() {
+    colour = 31;
+  }
+
+  public void errorLight() {
     colour = 1;
   }
 

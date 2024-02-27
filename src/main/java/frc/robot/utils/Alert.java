@@ -12,6 +12,7 @@ import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.subsystems.LEDs;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -78,6 +79,10 @@ public class Alert {
       }
     }
     this.active = active;
+    if (active && type == AlertType.ERROR) {
+      LEDs.getInstance().mode1();
+      LEDs.getInstance().errorLight();
+    }
   }
 
   /** Updates current alert text. */

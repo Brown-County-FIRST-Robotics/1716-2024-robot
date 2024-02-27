@@ -3,6 +3,7 @@ package frc.robot.commands;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.subsystems.LEDs;
 import frc.robot.subsystems.arm.Arm;
 import frc.robot.subsystems.shooter.Shooter;
 import frc.robot.utils.LoggedTunableNumber;
@@ -74,6 +75,8 @@ public class Intake extends Command {
     shooter.cmdVel(0, 0);
     shooter.setFeeder(0);
     arm.commandNeutral();
+    LEDs.getInstance().mode1();
+    LEDs.getInstance().intakelight();
   }
 
   @Override
