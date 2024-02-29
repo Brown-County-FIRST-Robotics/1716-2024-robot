@@ -76,7 +76,7 @@ public class RobotContainer {
                   new ModuleIOSparkFX(21, 13, "BL"),
                   new ModuleIOSparkFX(20, 11, "BR"),
                   new IMUIONavx());
-          var vision =
+          /*var vision =
               new Vision(
                   driveSys,
                   new Transform3d[] {
@@ -84,7 +84,7 @@ public class RobotContainer {
                         new Translation3d(3 * 0.0254, 2 * 0.0254, 22 * 0.0254),
                         new Rotation3d(0, -12 * Math.PI / 180, 0))
                   },
-                  new VisionIO[] {new VisionIOSecondSight("SS_LAPTOP", "0")});
+                  new VisionIO[] {new VisionIOSecondSight("SS_LAPTOP", "0")});*/
           break;
         default:
           driveSys = new MecanumDrivetrain(new MecanumIOSpark(1, 2, 3, 4), new IMUIONavx());
@@ -95,7 +95,7 @@ public class RobotContainer {
             arm = new Arm(new ArmIOSim());
             break;
           case ARM:
-            arm = new Arm(new ArmIOSparkFlex(55));
+            arm = new Arm(new ArmIOSparkFlex(38));
             break;
           case SHOOTER:
             shooter = new Shooter(new ShooterIOSparkFlexes(58, 57), new FeederIOSpark550(41, 0, 1));
