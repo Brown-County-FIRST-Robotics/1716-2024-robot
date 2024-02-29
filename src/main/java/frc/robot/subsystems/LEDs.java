@@ -19,7 +19,7 @@ public class LEDs extends PeriodicRunnable {
   int time = 0;
   int timespeed = 3; // bigger value makes stuff slower
   int raindrop[] = new int[180];
-  boolean mode1 = false;
+  boolean mode1 = true;
   boolean mode2 = false;
   boolean mode3 = false;
   Random random = new Random();
