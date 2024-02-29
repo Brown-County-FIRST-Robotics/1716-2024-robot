@@ -47,14 +47,14 @@ public class LoggedTunableNumber extends PeriodicRunnable {
     if (!hasDefault) {
       hasDefault = true;
       this.defaultValue = defaultValue;
-      changedAlert =
-          new Alert(
+      //changedAlert =
+          /*new Alert(
               "Tunable number \""
                   + name
                   + "\" is not at its default ("
                   + defaultValue
                   + "). This could impair robot functions. ",
-              Alert.AlertType.WARNING);
+              Alert.AlertType.WARNING);*/
       dashboardNumber = new LoggedDashboardNumber(key, defaultValue);
     }
   }
@@ -101,6 +101,6 @@ public class LoggedTunableNumber extends PeriodicRunnable {
       lastPeriodicValue = currentVal;
       handler.accept(currentVal);
     }
-    changedAlert.set(currentVal != defaultValue);
+    //changedAlert.set(currentVal != defaultValue);
   }
 }
