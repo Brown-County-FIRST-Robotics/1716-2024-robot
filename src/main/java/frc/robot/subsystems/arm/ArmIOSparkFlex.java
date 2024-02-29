@@ -10,7 +10,7 @@ public class ArmIOSparkFlex implements ArmIO {
   CANSparkMax controller;
   SparkPIDController pid;
   AbsoluteEncoder encoder;
-  private static final double GEAR_RATIO = 25.0*72.0/15.0;
+  private static final double GEAR_RATIO = 25.0 * 72.0 / 15.0;
   private static final double FREE_RPM = 5676;
   LoggedTunableNumber ffTuner = new LoggedTunableNumber("Arm/ff_tuner", GEAR_RATIO / FREE_RPM);
   LoggedTunableNumber pTuner = new LoggedTunableNumber("Arm/p_tuner", 0.5 * GEAR_RATIO / FREE_RPM);
