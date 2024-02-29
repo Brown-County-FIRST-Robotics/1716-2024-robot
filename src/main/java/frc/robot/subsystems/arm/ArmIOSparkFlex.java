@@ -7,11 +7,11 @@ import frc.robot.utils.CustomAlerts;
 import frc.robot.utils.LoggedTunableNumber;
 
 public class ArmIOSparkFlex implements ArmIO {
-  CANSparkFlex controller;
+  CANSparkMax controller;
   SparkPIDController pid;
   AbsoluteEncoder encoder;
-  private static final double GEAR_RATIO = 75;
-  private static final double FREE_RPM = 6784;
+  private static final double GEAR_RATIO = 25.0*72.0/15.0;
+  private static final double FREE_RPM = 5676;
   LoggedTunableNumber ffTuner = new LoggedTunableNumber("Arm/ff_tuner", GEAR_RATIO / FREE_RPM);
   LoggedTunableNumber pTuner = new LoggedTunableNumber("Arm/p_tuner", 0.5 * GEAR_RATIO / FREE_RPM);
   LoggedTunableNumber iTuner = new LoggedTunableNumber("Arm/i_tuner", 0.0);
@@ -19,7 +19,7 @@ public class ArmIOSparkFlex implements ArmIO {
   LoggedTunableNumber offset = new LoggedTunableNumber("Arm/offset", 0.76);
 
   public ArmIOSparkFlex(int id) {
-    controller = new CANSparkFlex(id, CANSparkLowLevel.MotorType.kBrushless);
+    controller = new CANSparkMax(id, CANSparkLowLevel.MotorType.kBrushless);
     pid = controller.getPIDController();
     encoder = controller.getAbsoluteEncoder(SparkAbsoluteEncoder.Type.kDutyCycle);
     controller.restoreFactoryDefaults();
@@ -27,10 +27,10 @@ public class ArmIOSparkFlex implements ArmIO {
     controller.setInverted(true);
 
     controller.setIdleMode(CANSparkBase.IdleMode.kBrake);
-    controller.setSmartCurrentLimit(Constants.CurrentLimits.NEO_VORTEX);
+    controller.setSmartCurrentLimit(Constants.CurrentLimits.NEO);
     pid.setFeedbackDevice(encoder);
     pid.setOutputRange(-1, 1);
-    pid.setSmartMotionMaxVelocity(0.6 * FREE_RPM / GEAR_RATIO, 0);
+    pid.setSmartMotionMaxVelocity(FREE_RPM / GEAR_RATIO, 0);
     pid.setSmartMotionMinOutputVelocity(0, 0);
     pid.setSmartMotionMaxAccel(30, 0);
     pid.setSmartMotionAllowedClosedLoopError(0.004, 0);
