@@ -27,16 +27,17 @@ public class Climb extends Command {
     leftVoltage = movement.getAsDouble() + levelVoltageModifier(false);
     rightVoltage = movement.getAsDouble() + levelVoltageModifier(true);
 
-    if (leftVoltage < voltageDeadzone.get() && rightVoltage < voltageDeadzone.get()) {
-      climber.setVoltage(0, 0);
-    } else {
-      climber.setVoltage(leftVoltage, rightVoltage);
-    }
+    // if (leftVoltage < voltageDeadzone.get() && rightVoltage < voltageDeadzone.get()) {
+    //   climber.setVoltage(0, 0);
+    // } else {
+    //   climber.setVoltage(leftVoltage, rightVoltage);
+    // }
+    climber.setVoltage(1, 1);
   }
 
   @Override
   public void end(boolean interrupted) {
-    climber.setVoltage(0, 0);
+    climber.setVoltage(1, 1);
   }
 
   // takes the roll of the robot and returns a modifier in volts
