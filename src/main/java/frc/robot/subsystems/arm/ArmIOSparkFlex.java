@@ -1,6 +1,8 @@
 package frc.robot.subsystems.arm;
 
 import com.revrobotics.*;
+import com.revrobotics.CANSparkLowLevel.PeriodicFrame;
+
 import edu.wpi.first.math.geometry.Rotation2d;
 import frc.robot.Constants;
 import frc.robot.utils.CustomAlerts;
