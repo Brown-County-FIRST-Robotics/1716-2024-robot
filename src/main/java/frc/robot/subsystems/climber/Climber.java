@@ -1,7 +1,6 @@
 package frc.robot.subsystems.climber;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.utils.LoggedTunableNumber;
 import org.littletonrobotics.junction.Logger;
 
 public class Climber extends SubsystemBase {
@@ -42,7 +41,7 @@ public class Climber extends SubsystemBase {
     //   rightVoltage = 0;
     // }
     // climberIO.setVoltage(clamp(leftVoltage, -12.0, 12.0), clamp(rightVoltage, -12.0, 12.0));
-    climberIO.setMotors(clamp(leftVoltage, -0.5, 0.5), clamp(rightVoltage, -0.5, 0.5));
+    climberIO.setMotors(clamp(leftVoltage, -1.0, 1.0), clamp(rightVoltage, -1.0, 1.0));
   }
 
   /**

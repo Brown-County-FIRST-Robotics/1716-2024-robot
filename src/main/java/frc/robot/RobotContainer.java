@@ -18,6 +18,7 @@ import frc.robot.subsystems.IMUIO;
 import frc.robot.subsystems.IMUIONavx;
 import frc.robot.subsystems.IMUIOPigeon;
 import frc.robot.subsystems.IMUIOSim;
+import frc.robot.subsystems.LEDs;
 import frc.robot.subsystems.arm.Arm;
 import frc.robot.subsystems.arm.ArmIO;
 import frc.robot.subsystems.arm.ArmIOSim;
@@ -244,8 +245,17 @@ public class RobotContainer {
                 shooter));
 
     // Climb
-    climber.setDefaultCommand(new Climb(
-                climber, () -> -secondController.getRightY(), () -> driveSys.getGyro().getX()));
+    climber.setDefaultCommand(
+        new ClimbAndLevel(
+            climber, () -> -secondController.getRightY(), () -> driveSys.getGyro().getX()));
+    secondController
+        .leftStick()
+        .onTrue(
+            new ClimbSplit(
+                    climber,
+                    () -> -secondController.getLeftY(),
+                    () -> -secondController.getRightY())
+                .until(() -> secondController.getHID().getRightStickButtonPressed()));
   }
 
   /**

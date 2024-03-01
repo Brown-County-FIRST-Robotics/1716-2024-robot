@@ -1,3 +1,4 @@
+// controls both sides of the climber with the same stick and levels the bot
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
@@ -5,7 +6,7 @@ import frc.robot.subsystems.climber.Climber;
 import frc.robot.utils.LoggedTunableNumber;
 import java.util.function.DoubleSupplier;
 
-public class Climb extends Command {
+public class ClimbAndLevel extends Command {
   private final Climber climber;
   private final DoubleSupplier movement;
   private final DoubleSupplier roll;
@@ -15,7 +16,7 @@ public class Climb extends Command {
 
   LoggedTunableNumber deadzone = new LoggedTunableNumber("Climber/Deadzone", 0.05);
 
-  public Climb(Climber climber, DoubleSupplier movement, DoubleSupplier roll) {
+  public ClimbAndLevel(Climber climber, DoubleSupplier movement, DoubleSupplier roll) {
     this.climber = climber;
     this.movement = movement;
     this.roll = roll;
@@ -26,8 +27,8 @@ public class Climb extends Command {
   public void execute() {
     // leftVoltage = movement.getAsDouble() + levelVoltageModifier(false);
     // rightVoltage = movement.getAsDouble() + levelVoltageModifier(true);
-    leftPercent = movement.getAsDouble() * 0.3;
-    rightPercent = movement.getAsDouble() * 0.5; //right has more resistance
+    leftPercent = movement.getAsDouble() * 0.75;
+    rightPercent = movement.getAsDouble() * 0.75;
 
     if (Math.abs(leftPercent) < deadzone.get() && Math.abs(rightPercent) < deadzone.get()) {
       climber.setMotors(0, 0);
