@@ -1,6 +1,8 @@
 package frc.robot.subsystems.arm;
 
 import com.revrobotics.*;
+import com.revrobotics.CANSparkLowLevel.PeriodicFrame;
+
 import edu.wpi.first.math.geometry.Rotation2d;
 import frc.robot.Constants;
 import frc.robot.utils.CustomAlerts;
@@ -38,6 +40,15 @@ public class ArmIOSparkFlex implements ArmIO {
     pTuner.attach(pid::setP);
     iTuner.attach(pid::setI);
     dTuner.attach(pid::setD);
+    controller.setPeriodicFramePeriod(PeriodicFrame.kStatus5,20);
+    controller.setPeriodicFramePeriod(PeriodicFrame.kStatus4,1000); // CHANGE THIS WHEN NOT USING OLI CABLE
+    controller.setPeriodicFramePeriod(PeriodicFrame.kStatus3,1000);
+    controller.setPeriodicFramePeriod(PeriodicFrame.kStatus2,1000);
+    controller.setPeriodicFramePeriod(PeriodicFrame.kStatus0,1000/20);
+    controller.setPeriodicFramePeriod(PeriodicFrame.kStatus6,20);
+    controller.setPeriodicFramePeriod(PeriodicFrame.kStatus1,1000/50);
+    controller.setCANTimeout(1000);
+
     controller.burnFlash();
     CustomAlerts.makeOverTempAlert(controller, 60, 50, "Arm motor");
   }
