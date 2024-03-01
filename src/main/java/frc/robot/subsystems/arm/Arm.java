@@ -42,7 +42,6 @@ public class Arm extends SubsystemBase {
    */
   public void setAngle(Rotation2d rot) {
     cmdArmStates.setAngle(rot);
-    Logger.recordOutput("Arm/cmdState", cmdStates);
     cmdAng = rot;
     commandAngle();
   }
