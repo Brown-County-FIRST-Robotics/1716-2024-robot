@@ -55,10 +55,10 @@ public class ClimberIOSparkMaxes implements ClimberIO {
     inputs.leftOut = leftMotor.getAppliedOutput();
     inputs.rightOut = rightMotor.getAppliedOutput();
 
-    inputs.leftBottomSensor = leftBottomLimit.get();
-    inputs.leftTopSensor = leftTopLimit.get();
-    inputs.rightBottomSensor = rightBottomLimit.get();
-    inputs.rightTopSensor = rightTopLimit.get();
+    inputs.leftBottomSensor = !leftBottomLimit.get();
+    inputs.leftTopSensor = !leftTopLimit.get();
+    inputs.rightBottomSensor = !rightBottomLimit.get();
+    inputs.rightTopSensor = !rightTopLimit.get();
   }
 
   @Override
