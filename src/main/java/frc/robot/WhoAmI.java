@@ -7,7 +7,7 @@ public final class WhoAmI {
   /** The robot */
   public static final RobotType bot = RobotType.SWERVEBASE;
   /** The appendages to the robot */
-  public static final Appendages[] appendages = {Appendages.SHOOTER, Appendages.ARM};
+  public static final Appendages[] appendages = {Appendages.SHOOTER, Appendages.ARM, Appendages.CLIMBER};
 
   /** The robot types */
   public static enum RobotType {

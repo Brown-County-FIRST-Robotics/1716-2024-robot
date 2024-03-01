@@ -10,10 +10,10 @@ public class Climb extends Command {
   private final DoubleSupplier movement;
   private final DoubleSupplier roll;
 
-  double leftVoltage;
-  double rightVoltage;
+  double leftPercent;
+  double rightPercent;
 
-  LoggedTunableNumber voltageDeadzone = new LoggedTunableNumber("Climber/Voltage Deadzone", 0.1);
+  LoggedTunableNumber deadzone = new LoggedTunableNumber("Climber/Deadzone", 0.05);
 
   public Climb(Climber climber, DoubleSupplier movement, DoubleSupplier roll) {
     this.climber = climber;
@@ -24,19 +24,21 @@ public class Climb extends Command {
 
   @Override
   public void execute() {
-    leftVoltage = movement.getAsDouble() + levelVoltageModifier(false);
-    rightVoltage = movement.getAsDouble() + levelVoltageModifier(true);
+    // leftVoltage = movement.getAsDouble() + levelVoltageModifier(false);
+    // rightVoltage = movement.getAsDouble() + levelVoltageModifier(true);
+    leftPercent = movement.getAsDouble() * 0.3;
+    rightPercent = movement.getAsDouble() * 0.5; //right has more resistance
 
-    if (leftVoltage < voltageDeadzone.get() && rightVoltage < voltageDeadzone.get()) {
-      climber.setVoltage(0, 0);
+    if (Math.abs(leftPercent) < deadzone.get() && Math.abs(rightPercent) < deadzone.get()) {
+      climber.setMotors(0, 0);
     } else {
-      climber.setVoltage(leftVoltage, rightVoltage);
+      climber.setMotors(leftPercent, rightPercent);
     }
   }
 
   @Override
   public void end(boolean interrupted) {
-    climber.setVoltage(0, 0);
+    climber.setMotors(0, 0);
   }
 
   // takes the roll of the robot and returns a modifier in volts
