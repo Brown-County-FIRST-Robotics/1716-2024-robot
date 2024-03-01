@@ -244,8 +244,18 @@ public class RobotContainer {
                 shooter));
 
     // Climb
-    climber.setDefaultCommand(new Climb(
-                climber, () -> -secondController.getRightY(), () -> driveSys.getGyro().getX()));
+    climber.setDefaultCommand(
+        new ClimbAndLevel(
+            climber, () -> -secondController.getRightY(), () -> driveSys.getGyro().getX()));
+    secondController
+        .leftStick()
+        .onTrue(
+            new ClimbSplit(
+                    climber,
+                    () -> -secondController.getLeftY(),
+                    () -> -secondController.getRightY())
+                .onlyIf(() -> !Overrides.disableArmAnglePresets.get()) //avoid conflict with override
+                .until(() -> secondController.getHID().getRightStickButtonPressed()));
   }
 
   /**
