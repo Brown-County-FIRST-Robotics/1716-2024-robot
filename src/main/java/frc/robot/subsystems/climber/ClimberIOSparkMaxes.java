@@ -62,9 +62,9 @@ public class ClimberIOSparkMaxes implements ClimberIO {
   }
 
   @Override
-  public void setVoltage(double leftVoltage, double rightVoltage) {
-    leftMotor.setVoltage(leftVoltage);
-    rightMotor.setVoltage(rightVoltage);
+  public void setMotors(double left, double right) {
+    leftMotor.set(left);
+    rightMotor.set(right);
   }
 
   // Sets the position of the motor's encoders, to set left pass in false, to set right pass in true
