@@ -22,6 +22,7 @@ import frc.robot.subsystems.arm.Arm;
 import frc.robot.subsystems.arm.ArmIO;
 import frc.robot.subsystems.arm.ArmIOSim;
 import frc.robot.subsystems.arm.ArmIOSparkFlex;
+import frc.robot.subsystems.climber.*;
 import frc.robot.subsystems.mecanum.MecanumDrivetrain;
 import frc.robot.subsystems.mecanum.MecanumIO;
 import frc.robot.subsystems.mecanum.MecanumIOSpark;
@@ -51,6 +52,7 @@ public class RobotContainer {
   private final Drivetrain driveSys;
   private Arm arm;
   private Shooter shooter;
+  private Climber climber;
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
@@ -100,6 +102,8 @@ public class RobotContainer {
           case SHOOTER:
             shooter = new Shooter(new ShooterIOSparkFlexes(58, 57), new FeederIOSpark550(41, 0, 1));
             break;
+          case CLIMBER:
+            climber = new Climber(new ClimberIOSparkMaxes(35, 42, 0, 1, 2, 3)); // TODO: UPDATE IDs
         }
       }
     } else {
@@ -137,6 +141,9 @@ public class RobotContainer {
     }
     if (arm == null) {
       arm = new Arm(new ArmIO() {});
+    }
+    if (climber == null) {
+      climber = new Climber(new ClimberIO() {});
     }
     if (shooter == null) {
       shooter = new Shooter(new ShooterIO() {}, new FeederIO() {});
@@ -235,6 +242,13 @@ public class RobotContainer {
                   shooter.setFeeder(0);
                 },
                 shooter));
+
+    // Climb
+    secondController
+        .rightStick()
+        .toggleOnTrue(
+            new Climb(
+                climber, () -> -secondController.getRightY(), () -> driveSys.getGyro().getX()));
   }
 
   /**
