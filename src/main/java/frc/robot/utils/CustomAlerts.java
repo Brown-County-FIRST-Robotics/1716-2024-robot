@@ -60,7 +60,7 @@ public class CustomAlerts {
   public static void makeOverTempAlert(CANSparkBase spark, double errTemp, String deviceName) {
     new CustomAlert(
         Alert.AlertType.ERROR,
-        () -> spark.getMotorTemperature() > errTemp,
+        () -> (spark.getMotorTemperature() > errTemp),
         () ->
             deviceName
                 + " is currently "
