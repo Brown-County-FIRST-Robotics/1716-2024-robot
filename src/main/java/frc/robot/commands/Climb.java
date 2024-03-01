@@ -26,8 +26,8 @@ public class Climb extends Command {
   public void execute() {
     // leftVoltage = movement.getAsDouble() + levelVoltageModifier(false);
     // rightVoltage = movement.getAsDouble() + levelVoltageModifier(true);
-    leftPercent = movement.getAsDouble() * 0.3;
-    rightPercent = movement.getAsDouble() * 0.5; //right has more resistance
+    leftPercent = movement.getAsDouble() * 0.75;
+    rightPercent = movement.getAsDouble() * 0.75;
 
     if (Math.abs(leftPercent) < deadzone.get() && Math.abs(rightPercent) < deadzone.get()) {
       climber.setMotors(0, 0);
