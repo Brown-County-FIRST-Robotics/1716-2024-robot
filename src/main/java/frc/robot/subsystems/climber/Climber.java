@@ -28,6 +28,8 @@ public class Climber extends SubsystemBase {
     checkSensors();
     checkResetMotorPositions();
     holdPosition();
+
+    climberIO.setVoltage(clamp(1.0, -12.0, 12.0), clamp(1.0, -12.0, 12.0));
   }
 
   /**
