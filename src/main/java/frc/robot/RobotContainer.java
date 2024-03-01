@@ -95,7 +95,7 @@ public class RobotContainer {
             arm = new Arm(new ArmIOSim());
             break;
           case ARM:
-            arm = new Arm(new ArmIOSparkFlex(55));
+            arm = new Arm(new ArmIOSparkFlex(9));
             break;
           case SHOOTER:
             shooter = new Shooter(new ShooterIOSparkFlexes(58, 57), new FeederIOSpark550(41, 0, 1));
