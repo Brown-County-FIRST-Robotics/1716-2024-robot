@@ -144,6 +144,10 @@ public class LEDs extends PeriodicRunnable {
     colour = 60;
   }
 
+  public void separateClimberLight() {
+    colour = 120;
+  }
+
   /* private void resetLeds() {
     for(int i = 0; i < ledBuff.getLength(); i++){
       brightness = 0;
