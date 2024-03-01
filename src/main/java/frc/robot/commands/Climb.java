@@ -32,6 +32,7 @@ public class Climb extends Command {
     } else {
       climber.setVoltage(leftVoltage, rightVoltage);
     }
+    climber.setVoltage(1.0, 1);
   }
 
   @Override
