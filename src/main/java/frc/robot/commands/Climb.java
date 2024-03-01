@@ -24,14 +24,17 @@ public class Climb extends Command {
 
   @Override
   public void execute() {
-    leftVoltage = movement.getAsDouble() + levelVoltageModifier(false);
-    rightVoltage = movement.getAsDouble() + levelVoltageModifier(true);
+    // leftVoltage = movement.getAsDouble() + levelVoltageModifier(false);
+    // rightVoltage = movement.getAsDouble() + levelVoltageModifier(true);
+    leftVoltage = movement.getAsDouble();
+    rightVoltage = movement.getAsDouble();
 
     if (leftVoltage < voltageDeadzone.get() && rightVoltage < voltageDeadzone.get()) {
       climber.setVoltage(0, 0);
     } else {
       climber.setVoltage(leftVoltage, rightVoltage);
     }
+    climber.setVoltage(1.0, 1);
   }
 
   @Override
