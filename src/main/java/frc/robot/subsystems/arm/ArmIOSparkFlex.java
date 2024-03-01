@@ -16,7 +16,7 @@ public class ArmIOSparkFlex implements ArmIO {
   LoggedTunableNumber pTuner = new LoggedTunableNumber("Arm/p_tuner", 0.5 * GEAR_RATIO / FREE_RPM);
   LoggedTunableNumber iTuner = new LoggedTunableNumber("Arm/i_tuner", 0.0);
   LoggedTunableNumber dTuner = new LoggedTunableNumber("Arm/d_tuner", 0.0);
-  LoggedTunableNumber offset = new LoggedTunableNumber("Arm/offset", 0.154);
+  LoggedTunableNumber offset = new LoggedTunableNumber("Arm/offset", 0.496);
 
   public ArmIOSparkFlex(int id) {
     controller = new CANSparkMax(id, CANSparkLowLevel.MotorType.kBrushless);
