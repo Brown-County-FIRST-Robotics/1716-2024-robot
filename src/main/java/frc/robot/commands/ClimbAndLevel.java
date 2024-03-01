@@ -25,8 +25,8 @@ public class ClimbAndLevel extends Command {
 
   @Override
   public void execute() {
-    // leftVoltage = movement.getAsDouble() + levelVoltageModifier(false);
-    // rightVoltage = movement.getAsDouble() + levelVoltageModifier(true);
+    // leftPercent = movement.getAsDouble() + levelPercentModifier(false);
+    // leftPercent = movement.getAsDouble() + levelPercentModifier(true);
     leftPercent = movement.getAsDouble() * 0.75;
     rightPercent = movement.getAsDouble() * 0.75;
 
@@ -43,19 +43,19 @@ public class ClimbAndLevel extends Command {
   }
 
   // takes the roll of the robot and returns a modifier in volts
-  private double levelVoltageModifier(boolean rightSide) {
+  private double levelPercentModifier(boolean rightSide) {
     double roll = this.roll.getAsDouble();
     if (rightSide) { // TODO: DETERMINE IF THIS IS THE CORRECT SIDE
       roll = -roll;
     }
 
     // https://www.desmos.com/calculator/4lzmqs1sj1
-    double voltage = Math.pow(2.0, roll); // TODO: MANIPULATE THIS FUNCTION TO WORK BETTER
+    double modifier = Math.pow(2.0, roll); // TODO: MANIPULATE THIS FUNCTION TO WORK BETTER
 
     if (!rightSide) { // TODO: DETERMINE IF THIS IS THE CORRECT SIDE
-      return voltage;
+      return modifier;
     } else {
-      return -voltage;
+      return -modifier;
     }
   }
 }
