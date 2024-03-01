@@ -26,7 +26,6 @@ public class Climber extends SubsystemBase {
     climberIO.updateInputs(inputs);
     Logger.processInputs("Climber/Inputs", inputs);
     checkSensors();
-    checkResetMotorPositions();
     holdPosition();
   }
 
@@ -37,16 +36,16 @@ public class Climber extends SubsystemBase {
    * @param rightVoltage the voltage to set the right motor
    */
   public void setVoltage(double leftVoltage, double rightVoltage) {
-    if (leftVoltage < 0 && (getSensors()[0][0] || getSensors()[0][1])) {
-      leftVoltage = 0;
-    } else if (leftVoltage > 0 && (getSensors()[1][0] || getSensors()[1][1])) {
-      leftVoltage = 0;
-    }
-    if (rightVoltage < 0 && (getSensors()[2][0] || getSensors()[2][1])) {
-      rightVoltage = 0;
-    } else if (rightVoltage > 0 && (getSensors()[3][0] || getSensors()[3][1])) {
-      rightVoltage = 0;
-    }
+    // if (leftVoltage < 0 && (getSensors()[0][0] || getSensors()[0][1])) {
+    //   leftVoltage = 0;
+    // } else if (leftVoltage > 0 && (getSensors()[1][0] || getSensors()[1][1])) {
+    //   leftVoltage = 0;
+    // }
+    // if (rightVoltage < 0 && (getSensors()[2][0] || getSensors()[2][1])) {
+    //   rightVoltage = 0;
+    // } else if (rightVoltage > 0 && (getSensors()[3][0] || getSensors()[3][1])) {
+    //   rightVoltage = 0;
+    // }
     climberIO.setVoltage(clamp(leftVoltage, -12.0, 12.0), clamp(rightVoltage, -12.0, 12.0));
 
     if (leftVoltage == 0 && rightVoltage == 0) {
@@ -64,46 +63,28 @@ public class Climber extends SubsystemBase {
    * @return an array containing the sensor values and whether the magnet is in the middle, it goes
    *     bottom left, top left, bottom right, top right
    */
-  public boolean[][] getSensors() {
-    return new boolean[][] {
-      {inputs.leftBottomSensor, betweenSensors[0]},
-      {inputs.leftTopSensor, betweenSensors[1]},
-      {inputs.rightBottomSensor, betweenSensors[2]},
-      {inputs.rightTopSensor, betweenSensors[3]}
-    };
-  }
+  // public boolean[][] getSensors() {
+  //   return new boolean[][] {
+  //     {inputs.leftBottomSensor, betweenSensors[0]},
+  //     {inputs.leftTopSensor, betweenSensors[1]},
+  //     {inputs.rightBottomSensor, betweenSensors[2]},
+  //     {inputs.rightTopSensor, betweenSensors[3]}
+  //   };
+  // }
 
   // the same as setVoltage but does not affect doHoldPosition. Used to actually hold the position.
   private void setVoltageInternal(double leftVoltage, double rightVoltage) {
-    if (leftVoltage < 0 && (getSensors()[0][0] || getSensors()[0][1])) {
-      leftVoltage = 0;
-    } else if (leftVoltage > 0 && (getSensors()[1][0] || getSensors()[1][1])) {
-      leftVoltage = 0;
-    }
-    if (rightVoltage < 0 && (getSensors()[2][0] || getSensors()[2][1])) {
-      rightVoltage = 0;
-    } else if (rightVoltage > 0 && (getSensors()[3][0] || getSensors()[3][1])) {
-      rightVoltage = 0;
-    }
+    // if (leftVoltage < 0 && (getSensors()[0][0] || getSensors()[0][1])) {
+    //   leftVoltage = 0;
+    // } else if (leftVoltage > 0 && (getSensors()[1][0] || getSensors()[1][1])) {
+    //   leftVoltage = 0;
+    // }
+    // if (rightVoltage < 0 && (getSensors()[2][0] || getSensors()[2][1])) {
+    //   rightVoltage = 0;
+    // } else if (rightVoltage > 0 && (getSensors()[3][0] || getSensors()[3][1])) {
+    //   rightVoltage = 0;
+    // }
     climberIO.setVoltage(clamp(leftVoltage, -12.0, 12.0), clamp(rightVoltage, -12.0, 12.0));
-  }
-
-  private void checkResetMotorPositions() {
-    // NOTE: This isn't going to be very accurate, since it resets at the top, bottom, and middle of
-    // the sensors (should be good enough though)
-    if (getSensors()[0][0] || getSensors()[0][1]) {
-      climberIO.setMotorEncoderPosition(false, 0);
-    }
-    // TODO: FIND POINTS FOR THE TOP
-    // else if (getSensors()[1][0] || getSensors()[1][1]) {
-    //   climberIO.leftMotor.setEncoderPosition(0);
-    // }
-    if (getSensors()[2][0] || getSensors()[2][1]) {
-      climberIO.setMotorEncoderPosition(true, 0);
-    }
-    // else if (getSensors()[3][0] || getSensors()[3][1]) {
-    //   climberIO.rightMotor.setEncoderPosition(0);
-    // }
   }
 
   private void checkSensors() {
