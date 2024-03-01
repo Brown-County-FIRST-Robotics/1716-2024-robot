@@ -103,7 +103,7 @@ public class RobotContainer {
             shooter = new Shooter(new ShooterIOSparkFlexes(58, 57), new FeederIOSpark550(41, 0, 1));
             break;
           case CLIMBER:
-            climber = new Climber(new ClimberIOSparkMaxes(35, 42, 0, 1, 2, 3)); // TODO: UPDATE IDs
+            climber = new Climber(new ClimberIOSparkMaxes(29, 35, 6, 7, 8, 9)); // TODO: UPDATE IDs
         }
       }
     } else {
@@ -248,7 +248,7 @@ public class RobotContainer {
         .rightStick()
         .toggleOnTrue(
             new Climb(
-                climber, () -> -secondController.getRightY(), () -> driveSys.getGyro().getX()));
+                climber, () -> secondController.getRightY(), () -> driveSys.getGyro().getX()));
   }
 
   /**
