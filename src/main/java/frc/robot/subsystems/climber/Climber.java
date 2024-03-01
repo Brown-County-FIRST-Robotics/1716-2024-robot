@@ -20,28 +20,26 @@ public class Climber extends SubsystemBase {
   public void periodic() {
     climberIO.updateInputs(inputs);
     Logger.processInputs("Climber/Inputs", inputs);
-    checkSensors();
   }
 
   /**
-   * Sets the voltages of the left and right motors Note: this will not go past the sensors
+   * Sets the percent output of the left and right motors Note: this will not go past the sensors
    *
-   * @param leftVoltage the voltage to set the left motor
-   * @param rightVoltage the voltage to set the right motor
+   * @param left the percent to set the left motor to
+   * @param right the percent to set the right motor to
    */
-  public void setMotors(double leftVoltage, double rightVoltage) {
-    // if (leftVoltage < 0 && (getSensors()[0][0] || getSensors()[0][1])) {
-    //   leftVoltage = 0;
-    // } else if (leftVoltage > 0 && (getSensors()[1][0] || getSensors()[1][1])) {
-    //   leftVoltage = 0;
-    // }
-    // if (rightVoltage < 0 && (getSensors()[2][0] || getSensors()[2][1])) {
-    //   rightVoltage = 0;
-    // } else if (rightVoltage > 0 && (getSensors()[3][0] || getSensors()[3][1])) {
-    //   rightVoltage = 0;
-    // }
-    // climberIO.setVoltage(clamp(leftVoltage, -12.0, 12.0), clamp(rightVoltage, -12.0, 12.0));
-    climberIO.setMotors(clamp(leftVoltage, -1.0, 1.0), clamp(rightVoltage, -1.0, 1.0));
+  public void setMotors(double left, double right) {
+    if (left < 0 && (getSensors()[0][0] || getSensors()[0][1])) {
+      left = 0;
+    } else if (left > 0 && (getSensors()[1][0] || getSensors()[1][1])) {
+      left = 0;
+    }
+    if (right < 0 && (getSensors()[2][0] || getSensors()[2][1])) {
+      right = 0;
+    } else if (right > 0 && (getSensors()[3][0] || getSensors()[3][1])) {
+      right = 0;
+    }
+    climberIO.setMotors(clamp(left, -1.0, 1.0), clamp(right, -1.0, 1.0)); //TODO: Make this full range again
   }
 
   /**
@@ -51,28 +49,13 @@ public class Climber extends SubsystemBase {
    * @return an array containing the sensor values and whether the magnet is in the middle, it goes
    *     bottom left, top left, bottom right, top right
    */
-  // public boolean[][] getSensors() {
-  //   return new boolean[][] {
-  //     {inputs.leftBottomSensor, betweenSensors[0]},
-  //     {inputs.leftTopSensor, betweenSensors[1]},
-  //     {inputs.rightBottomSensor, betweenSensors[2]},
-  //     {inputs.rightTopSensor, betweenSensors[3]}
-  //   };
-  // }
-
-  private void checkSensors() {
-    if (inputs.leftBottomSensor) {
-      betweenSensors[0] = !betweenSensors[0];
-    }
-    if (inputs.leftTopSensor) {
-      betweenSensors[1] = !betweenSensors[1];
-    }
-    if (inputs.rightBottomSensor) {
-      betweenSensors[2] = !betweenSensors[2];
-    }
-    if (inputs.rightTopSensor) {
-      betweenSensors[3] = !betweenSensors[3];
-    }
+  public boolean[][] getSensors() {
+    return new boolean[][] {
+      {inputs.leftBottomSensor, betweenSensors[0]},
+      {inputs.leftTopSensor, betweenSensors[1]},
+      {inputs.rightBottomSensor, betweenSensors[2]},
+      {inputs.rightTopSensor, betweenSensors[3]}
+    };
   }
 
   private double clamp(double value, double min, double max) {
