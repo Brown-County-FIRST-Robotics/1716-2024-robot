@@ -8,6 +8,9 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 
 /** Utility functions for calculating shooter angles */
 public class ShootWhileMove {
+  static CustomAlerts.TimeLatchAlert nanLatch =
+      new CustomAlerts.TimeLatchAlert(
+          Alert.AlertType.ERROR, 2.0, "You are too far away (NaN arm goal)");
   /** The kinematics of the shooter */
   public interface ShooterKinematics {
     /**
@@ -140,7 +143,9 @@ public class ShootWhileMove {
       theta_s = theta_s - delts;
       theta_b = theta_b - deltb;
     }
-
+    if (Double.isNaN(theta_s)) {
+      nanLatch.latch();
+    }
     return new ShootingCommand(Rotation2d.fromRadians(theta_b), Rotation2d.fromRadians(theta_s), v);
   }
 

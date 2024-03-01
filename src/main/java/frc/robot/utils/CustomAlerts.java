@@ -35,6 +35,31 @@ public class CustomAlerts {
     }
   }
 
+  public static class TimeLatchAlert extends PeriodicRunnable {
+    Timer lastTrue = new Timer();
+    boolean hasTrue = false;
+    double duration;
+    Alert alert;
+
+    public TimeLatchAlert(Alert.AlertType level, double duration, String message) {
+      super();
+      alert = new Alert(message, level);
+    }
+
+    public void latch() {
+      hasTrue = true;
+      lastTrue.restart();
+    }
+
+    @Override
+    public void periodic() {
+      alert.set(hasTrue);
+      if (lastTrue.hasElapsed(duration) && hasTrue) {
+        hasTrue = false;
+      }
+    }
+  }
+
   public static class TimeoutAlert extends PeriodicRunnable {
     final double timeout;
     Alert alert;
