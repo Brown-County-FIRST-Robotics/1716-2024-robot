@@ -26,8 +26,8 @@ public class ClimbSplit extends Command {
 
   @Override
   public void execute() {
-    leftPercent = leftMovement.getAsDouble() * 0.75;
-    rightPercent = rightMovement.getAsDouble() * 0.75;
+    leftPercent = leftMovement.getAsDouble() * 1.0;
+    rightPercent = rightMovement.getAsDouble() * 1.0;
 
     if (Math.abs(leftPercent) < deadzone.get()) {
       leftPercent = 0;
