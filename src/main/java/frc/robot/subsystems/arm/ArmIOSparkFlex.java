@@ -1,6 +1,8 @@
 package frc.robot.subsystems.arm;
 
 import com.revrobotics.*;
+import com.revrobotics.CANSparkLowLevel.PeriodicFrame;
+
 import edu.wpi.first.math.geometry.Rotation2d;
 import frc.robot.Constants;
 import frc.robot.utils.CustomAlerts;
@@ -32,7 +34,7 @@ public class ArmIOSparkFlex implements ArmIO {
     pid.setOutputRange(-1, 1);
     pid.setSmartMotionMaxVelocity(FREE_RPM / GEAR_RATIO, 0);
     pid.setSmartMotionMinOutputVelocity(0, 0);
-    pid.setSmartMotionMaxAccel(15, 0);
+    pid.setSmartMotionMaxAccel(20, 0);
     pid.setSmartMotionAllowedClosedLoopError(0.004, 0);
     ffTuner.attach(pid::setFF);
     pTuner.attach(pid::setP);
