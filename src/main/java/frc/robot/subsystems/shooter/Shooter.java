@@ -101,6 +101,7 @@ public class Shooter extends SubsystemBase {
     double factor = 3500 / 9.88;
     cmdTopSpeed = -factor * exitVel;
     cmdBottomSpeed = factor * exitVel;
+    System.out.println("SetS0edd");
   }
 
   public void shoot(double tvel, double bvel) {
