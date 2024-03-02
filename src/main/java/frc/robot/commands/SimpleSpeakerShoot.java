@@ -38,12 +38,16 @@ public class SimpleSpeakerShoot extends Command {
 
   @Override
   public void initialize() {
+        System.out.println("ENTERED SSS");
+
     shooter.setFiringBlocked(true);
   }
 
   @Override
   public void execute() {
     // Calculate position of the tip of the shooter
+        System.out.println("PERIODIC SSS");
+
     Pose2d pos = drive.getPosition();
     Translation3d botPose =
         new Pose3d(pos.getX(), pos.getY(), 0, new Rotation3d(0, 0, pos.getRotation().getRadians()))
@@ -73,7 +77,7 @@ public class SimpleSpeakerShoot extends Command {
               overrideController.getLeftY() * Overrides.armAngleOverrideIncrementScale.get()));
       blocked = blocked || (!overrideController.getAButton()); // Use the A button to fire
     } else {
-      Rotation2d shooterAngle = Rotation2d.fromRadians(1);
+      Rotation2d shooterAngle = Rotation2d.fromDegrees(Overrides.kitbot.get());
       arm.setAngle(shooterAngle);
       blocked =
           blocked
