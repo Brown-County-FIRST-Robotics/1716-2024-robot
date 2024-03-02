@@ -73,7 +73,7 @@ public class SimpleSpeakerShoot extends Command {
               overrideController.getLeftY() * Overrides.armAngleOverrideIncrementScale.get()));
       blocked = blocked || (!overrideController.getAButton()); // Use the A button to fire
     } else {
-      Rotation2d shooterAngle = Rotation2d.fromRadians(1);
+      Rotation2d shooterAngle = Rotation2d.fromDegrees(Overrides.kitbot.get());
       arm.setAngle(shooterAngle);
       blocked =
           blocked
