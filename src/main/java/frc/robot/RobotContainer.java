@@ -4,6 +4,7 @@
 // the WPILib BSD license file in the root directory of this project.
 
 package frc.robot;
+import java.util.Optional;
 
 import edu.wpi.first.math.geometry.*;
 import edu.wpi.first.math.trajectory.TrajectoryConfig;
@@ -18,7 +19,6 @@ import frc.robot.subsystems.IMUIO;
 import frc.robot.subsystems.IMUIONavx;
 import frc.robot.subsystems.IMUIOPigeon;
 import frc.robot.subsystems.IMUIOSim;
-import frc.robot.subsystems.LEDs;
 import frc.robot.subsystems.arm.Arm;
 import frc.robot.subsystems.arm.ArmIO;
 import frc.robot.subsystems.arm.ArmIOSim;
@@ -40,6 +40,7 @@ import frc.robot.utils.LoggedTunableNumber;
 import frc.robot.utils.Overrides;
 import frc.robot.utils.ShootWhileMove;
 import java.util.List;
+import java.util.function.Consumer;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -84,8 +85,8 @@ public class RobotContainer {
                   driveSys,
                   new Transform3d[] {
                     new Transform3d(
-                        new Translation3d(3 * 0.0254, 2 * 0.0254, 22 * 0.0254),
-                        new Rotation3d(0, -12 * Math.PI / 180, 0))
+                        new Translation3d(0, 0 * 0.0254, 22 * 0.0254),
+                        new Rotation3d(0, -12.0 * Math.PI / 180, 0))
                   },
                   new VisionIO[] {new VisionIOSecondSight("SS_LAPTOP", "0")});
           break;
@@ -265,7 +266,7 @@ public class RobotContainer {
    */
   public Command getAutonomousCommand() {
     // An example command will be run in autonomous
-    var rt = new RotateTo(driveSys);
+/*    var rt = new RotateTo(driveSys);
     var rt2 = new RotateTo(driveSys, new Rotation2d(123));
 
     return new SpeakerShoot(
@@ -301,6 +302,8 @@ public class RobotContainer {
         .andThen(
             new SpeakerShoot(
                     driveSys, arm, rt2::setCustomRotation, shooter, secondController.getHID())
-                .raceWith(rt2.repeatedly()));
+                .raceWith(rt2.repeatedly()));*/
+
+                return new SimpleSpeakerShoot(driveSys,arm,(Optional<Rotation2d> r)->{},shooter,secondController.getHID());
   }
 }
