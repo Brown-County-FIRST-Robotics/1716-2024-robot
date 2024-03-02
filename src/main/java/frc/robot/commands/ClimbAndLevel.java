@@ -27,8 +27,8 @@ public class ClimbAndLevel extends Command {
   public void execute() {
     // leftPercent = (movement.getAsDouble() + levelPercentModifier(false)) * 0.75;
     // rightPercent = (movement.getAsDouble() + levelPercentModifier(true)) * 0.75;
-    leftPercent = (movement.getAsDouble()) * 0.75;
-    rightPercent = (movement.getAsDouble()) * 0.75;
+    leftPercent = (movement.getAsDouble()) * 1.0;
+    rightPercent = (movement.getAsDouble()) * 1.0;
 
     if (Math.abs(leftPercent) < deadzone.get() && Math.abs(rightPercent) < deadzone.get()) {
       climber.setMotors(0, 0);
