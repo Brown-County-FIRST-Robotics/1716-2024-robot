@@ -155,6 +155,8 @@ public class RobotContainer {
     // driverController.rightTrigger().onTrue(new RunCommand(() -> leds.getControllerInput(driverController.getLeftTriggerAxis(), driverController.getRightTriggerAxis())));
     driverController.povUp().onTrue(new InstantCommand(() -> leds.increaseSpeed()));
     driverController.povDown().onTrue(new InstantCommand(() -> leds.decreaseSpeed()));
+    
+     driverController.rightBumper().onTrue(new InstantCommand(() -> leds.setColor(50)));
   }
 
   /**

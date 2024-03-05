@@ -10,6 +10,7 @@ public class LEDs extends PeriodicRunnable {
   AddressableLEDBuffer ledBuff;
   int counter = 0;
   int colour = 0;
+  int color[] = new int[180];
   int brightness = 25;
   int x = 5;
   int x2 = 44;
@@ -35,7 +36,9 @@ public class LEDs extends PeriodicRunnable {
 
     for(var i = 0; i != ledBuff.getLength(); i++)
     {
-      raindrop[i] = random.nextInt(255);;
+      raindrop[i] = random.nextInt(255);
+      //color[i] = random.nextInt(15);
+      color[i] = 2;
     }
 
   }
@@ -93,28 +96,26 @@ public class LEDs extends PeriodicRunnable {
      colour = (colour + 1) % 180;
   }
 
-  if(mode3 == true)    //MODE 3
+  if(mode3 == true)    //MODE 3 
   {
    
     if(time == 1)
     {
     for(var i = 0; i < 100; i++)
     {
-    ledBuff.setHSV(i, colour, 255, raindrop[i]);
-    raindrop[i]--;
-     // brightness = raindrop[i];
-     /*  if(time == 0)
+    ledBuff.setHSV(i, color[i], 255, raindrop[i]);
+    raindrop[i] -=4;
+    if (raindrop[i] < 1)
     {
-      colour = random.nextInt(180);
-    } */
-     
-    
+      color[i] +=10;
+      raindrop[i] = 80;
+    }
+    if (color[i] > 240)
+    {
+      color[i] = 10;
+    }
   }
-
-
-
 }
-
   }
 
 
@@ -143,7 +144,24 @@ mode2 = false;
 
 
   public void intakelight() {
-    colour = 1;
+    mode1 = false;
+    mode2 = false; 
+    mode3 = false;
+    colour =  50;
+   for(int i = 0; i != ledBuff.getLength(); i++)
+   {
+     ledBuff.setHSV(i, colour, 255, 255);
+   }
+  }
+
+  public void setColor(int colour) {
+    mode1 = false;
+    mode2 = false; 
+    mode3 = false;
+   for(int i = 0; i != ledBuff.getLength(); i++)
+   {
+     ledBuff.setHSV(i, colour, 255, 255);
+   }
   }
 
   public void shooterlight() {
