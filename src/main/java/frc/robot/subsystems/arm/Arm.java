@@ -3,6 +3,8 @@ package frc.robot.subsystems.arm;
 import edu.wpi.first.math.geometry.*;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
+import edu.wpi.first.wpilibj.util.Color;
+import edu.wpi.first.wpilibj.util.Color8Bit;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.utils.LoggedTunableNumber;
 import org.littletonrobotics.junction.Logger;
@@ -25,6 +27,12 @@ public class Arm extends SubsystemBase {
    * @param io The IO interface to use
    */
   public Arm(ArmIO io) {
+    realArmStates.setColor(new Color8Bit(Color.kRed));
+    if (Logger.hasReplaySource()) {
+      cmdArmStates.setColor(new Color8Bit(Color.kYellow));
+    } else {
+      cmdArmStates.setColor(new Color8Bit(Color.kGreen));
+    }
     realStates.getRoot("Root", 50, 50).append(realArmStates);
     cmdStates.getRoot("Root", 50, 50).append(cmdArmStates);
     Logger.recordOutput("Arm/realState", realStates);

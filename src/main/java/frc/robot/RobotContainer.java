@@ -132,7 +132,7 @@ public class RobotContainer {
                   driveSys,
                   new Transform3d[] {
                     new Transform3d(
-                        new Translation3d(3 * 0.0254, 2 * 0.0254, 22 * 0.0254),
+                        new Translation3d(0 * 0.0254, 0 * 0.0254, 22 * 0.0254),
                         new Rotation3d(0, -12 * Math.PI / 180, 0))
                   },
                   new VisionIO[] {new VisionIO() {}});
@@ -266,7 +266,7 @@ public class RobotContainer {
    */
   public Command getAutonomousCommand() {
     // An example command will be run in autonomous
-/*    var rt = new RotateTo(driveSys);
+    /*    var rt = new RotateTo(driveSys);
     var rt2 = new RotateTo(driveSys, new Rotation2d(123));
 
     return new SpeakerShoot(
@@ -304,6 +304,7 @@ public class RobotContainer {
                     driveSys, arm, rt2::setCustomRotation, shooter, secondController.getHID())
                 .raceWith(rt2.repeatedly()));*/
 
-                return new SimpleSpeakerShoot(driveSys,arm,(Optional<Rotation2d> r)->{},shooter,secondController.getHID());
+    return new SimpleSpeakerShoot(
+        driveSys, arm, (Optional<Rotation2d> r) -> {}, shooter, secondController.getHID());
   }
 }

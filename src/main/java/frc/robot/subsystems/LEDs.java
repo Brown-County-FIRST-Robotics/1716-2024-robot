@@ -27,7 +27,7 @@ public class LEDs extends PeriodicRunnable {
 
   public static LEDs getInstance() {
     if (globalInst == null) {
-       globalInst = new LEDs();
+      globalInst = new LEDs();
     }
     return globalInst;
   }

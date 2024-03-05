@@ -169,7 +169,18 @@ public class PoseEstimator {
   }
 
   /** Constructs a new pose estimator */
-  public PoseEstimator() {}
+  public PoseEstimator() {
+    new PeriodicRunnable() {
+      @Override
+      public void periodic() {
+        if (pastSnapshots.size() > 1) {
+          while (Timer.getFPGATimestamp() - pastSnapshots.firstKey() > 3) {
+            pastSnapshots.remove(pastSnapshots.firstKey());
+          }
+        }
+      }
+    };
+  }
 
   static class PoseRecord {
     public Pose2d poseEstimate;

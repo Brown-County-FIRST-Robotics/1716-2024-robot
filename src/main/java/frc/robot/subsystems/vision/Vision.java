@@ -9,6 +9,7 @@ import frc.robot.subsystems.vision.VisionIO.VisionIOInputs;
 import frc.robot.utils.LoggedTunableNumber;
 import frc.robot.utils.Overrides;
 import frc.robot.utils.PeriodicRunnable;
+import frc.robot.utils.ShootWhileMove;
 import org.littletonrobotics.junction.Logger;
 
 /** The vision subsystem */
@@ -78,11 +79,13 @@ public class Vision extends PeriodicRunnable {
                     r1.getX(),
                     r1.getY(),
                     drivetrain
-                        .getPosition()
+                        .getPE()
+                        .getPose(inputs[i].timestamp.get())
+                        .orElseGet(drivetrain::getPosition)
                         .relativeTo(tagpose.toPose2d())
                         .getRotation()
                         .unaryMinus()
-                        .interpolate(r1.toRotation2d(), 0.2)
+                        .interpolate(r1.toRotation2d(), 0.01)
                         .getRadians());
 
             Transform3d as =
@@ -107,7 +110,11 @@ public class Vision extends PeriodicRunnable {
           }
           Pose3d poseOfBot = outPose.plus(camPoses[i].inverse());
           Logger.recordOutput("Vision/EstPose_" + i, poseOfBot);
-          if (!Overrides.disableVision.get()) {
+          if (!Overrides.disableVision.get()
+              && (ShootWhileMove.getFieldRelativeSpeeds(drivetrain.getVelocity(), new Rotation2d())
+                      .getNorm()
+                  < 0.8)
+              && Math.abs(drivetrain.getVelocity().omegaRadiansPerSecond) < 0.5) {
             drivetrain.addVisionUpdate(
                 poseOfBot.toPose2d(),
                 VecBuilder.fill(

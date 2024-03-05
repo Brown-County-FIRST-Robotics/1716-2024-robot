@@ -308,4 +308,9 @@ public class SwerveDrivetrain implements Drivetrain {
   public ChassisSpeeds getVelocity() {
     return KINEMATICS.toChassisSpeeds(getWheelSpeeds());
   }
+
+  @Override
+  public PoseEstimator getPE() {
+    return poseEstimator;
+  }
 }
