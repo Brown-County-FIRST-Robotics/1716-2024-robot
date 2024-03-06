@@ -4,11 +4,8 @@
 // the WPILib BSD license file in the root directory of this project.
 
 package frc.robot;
-import java.util.Optional;
 
 import edu.wpi.first.math.geometry.*;
-import edu.wpi.first.math.trajectory.TrajectoryConfig;
-import edu.wpi.first.math.trajectory.TrajectoryGenerator;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -35,12 +32,9 @@ import frc.robot.subsystems.swerve.SwerveDrivetrain;
 import frc.robot.subsystems.vision.Vision;
 import frc.robot.subsystems.vision.VisionIO;
 import frc.robot.subsystems.vision.VisionIOSecondSight;
-import frc.robot.utils.HolonomicTrajectoryFollower;
 import frc.robot.utils.LoggedTunableNumber;
 import frc.robot.utils.Overrides;
-import frc.robot.utils.ShootWhileMove;
-import java.util.List;
-import java.util.function.Consumer;
+import java.util.Optional;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
