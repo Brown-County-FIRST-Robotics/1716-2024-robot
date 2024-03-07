@@ -8,7 +8,7 @@ public final class WhoAmI {
   public static final RobotType bot = RobotType.SWERVEBASE;
   /** The appendages to the robot */
   public static final Appendages[] appendages = {
-    Appendages.SHOOTER, Appendages.ARM, Appendages.CLIMBER
+    Appendages.SHOOTER, Appendages.ARM
   };
 
   /** The robot types */
