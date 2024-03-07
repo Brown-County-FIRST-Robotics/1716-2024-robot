@@ -45,7 +45,7 @@ public class ArmIOSparkFlex implements ArmIO {
   @Override
   public void updateInputs(ArmIOInputs inputs) {
     inputs.angle = Rotation2d.fromRotations(encoder.getPosition() - offset.get());
-    inputs.omega = encoder.getVelocity() / 60.0;
+    inputs.omega = encoder.getVelocity();
     inputs.appliedOutput = controller.getAppliedOutput();
     inputs.temperature = controller.getMotorTemperature();
   }

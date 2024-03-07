@@ -114,7 +114,7 @@ public class ModuleIOSparkFX implements ModuleIO {
   public void updateInputs(ModuleIOInputs inputs) {
     BaseStatusSignal.refreshAll(velSignal, posSignal, errSignal, tempSignal);
     inputs.absSensorAngle = analogEncoder.getPosition();
-    inputs.absSensorOmega = analogEncoder.getVelocity() / 60.0;
+    inputs.absSensorOmega = analogEncoder.getVelocity();
     inputs.relativeSensorAngle = relativeEncoder.getPosition();
     inputs.relativeSensorOmega = relativeEncoder.getVelocity() / 60.0;
     inputs.thrustVel = velSignal.getValue() * THRUST_DISTANCE_PER_TICK;
