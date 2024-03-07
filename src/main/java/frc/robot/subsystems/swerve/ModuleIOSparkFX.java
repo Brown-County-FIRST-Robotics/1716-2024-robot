@@ -90,12 +90,13 @@ public class ModuleIOSparkFX implements ModuleIO {
     relativeEncoder.setPositionConversionFactor(1.0 / STEER_GEAR_RATIO);
     analogEncoder.setPositionConversionFactor(1 / 3.33);
     analogEncoder.setInverted(true);
+    steer.setInverted(true);
     pid.setFeedbackDevice(relativeEncoder);
 
     pid.setOutputRange(-1, 1);
     pid.setSmartMotionMaxVelocity(STEER_FREE_RPM / STEER_GEAR_RATIO, 0);
     pid.setSmartMotionMinOutputVelocity(0, 0);
-    pid.setSmartMotionMaxAccel(STEER_FREE_RPM / STEER_GEAR_RATIO, 0);
+    pid.setSmartMotionMaxAccel(0.05*STEER_FREE_RPM / STEER_GEAR_RATIO, 0);
     pid.setSmartMotionAllowedClosedLoopError(0.01, 0);
     steer.setSmartCurrentLimit(Constants.CurrentLimits.NEO);
 
@@ -128,6 +129,7 @@ public class ModuleIOSparkFX implements ModuleIO {
   @Override
   public void setCmdState(double ang, double vel) {
     thrust.setControl(new VelocityDutyCycle(vel / THRUST_DISTANCE_PER_TICK));
+    System.out.println("cmd:"+ang+" rp:"+relativeEncoder.getPosition());
     pid.setReference(ang, CANSparkMax.ControlType.kSmartMotion);
   }
 }
