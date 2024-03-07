@@ -90,6 +90,7 @@ public class ModuleIOSparkFX implements ModuleIO {
     relativeEncoder.setPositionConversionFactor(1.0 / STEER_GEAR_RATIO);
     analogEncoder.setPositionConversionFactor(1 / 3.33);
     analogEncoder.setInverted(true);
+    steer.setInverted(true);
     pid.setFeedbackDevice(relativeEncoder);
 
     pid.setOutputRange(-1, 1);
