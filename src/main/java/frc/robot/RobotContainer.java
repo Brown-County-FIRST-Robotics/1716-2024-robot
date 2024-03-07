@@ -25,6 +25,7 @@ import frc.robot.subsystems.mecanum.MecanumDrivetrain;
 import frc.robot.subsystems.mecanum.MecanumIO;
 import frc.robot.subsystems.mecanum.MecanumIOSpark;
 import frc.robot.subsystems.shooter.*;
+import frc.robot.subsystems.swerve.Module;
 import frc.robot.subsystems.swerve.ModuleIO;
 import frc.robot.subsystems.swerve.ModuleIOSim;
 import frc.robot.subsystems.swerve.ModuleIOSparkFX;
@@ -60,19 +61,19 @@ public class RobotContainer {
         case SIMSWERVEBASE:
           driveSys =
               new SwerveDrivetrain(
-                  new ModuleIOSim(0),
-                  new ModuleIOSim(1),
-                  new ModuleIOSim(2),
-                  new ModuleIOSim(3),
+                  new Module(new ModuleIOSim(0), 0),
+                  new Module(new ModuleIOSim(1), 1),
+                  new Module(new ModuleIOSim(2), 2),
+                  new Module(new ModuleIOSim(3), 3),
                   new IMUIOSim());
           break;
         case SWERVEBASE:
           driveSys =
               new SwerveDrivetrain(
-                  new ModuleIOSparkFX(22, 10, "FL"),
-                  new ModuleIOSparkFX(23, 12, "FR"),
-                  new ModuleIOSparkFX(21, 13, "BL"),
-                  new ModuleIOSparkFX(20, 11, "BR"),
+                  new Module(new ModuleIOSparkFX(22, 10, "FL"), 0),
+                  new Module(new ModuleIOSparkFX(23, 12, "FR"), 1),
+                  new Module(new ModuleIOSparkFX(21, 13, "BL"), 2),
+                  new Module(new ModuleIOSparkFX(20, 11, "BR"), 3),
                   new IMUIONavx());
           var vision =
               new Vision(
@@ -107,19 +108,19 @@ public class RobotContainer {
         case SIMSWERVEBASE:
           driveSys =
               new SwerveDrivetrain(
-                  new ModuleIO() {},
-                  new ModuleIO() {},
-                  new ModuleIO() {},
-                  new ModuleIO() {},
+                  new Module(new ModuleIO() {}, 0),
+                  new Module(new ModuleIO() {}, 1),
+                  new Module(new ModuleIO() {}, 2),
+                  new Module(new ModuleIO() {}, 3),
                   new IMUIO() {});
           break;
         case SWERVEBASE:
           driveSys =
               new SwerveDrivetrain(
-                  new ModuleIO() {},
-                  new ModuleIO() {},
-                  new ModuleIO() {},
-                  new ModuleIO() {},
+                  new Module(new ModuleIO() {}, 0),
+                  new Module(new ModuleIO() {}, 1),
+                  new Module(new ModuleIO() {}, 2),
+                  new Module(new ModuleIO() {}, 3),
                   new IMUIO() {});
           var vision =
               new Vision(

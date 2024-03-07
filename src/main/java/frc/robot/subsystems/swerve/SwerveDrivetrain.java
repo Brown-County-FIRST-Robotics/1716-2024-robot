@@ -32,14 +32,11 @@ public class SwerveDrivetrain implements Drivetrain {
           new Translation2d(-D / 2, D / 2),
           new Translation2d(-D / 2, -D / 2));
   private static final double MAX_WHEEL_SPEED = 5.0;
-  ModuleIO fl;
-  ModuleIO fr;
-  ModuleIO bl;
-  ModuleIO br;
-  ModuleIOInputsAutoLogged flInputs = new ModuleIOInputsAutoLogged();
-  ModuleIOInputsAutoLogged frInputs = new ModuleIOInputsAutoLogged();
-  ModuleIOInputsAutoLogged blInputs = new ModuleIOInputsAutoLogged();
-  ModuleIOInputsAutoLogged brInputs = new ModuleIOInputsAutoLogged();
+  Module fl;
+  Module fr;
+  Module bl;
+  Module br;
+
   Rotation2d lastIMU;
   SwerveModulePosition[] lastPositions;
   PoseEstimator poseEstimator;
@@ -50,38 +47,10 @@ public class SwerveDrivetrain implements Drivetrain {
   private SwerveModulePosition[] getPositions() {
 
     return new SwerveModulePosition[] {
-      new SwerveModulePosition(
-          flInputs.pos.distanceMeters,
-          flInputs
-              .pos
-              .angle
-              .minus(Rotation2d.fromRotations(flInputs.offset))
-              .unaryMinus()
-              .minus(Rotation2d.fromDegrees(-90))),
-      new SwerveModulePosition(
-          frInputs.pos.distanceMeters,
-          frInputs
-              .pos
-              .angle
-              .minus(Rotation2d.fromRotations(frInputs.offset))
-              .unaryMinus()
-              .minus(Rotation2d.fromDegrees(0))),
-      new SwerveModulePosition(
-          blInputs.pos.distanceMeters,
-          blInputs
-              .pos
-              .angle
-              .minus(Rotation2d.fromRotations(blInputs.offset))
-              .unaryMinus()
-              .minus(Rotation2d.fromDegrees(180))),
-      new SwerveModulePosition(
-          brInputs.pos.distanceMeters,
-          brInputs
-              .pos
-              .angle
-              .minus(Rotation2d.fromRotations(brInputs.offset))
-              .unaryMinus()
-              .minus(Rotation2d.fromDegrees(90)))
+      fl.getChassisRelativePosition(),
+      fr.getChassisRelativePosition(),
+      bl.getChassisRelativePosition(),
+      br.getChassisRelativePosition()
     };
   }
 
@@ -94,16 +63,12 @@ public class SwerveDrivetrain implements Drivetrain {
    * @param br Back right module IO
    * @param imu IMU IO
    */
-  public SwerveDrivetrain(ModuleIO fl, ModuleIO fr, ModuleIO bl, ModuleIO br, IMUIO imu) {
+  public SwerveDrivetrain(Module fl, Module fr, Module bl, Module br, IMUIO imu) {
     this.imu = imu;
     this.fl = fl;
     this.fr = fr;
     this.bl = bl;
     this.br = br;
-    fl.updateInputs(flInputs);
-    fr.updateInputs(frInputs);
-    bl.updateInputs(blInputs);
-    br.updateInputs(brInputs);
     poseEstimator = new PoseEstimator();
     poseEstimator.setPose(Constants.INIT_POSE);
     lastIMU = getGyro().toRotation2d();
@@ -114,14 +79,10 @@ public class SwerveDrivetrain implements Drivetrain {
   public void periodic() {
     imu.updateInputs(imuInputs);
     Logger.processInputs("Drive/IMU", imuInputs);
-    fl.updateInputs(flInputs);
-    fr.updateInputs(frInputs);
-    bl.updateInputs(blInputs);
-    br.updateInputs(brInputs);
-    Logger.processInputs("Drive/FL", flInputs);
-    Logger.processInputs("Drive/FR", frInputs);
-    Logger.processInputs("Drive/BL", blInputs);
-    Logger.processInputs("Drive/BR", brInputs);
+    fl.periodic();
+    fr.periodic();
+    bl.periodic();
+    br.periodic();
 
     Logger.recordOutput("Drive/RealStates", getWheelSpeeds());
     Twist2d odoTwist =
@@ -151,10 +112,10 @@ public class SwerveDrivetrain implements Drivetrain {
 
   private SwerveModuleState[] getWheelSpeeds() {
     return new SwerveModuleState[] {
-      new SwerveModuleState(flInputs.vel.speedMetersPerSecond, getPositions()[0].angle),
-      new SwerveModuleState(frInputs.vel.speedMetersPerSecond, getPositions()[1].angle),
-      new SwerveModuleState(blInputs.vel.speedMetersPerSecond, getPositions()[2].angle),
-      new SwerveModuleState(brInputs.vel.speedMetersPerSecond, getPositions()[3].angle)
+      fl.getChassisRelativeState(),
+      fr.getChassisRelativeState(),
+      bl.getChassisRelativeState(),
+      br.getChassisRelativeState()
     };
   }
 
@@ -165,48 +126,11 @@ public class SwerveDrivetrain implements Drivetrain {
 
   private void setModuleStates(SwerveModuleState[] states) {
     SwerveDriveKinematics.desaturateWheelSpeeds(states, MAX_WHEEL_SPEED);
-    states[0] = SwerveModuleState.optimize(states[0], getPositions()[0].angle);
-    states[1] = SwerveModuleState.optimize(states[1], getPositions()[1].angle);
-    states[2] = SwerveModuleState.optimize(states[2], getPositions()[2].angle);
-    states[3] = SwerveModuleState.optimize(states[3], getPositions()[3].angle);
-    states[0].speedMetersPerSecond *= getPositions()[0].angle.minus(states[0].angle).getCos();
-    states[1].speedMetersPerSecond *= getPositions()[1].angle.minus(states[1].angle).getCos();
-    states[2].speedMetersPerSecond *= getPositions()[2].angle.minus(states[2].angle).getCos();
-    states[3].speedMetersPerSecond *= getPositions()[3].angle.minus(states[3].angle).getCos();
-
     Logger.recordOutput("Drive/CmdStates", states);
-    fl.setCmdState(
-        new SwerveModuleState(
-            states[0].speedMetersPerSecond,
-            states[0]
-                .angle
-                .plus(Rotation2d.fromDegrees(-90))
-                .unaryMinus()
-                .plus(Rotation2d.fromRotations(flInputs.offset))));
-    fr.setCmdState(
-        new SwerveModuleState(
-            states[1].speedMetersPerSecond,
-            states[1]
-                .angle
-                .plus(Rotation2d.fromDegrees(0))
-                .unaryMinus()
-                .plus(Rotation2d.fromRotations(frInputs.offset))));
-    bl.setCmdState(
-        new SwerveModuleState(
-            states[2].speedMetersPerSecond,
-            states[2]
-                .angle
-                .plus(Rotation2d.fromDegrees(180))
-                .unaryMinus()
-                .plus(Rotation2d.fromRotations(blInputs.offset))));
-    br.setCmdState(
-        new SwerveModuleState(
-            states[3].speedMetersPerSecond,
-            states[3]
-                .angle
-                .plus(Rotation2d.fromDegrees(90))
-                .unaryMinus()
-                .plus(Rotation2d.fromRotations(brInputs.offset))));
+    fl.setState(states[0]);
+    fr.setState(states[1]);
+    bl.setState(states[2]);
+    br.setState(states[3]);
   }
 
   private Command makeTrajectoryCommand(Trajectory trajectory) {

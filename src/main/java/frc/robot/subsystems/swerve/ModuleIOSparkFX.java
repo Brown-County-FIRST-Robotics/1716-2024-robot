@@ -8,9 +8,6 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.revrobotics.*;
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.kinematics.SwerveModulePosition;
-import edu.wpi.first.math.kinematics.SwerveModuleState;
 import frc.robot.Constants;
 import frc.robot.utils.CustomAlerts;
 import frc.robot.utils.LoggedTunableNumber;
@@ -19,8 +16,11 @@ import org.littletonrobotics.junction.Logger;
 /** IO layer for a SDS MK4i L2 swerve module using a Falcon 500 as thrust, and a Neo as steering */
 public class ModuleIOSparkFX implements ModuleIO {
   private final double THRUST_DISTANCE_PER_TICK = .0254 * 4.0 * Math.PI / 6.75;
+  private static final double STEER_FREE_RPM = 5676.0;
+  private static final double STEER_GEAR_RATIO = 150.0 / 7.0;
   private final CANSparkMax steer;
-  private final SparkAnalogSensor encoder;
+  private final SparkAnalogSensor analogEncoder;
+  private final RelativeEncoder relativeEncoder;
   private final SparkPIDController pid;
   private final TalonFX thrust;
   StatusSignal<Double> velSignal;
@@ -34,10 +34,12 @@ public class ModuleIOSparkFX implements ModuleIO {
   LoggedTunableNumber thrustI = new LoggedTunableNumber("Thrust I", 0);
   LoggedTunableNumber thrustD = new LoggedTunableNumber("Thrust D", 0);
   LoggedTunableNumber thrustKV = new LoggedTunableNumber("Thrust KV", 60.0 / 6380.0);
-  LoggedTunableNumber steerP = new LoggedTunableNumber("Steer P", 1.0 / 264);
+  LoggedTunableNumber steerP =
+      new LoggedTunableNumber("Steer P", STEER_GEAR_RATIO / STEER_FREE_RPM);
   LoggedTunableNumber steerI = new LoggedTunableNumber("Steer I", 0);
   LoggedTunableNumber steerD = new LoggedTunableNumber("Steer D", 0);
-  LoggedTunableNumber steerKV = new LoggedTunableNumber("Steer KV", 1.0 / 264);
+  LoggedTunableNumber steerKV =
+      new LoggedTunableNumber("Steer KV", STEER_GEAR_RATIO / STEER_FREE_RPM);
   LoggedTunableNumber offsetTun;
   double off;
 
@@ -83,20 +85,18 @@ public class ModuleIOSparkFX implements ModuleIO {
     steer = new CANSparkMax(steerID, CANSparkLowLevel.MotorType.kBrushless);
     steer.restoreFactoryDefaults();
     pid = steer.getPIDController();
-    encoder = steer.getAnalog(SparkAnalogSensor.Mode.kAbsolute);
-
-    encoder.setPositionConversionFactor(1 / 3.33);
-    encoder.setInverted(true);
-    pid.setFeedbackDevice(encoder);
+    analogEncoder = steer.getAnalog(SparkAnalogSensor.Mode.kAbsolute);
+    relativeEncoder = steer.getEncoder();
+    relativeEncoder.setPositionConversionFactor(1.0 / STEER_GEAR_RATIO);
+    analogEncoder.setPositionConversionFactor(1 / 3.33);
+    analogEncoder.setInverted(true);
+    pid.setFeedbackDevice(relativeEncoder);
 
     pid.setOutputRange(-1, 1);
-    pid.setSmartMotionMaxVelocity(264, 0);
+    pid.setSmartMotionMaxVelocity(STEER_FREE_RPM / STEER_GEAR_RATIO, 0);
     pid.setSmartMotionMinOutputVelocity(0, 0);
-    pid.setSmartMotionMaxAccel(2100, 0);
+    pid.setSmartMotionMaxAccel(STEER_FREE_RPM / STEER_GEAR_RATIO, 0);
     pid.setSmartMotionAllowedClosedLoopError(0.01, 0);
-    pid.setPositionPIDWrappingEnabled(true);
-    pid.setPositionPIDWrappingMaxInput(1);
-    pid.setPositionPIDWrappingMinInput(0);
     steer.setSmartCurrentLimit(Constants.CurrentLimits.NEO);
 
     steerKV.attach(pid::setFF);
@@ -113,10 +113,12 @@ public class ModuleIOSparkFX implements ModuleIO {
   @Override
   public void updateInputs(ModuleIOInputs inputs) {
     BaseStatusSignal.refreshAll(velSignal, posSignal, errSignal, tempSignal);
-    inputs.pos = getModulePosition();
-    inputs.vel =
-        new SwerveModuleState(
-            velSignal.getValue() * THRUST_DISTANCE_PER_TICK, getModulePosition().angle);
+    inputs.absSensorAngle = analogEncoder.getPosition();
+    inputs.absSensorOmega = analogEncoder.getVelocity() / 60.0;
+    inputs.relativeSensorAngle = relativeEncoder.getPosition();
+    inputs.relativeSensorOmega = relativeEncoder.getVelocity() / 60.0;
+    inputs.thrustVel = velSignal.getValue() * THRUST_DISTANCE_PER_TICK;
+    inputs.thrustPos = posSignal.getValue() * THRUST_DISTANCE_PER_TICK;
     inputs.steerTempC = steer.getMotorTemperature();
     inputs.thrustErr = errSignal.getValue();
     inputs.thrustTempC = tempSignal.getValue();
@@ -124,16 +126,8 @@ public class ModuleIOSparkFX implements ModuleIO {
   }
 
   @Override
-  public void setCmdState(SwerveModuleState state) {
-    double cmd_ang = state.angle.getRotations();
-    thrust.setControl(new VelocityDutyCycle(state.speedMetersPerSecond / THRUST_DISTANCE_PER_TICK));
-
-    pid.setReference(((cmd_ang % 1.0) + 1.0) % 1.0, CANSparkMax.ControlType.kSmartMotion);
-  }
-
-  private SwerveModulePosition getModulePosition() {
-    return new SwerveModulePosition(
-        posSignal.getValue() * THRUST_DISTANCE_PER_TICK,
-        Rotation2d.fromRotations(encoder.getPosition()));
+  public void setCmdState(double ang, double vel) {
+    thrust.setControl(new VelocityDutyCycle(vel / THRUST_DISTANCE_PER_TICK));
+    pid.setReference(ang, CANSparkMax.ControlType.kSmartMotion);
   }
 }
