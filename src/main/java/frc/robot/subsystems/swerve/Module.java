@@ -54,14 +54,15 @@ public class Module {
     }
     if (noMotionTimer.hasElapsed(minNoMotionTime.get())) {
       reZero();
-      noMotionTimer.restart();
     }
   }
 
   private void reZero() {
     Logger.recordOutput(
-        "CHANGE", getAbsEncoderPos().minus(getProcessedRelativeEncoderPos()).getDegrees());
+        "Drive/" + name + "/relative_encoder_drift",
+        getAbsEncoderPos().minus(getProcessedRelativeEncoderPos()).getDegrees());
     relativeSensorZeroPosition = getAbsEncoderPos().minus(getUnprocessedRelativeEncoderPos());
+    noMotionTimer.restart();
   }
 
   private Rotation2d getProcessedRelativeEncoderPos() {
