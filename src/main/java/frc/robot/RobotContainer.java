@@ -252,6 +252,10 @@ public class RobotContainer {
                     () -> -secondController.getLeftY(),
                     () -> -secondController.getRightY())
                 .until(() -> secondController.getHID().getRightStickButtonPressed()));
+    // Pre-spin up
+    secondController
+        .rightTrigger(0.2)
+        .whileTrue(Commands.run(() -> shooter.cmdVel(-4000, 4000), shooter));
   }
 
   /**
