@@ -9,11 +9,11 @@ public class Overrides {
   public static LoggedDashboardBoolean disableIMU =
       new LoggedDashboardBoolean("Disable IMU", false);
   public static LoggedDashboardBoolean disableVision =
-      new LoggedDashboardBoolean("Disable Vision", true);
+      new LoggedDashboardBoolean("Disable Vision", false);
   public static LoggedDashboardBoolean disableAutoAiming =
-      new LoggedDashboardBoolean("Disable Auto Aiming", true);
+      new LoggedDashboardBoolean("Disable Auto Aiming", false);
   public static LoggedDashboardBoolean disableAutoAlign =
-      new LoggedDashboardBoolean("Disable Auto Align", true);
+      new LoggedDashboardBoolean("Disable Auto Align", false);
 
   // intake from floor, intake from source, aim for amp, aim for speaker:
   public static LoggedDashboardBoolean disableArmAnglePresets =
