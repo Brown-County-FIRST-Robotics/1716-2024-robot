@@ -26,6 +26,19 @@ public class SpeakerShoot extends Command {
   LoggedTunableNumber botAngleThreshold = new LoggedTunableNumber("bot ang threshold", 0.008);
   XboxController controller;
   LoggedTunableNumber sp = new LoggedTunableNumber("Shooter Speed", 11.3);
+  private static final ShootWhileMove.ShooterKinematics kinematics =
+      (cmd, botPose) ->
+          new Pose3d(
+                  botPose.getX(),
+                  botPose.getY(),
+                  0,
+                  new Rotation3d(0, 0, cmd.botAngle.getRadians()))
+              .transformBy(
+                  new Transform3d(
+                      new Translation3d(11 * 0.0254, 0, 10 * 0.0254),
+                      new Rotation3d(0, -cmd.shooterAngle.getRadians(), 0)))
+              .transformBy(new Transform3d(new Translation3d(0.3, 0, 0.115), new Rotation3d()))
+              .getTranslation();
 
   public SpeakerShoot(
       Drivetrain drive,
@@ -47,62 +60,21 @@ public class SpeakerShoot extends Command {
     shooter.shoot(-4000, 4000);
   }
 
-  /**
-   * Calculates the best shooter angle
-   *
-   * @param d The horizontal distance to the target
-   * @param z The vertical distance to the target
-   * @param v The firing velocity
-   * @return The best shooter angle to hit the target
-   */
-  public static double bestAng(double d, double z, double v) {
-    double g = 9.8065;
-    double cside = g * d / (v * v);
-    double ts = Math.asin(Math.sqrt(2 * g * z / (v * v))) * 1.01;
-    for (int i = 0; i < 10; i++) {
-      double sqrted = Math.sqrt(Math.pow(Math.sin(ts), 2) - (2 * g * z / (v * v)));
-      double rside = Math.sin(ts) - sqrted;
-      double erf = rside * Math.cos(ts) - cside;
-      double dts =
-          -rside * Math.sin(ts)
-              + Math.cos(ts) * (Math.cos(ts) - (Math.sin(ts) * Math.cos(ts) / sqrted));
-      ts = ts - (erf / dts);
-    }
-    return ts;
-  }
-
   @Override
   public void execute() {
     // Calculates position of the tip of the shooter
     Pose2d pos = drive.getPosition();
-    Translation3d botPose =
-        new Pose3d(pos.getX(), pos.getY(), 0, new Rotation3d(0, 0, pos.getRotation().getRadians()))
-            .transformBy(
-                new Transform3d(
-                    new Translation3d(11 * 0.0254, 0, 10 * 0.0254),
-                    new Rotation3d(0, -arm.getAngle().getRadians(), 0)))
-            .transformBy(new Transform3d(new Translation3d(0.3, 0, 0.115), new Rotation3d()))
-            .getTranslation();
-
-    //    var shooterAngle =
-    //        Rotation2d.fromRadians(
-    //            bestAng(
-    //                FieldConstants.getSpeaker().minus(botPose).toTranslation2d().getNorm(),
-    //                FieldConstants.getSpeaker().minus(botPose).getZ(),
-    //                sp.get()));
-    //    var botAngle = FieldConstants.getSpeaker().minus(botPose).toTranslation2d().getAngle();
-    //    Logger.recordOutput(
-    //        "PredPose", new Pose3d(botPose, new Rotation3d(0, -shooterAngle.getRadians(), 0)));
     var cmd =
-        ShootWhileMove.newShooting(
+        ShootWhileMove.calcCommandWithKinematics(
+            pos.getTranslation(),
             FieldConstants.getSpeaker(),
-            botPose,
             ShootWhileMove.getFieldRelativeSpeeds(
-                drive.getVelocity(), drive.getPosition().getRotation()));
+                drive.getVelocity(), drive.getPosition().getRotation()),
+            kinematics);
     shooter.setSpeed(9.88); // Max speed
     rotationCommander.accept(Optional.of(cmd.botAngle));
     arm.setAngle(cmd.shooterAngle);
-    if(!Double.isNaN(cmd.shooterAngle.getRadians())){
+    if (!Double.isNaN(cmd.shooterAngle.getRadians())) {
       arm.setAngle(cmd.shooterAngle);
     }
     // Prevent firing if angles are not close enough

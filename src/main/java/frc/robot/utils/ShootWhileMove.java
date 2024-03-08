@@ -82,28 +82,14 @@ public class ShootWhileMove {
     public Rotation2d botAngle;
     /** The angle of the shooter */
     public Rotation2d shooterAngle;
-    /** The shooting speed */
-    public double shooterSpeedMPS;
 
-    public ShootingCommand(Rotation2d botAngle, Rotation2d shooterAngle, double shooterSpeedMPS) {
+    public ShootingCommand(Rotation2d botAngle, Rotation2d shooterAngle) {
       this.botAngle = botAngle;
       this.shooterAngle = shooterAngle;
-      this.shooterSpeedMPS = shooterSpeedMPS;
     }
   }
 
-  /**
-   * Does a dot product between two translations
-   *
-   * @param a The first vector
-   * @param b The second vector
-   * @return The dot product of a and b
-   */
-  private static double dot(Translation2d a, Translation2d b) {
-    return a.getX() * b.getX() + a.getY() * b.getY();
-  }
-
-  public static ShootingCommand newShooting(
+  public static ShootingCommand calcSimpleCommand(
       Translation3d target, Translation3d botPose, Translation2d botVel) {
     double g = 9.8065;
     double v = 12;
@@ -146,7 +132,7 @@ public class ShootWhileMove {
     if (Double.isNaN(theta_s)) {
       nanLatch.latch();
     }
-    return new ShootingCommand(Rotation2d.fromRadians(theta_b), Rotation2d.fromRadians(theta_s), v);
+    return new ShootingCommand(Rotation2d.fromRadians(theta_b), Rotation2d.fromRadians(theta_s));
   }
 
   /**
@@ -157,26 +143,8 @@ public class ShootWhileMove {
    * @return If iteration can be stopped
    */
   private static boolean converged(ShootingCommand a, ShootingCommand b) {
-    return Math.abs(a.shooterSpeedMPS - b.shooterSpeedMPS) < 0.01
-        && Math.abs(a.botAngle.minus(b.botAngle).getRotations()) < 0.01
-        && Math.abs(a.shooterAngle.minus(b.shooterAngle).getRotations()) < 0.01;
-  }
-
-  /**
-   * Calculates a basic shooting command
-   *
-   * @param botPose The pose of the robot relative to the target
-   * @param botVelocity The velocity of the robot
-   * @return The commands for the shooter and drive base
-   */
-  public static ShootingCommand calcSimpleCommand(
-      Translation3d botPose, Translation2d botVelocity) {
-    double g = 9.8065;
-    double tmpA = Math.sqrt(-g * botPose.getZ() * 2);
-    Translation2d tmpB = botPose.toTranslation2d().times(-g / tmpA).minus(botVelocity);
-    double shooterVel = Math.sqrt(dot(tmpB, tmpB) - g * botPose.getZ() * 2);
-    return new ShootingCommand(
-        tmpB.getAngle(), Rotation2d.fromRadians(Math.asin(tmpA / shooterVel)), shooterVel);
+    return Math.abs(a.botAngle.minus(b.botAngle).getDegrees()) < 0.1
+        && Math.abs(a.shooterAngle.minus(b.shooterAngle).getDegrees()) < 0.1;
   }
 
   /**
@@ -193,17 +161,17 @@ public class ShootWhileMove {
       Translation3d target,
       Translation2d botVelocity,
       ShooterKinematics kinematics) {
-    ShootingCommand lastCommand = new ShootingCommand(new Rotation2d(), new Rotation2d(), 0);
+    ShootingCommand lastCommand = new ShootingCommand(new Rotation2d(), new Rotation2d());
     for (int i = 0; i < 100; i++) {
       Translation3d poseOfBot = kinematics.getPose(lastCommand, botPose);
-      var canidateCmd = calcSimpleCommand(poseOfBot.minus(target), botVelocity);
+      var canidateCmd = calcSimpleCommand(target, poseOfBot, botVelocity);
       if (converged(canidateCmd, lastCommand)) {
         System.out.println("calcCommandWithKinematics converged in " + i + " iterations");
         return canidateCmd;
       }
       lastCommand = canidateCmd;
     }
-    System.out.println("calcCommandWithKinematics did not converge");
+    System.err.println("calcCommandWithKinematics did not converge");
     return lastCommand;
   }
 
@@ -218,7 +186,7 @@ public class ShootWhileMove {
   public static ShootingCommand calcCommandWithPrediction(
       SystemPredictor predictor, ShooterKinematics kinematics, Translation3d target) {
     double lastT = 0;
-    ShootingCommand lastCommand = new ShootingCommand(new Rotation2d(), new Rotation2d(), 0);
+    ShootingCommand lastCommand = new ShootingCommand(new Rotation2d(), new Rotation2d());
     for (int i = 0; i < 100; i++) {
       var canidateCmd =
           calcCommandWithKinematics(
@@ -237,39 +205,5 @@ public class ShootWhileMove {
     return lastCommand;
   }
 
-  public static void main(String[] args) { // Basic testing script
-    Translation3d target = new Translation3d(0.458597, 5.544566, 2.1105114);
-    Translation3d botPose = new Translation3d(3, 5, 0);
-    Translation2d botvel = new Translation2d(0, 0);
-    var cmd = calcSimpleCommand(botPose.minus(target), botvel);
-    System.out.println(cmd.shooterSpeedMPS);
-    Translation3d pose = botPose;
-    Translation3d vel = new Translation3d(botvel.getX(), botvel.getY(), 0);
-    double tVel = cmd.shooterSpeedMPS * cmd.shooterAngle.getCos();
-    vel =
-        vel.plus(
-            new Translation3d(
-                tVel * cmd.botAngle.getCos(),
-                tVel * cmd.botAngle.getSin(),
-                cmd.shooterSpeedMPS * cmd.shooterAngle.getSin()));
-    double dt = 0.001;
-    for (int i = 0; i < 10 / dt; i++) {
-      pose = pose.plus(vel.times(dt));
-      vel = vel.plus(new Translation3d(0, 0, -9.8065 * dt));
-      if (pose.minus(target).getNorm() < 0.1) {
-        System.out.println(
-            "t:"
-                + i * dt
-                + "\tx:"
-                + pose.getX()
-                + "\ty:"
-                + pose.getY()
-                + "\tz:"
-                + pose.getZ()
-                + "\tvz:"
-                + vel.getZ());
-      }
-    }
-    System.out.println(9.88 > cmd.shooterSpeedMPS);
-  }
+  public static void main(String[] args) {}
 }
