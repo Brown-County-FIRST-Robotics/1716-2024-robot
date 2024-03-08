@@ -43,6 +43,8 @@ import frc.robot.subsystems.vision.VisionIOSecondSight;
 public class RobotContainer {
   private final CommandXboxController driverController =
       new CommandXboxController(Constants.Driver.DRIVER_CONTROLLER_PORT);
+    private final CommandXboxController secondController =
+      new CommandXboxController(1);
   private final Drivetrain driveSys;
   private Arm arm;
   private LEDs leds;
@@ -152,11 +154,13 @@ public class RobotContainer {
     driverController.b().onTrue(new InstantCommand(() -> leds.mode1()));
     driverController.a().onTrue(new InstantCommand(() -> leds.mode2()));
     driverController.x().onTrue(new InstantCommand(() -> leds.mode3()));
+     driverController.start().onTrue(new InstantCommand(() -> leds.gamemode()));
     // driverController.rightTrigger().onTrue(new RunCommand(() -> leds.getControllerInput(driverController.getLeftTriggerAxis(), driverController.getRightTriggerAxis())));
     driverController.povUp().onTrue(new InstantCommand(() -> leds.increaseSpeed()));
     driverController.povDown().onTrue(new InstantCommand(() -> leds.decreaseSpeed()));
     
-     driverController.rightBumper().onTrue(new InstantCommand(() -> leds.setColor(50)));
+     driverController.y().onTrue(new InstantCommand(() -> leds.y1()));
+   secondController.y().onTrue(new InstantCommand(() -> leds.y2()));
   }
 
   /**

@@ -23,8 +23,13 @@ public class LEDs extends PeriodicRunnable {
   boolean mode1 = false;
   boolean mode2 = false;
   boolean mode3 = false;
+  boolean gamemode = false;
   Random random = new Random();
 
+  int p1 = 0;
+  int p1score = 0;
+  int p2 = 0;
+  int p2score = 26;
   public LEDs() {
     super(); // Super call adds it to the registry, which calls the periodic method every tick
     leds = new AddressableLED(5);
@@ -83,6 +88,9 @@ public class LEDs extends PeriodicRunnable {
     colour = (colour + 1) % 180;
   }
 
+
+
+
     if(mode2 == true)  //MODE 2
     {
      ledBuff.setHSV((x - (y * 5)), 7, 255, 0);
@@ -95,6 +103,10 @@ public class LEDs extends PeriodicRunnable {
     
      colour = (colour + 1) % 180;
   }
+
+
+
+
 
   if(mode3 == true)    //MODE 3 
   {
@@ -122,31 +134,79 @@ public class LEDs extends PeriodicRunnable {
 
 
 
+  if(gamemode == true) //Gamemode
+  {
+  
+    ledBuff.setHSV(13, 1, 255, 150);
+    ledBuff.setHSV(14, 1, 255, 150);
+  
+  
+  p1score = (p1 / 10);
+  p2score = p2 / 10;
+  
+  if((p1score != 13) && (p2score != 14))
+  {
+  ledBuff.setHSV(p1score, 175, 255, 150);
+  ledBuff.setHSV(p2score, 10, 255, 150);
+  }
+  }
+
+  if((p1score > 12) && (p1score != ledBuff.getLength()))
+  {
+   p1score++;
+  }
+
     leds.setData(ledBuff);
   }
 
-  public void mode1() {
+  public void mode1() { //Button B
     mode1 = true;
     mode2 = false;
     mode3 = false;
+    gamemode = false;
   }
-  public void mode2() {
+  public void mode2() { //Button A
     mode2 = true;
     mode1 = false;
     mode3 = false;
+    gamemode = false;
   }
 
-public void mode3() {
+public void mode3() { //Button X
 mode3 = true;
 mode1 = false;
 mode2 = false;
+gamemode = false;
 }
 
+public void gamemode() { //Button Start button
+
+  for(int i = 0; i != ledBuff.getLength(); i++)
+  {
+    ledBuff.setHSV(i, 1, 255, 0);
+  }
+ p1score = 0;
+ p2score = 26;
+mode1 = false;
+mode2 = false;
+mode3 = false;
+gamemode = true;
+
+}
+
+public void y2(){
+p2++;
+}
+
+public void y1(){
+p1++;
+}
 
   public void intakelight() {
     mode1 = false;
     mode2 = false; 
     mode3 = false;
+    gamemode = false;
     colour =  50;
    for(int i = 0; i != ledBuff.getLength(); i++)
    {
@@ -163,6 +223,8 @@ mode2 = false;
      ledBuff.setHSV(i, colour, 255, 255);
    }
   }
+
+  
 
   public void shooterlight() {
     colour = 60;
