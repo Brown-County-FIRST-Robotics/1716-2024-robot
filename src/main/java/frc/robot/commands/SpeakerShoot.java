@@ -102,6 +102,9 @@ public class SpeakerShoot extends Command {
     shooter.setSpeed(9.88); // Max speed
     rotationCommander.accept(Optional.of(cmd.botAngle));
     arm.setAngle(cmd.shooterAngle);
+    if(!Double.isNaN(cmd.shooterAngle.getRadians())){
+      arm.setAngle(cmd.shooterAngle);
+    }
     // Prevent firing if angles are not close enough
     boolean blocked =
         0.006 < Math.abs(cmd.botAngle.minus(drive.getPosition().getRotation()).getRotations())
