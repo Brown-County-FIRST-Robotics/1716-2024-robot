@@ -1,5 +1,7 @@
 package frc.robot;
 
+import java.util.Objects;
+
 /** The class that contains the information about whom the robot is */
 public final class WhoAmI {
   /** The mode of the robot */
@@ -8,7 +10,7 @@ public final class WhoAmI {
   public static final RobotType bot = RobotType.SWERVEBASE;
   /** The appendages to the robot */
   public static final Appendages[] appendages = {
-    Appendages.SHOOTER, Appendages.ARM, Appendages.CLIMBER
+    Appendages.SHOOTER, Appendages.ARM
   };
 
   /** The robot types */
@@ -83,9 +85,9 @@ public final class WhoAmI {
     if(args.length!=1){
       throw new IllegalArgumentException("Give me arguments");
     }
-    if(args[0]=="sim"){
+    if(Objects.equals(args[0], "sim")){
       checkSim();
-    } else if (args[0] == "real") {
+    } else if (Objects.equals(args[0], "real")) {
       checkReal();
     }else{
       throw new IllegalArgumentException("Invalid arguments");
