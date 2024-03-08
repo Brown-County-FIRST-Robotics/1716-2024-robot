@@ -46,13 +46,24 @@ public final class WhoAmI {
     /** Simulated */
     SIM
   }
-
-  /**
-   * Checks the configuration
-   *
-   * @param args Not used
-   */
-  public static void main(String... args) {
+  private static void checkSim(){
+    if(mode==Mode.REAL){
+      throw new IllegalArgumentException("Cannot deploy code in Sim mode to the robot");
+    }
+    if(mode==Mode.SIM){
+      if (bot != RobotType.SIMSWERVEBASE){
+        throw new IllegalArgumentException(
+            "You are currently deploying code meant for a real robot to a simulator");
+      }
+      for(var appendage:appendages){
+        switch (appendage){
+          case ARM, SHOOTER, CLIMBER -> throw new IllegalArgumentException(
+          "You are currently deploying code meant for a real robot to a simulator");
+        }
+      }
+    }
+  }
+  private static void checkReal(){
     if (mode != Mode.REAL) {
       throw new IllegalArgumentException("Cannot deploy code in Sim mode to the robot");
     }
@@ -60,6 +71,24 @@ public final class WhoAmI {
     if (bot == RobotType.SIMSWERVEBASE && !override) {
       throw new IllegalArgumentException(
           "You are currently deploying code meant for the simulator to a real robot. ONLY DO THIS IF YOU ABSOLUTELY KNOW WHAT YOU ARE DOING. ");
+    }
+  }
+
+  /**
+   * Checks the configuration
+   *
+   * @param args Not used
+   */
+  public static void main(String... args) {
+    if(args.length!=1){
+      throw new IllegalArgumentException("Give me arguments");
+    }
+    if(args[0]=="sim"){
+      checkSim();
+    } else if (args[0] == "real") {
+      checkReal();
+    }else{
+      throw new IllegalArgumentException("Invalid arguments");
     }
   }
 }
