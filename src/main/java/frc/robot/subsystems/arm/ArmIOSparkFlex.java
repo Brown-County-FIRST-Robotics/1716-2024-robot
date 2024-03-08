@@ -48,6 +48,7 @@ public class ArmIOSparkFlex implements ArmIO {
     inputs.omega = encoder.getVelocity();
     inputs.appliedOutput = controller.getAppliedOutput();
     inputs.temperature = controller.getMotorTemperature();
+    inputs.current=controller.getOutputCurrent();
   }
 
   @Override

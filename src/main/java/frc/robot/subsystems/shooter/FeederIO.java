@@ -10,6 +10,8 @@ public interface FeederIO {
     public double position = 0.0;
     public double velocity = 0.0;
     public double current = 0.0;
+    public double appliedOutput=0.0;
+    public double temperature=0.0;
     public boolean openContact = false;
     public boolean closedContact = true;
   }
