@@ -35,7 +35,7 @@ public class ModuleIOSparkFX implements ModuleIO {
   LoggedTunableNumber thrustD = new LoggedTunableNumber("Thrust D", 0);
   LoggedTunableNumber thrustKV = new LoggedTunableNumber("Thrust KV", 60.0 / 6380.0);
   LoggedTunableNumber steerP =
-      new LoggedTunableNumber("Steer P", STEER_GEAR_RATIO / STEER_FREE_RPM);
+      new LoggedTunableNumber("Steer P",0);
   LoggedTunableNumber steerI = new LoggedTunableNumber("Steer I", 0);
   LoggedTunableNumber steerD = new LoggedTunableNumber("Steer D", 0);
   LoggedTunableNumber steerKV =
@@ -90,12 +90,13 @@ public class ModuleIOSparkFX implements ModuleIO {
     relativeEncoder.setPositionConversionFactor(1.0 / STEER_GEAR_RATIO);
     analogEncoder.setPositionConversionFactor(1 / 3.33);
     analogEncoder.setInverted(true);
+    steer.setInverted(true);
     pid.setFeedbackDevice(relativeEncoder);
 
     pid.setOutputRange(-1, 1);
     pid.setSmartMotionMaxVelocity(STEER_FREE_RPM / STEER_GEAR_RATIO, 0);
     pid.setSmartMotionMinOutputVelocity(0, 0);
-    pid.setSmartMotionMaxAccel(STEER_FREE_RPM / STEER_GEAR_RATIO, 0);
+    pid.setSmartMotionMaxAccel(5*STEER_FREE_RPM / STEER_GEAR_RATIO, 0);
     pid.setSmartMotionAllowedClosedLoopError(0.01, 0);
     steer.setSmartCurrentLimit(Constants.CurrentLimits.NEO);
 
