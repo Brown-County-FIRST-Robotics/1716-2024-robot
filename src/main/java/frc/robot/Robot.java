@@ -4,6 +4,8 @@ import edu.wpi.first.hal.HALUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.Filesystem;
+import edu.wpi.first.wpilibj.GenericHID;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.utils.Alert;
@@ -19,6 +21,7 @@ import java.util.Scanner;
 import org.littletonrobotics.junction.LogFileUtil;
 import org.littletonrobotics.junction.LoggedRobot;
 import org.littletonrobotics.junction.Logger;
+import org.littletonrobotics.junction.networktables.LoggedDashboardBoolean;
 import org.littletonrobotics.junction.networktables.NT4Publisher;
 import org.littletonrobotics.junction.wpilog.WPILOGReader;
 import org.littletonrobotics.junction.wpilog.WPILOGWriter;
@@ -30,6 +33,7 @@ import org.littletonrobotics.junction.wpilog.WPILOGWriter;
  * project.
  */
 public class Robot extends LoggedRobot {
+  Timer gcTimer=new Timer();
   private Command autonomousCommand;
   boolean builtPoseSetter = false;
   private RobotContainer robotContainer;
@@ -100,8 +104,9 @@ public class Robot extends LoggedRobot {
     robotContainer = new RobotContainer();
     // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
     // autonomous chooser on the dashboard.
+    gcTimer.start();
   }
-
+  LoggedDashboardBoolean rum=new LoggedDashboardBoolean("lkjhgfghjkkl",false);
   /**
    * This function is called every robot packet, no matter the mode. Use this for items like
    * diagnostics that you want ran during disabled, autonomous, teleoperated and test.
@@ -127,6 +132,16 @@ public class Robot extends LoggedRobot {
           "Amp side", FieldConstants.flip(new Pose2d(0.5, 7, Rotation2d.fromRotations(0.75))));
       poseChooser.attach(robotContainer::setPose);
       builtPoseSetter = true;
+    }
+    if(gcTimer.advanceIfElapsed(5)){
+      System.gc();
+      System.out.println("GC");
+    }
+    if(rum.get()){
+      robotContainer.driverController.getHID().setRumble(GenericHID.RumbleType.kBothRumble,1);
+    }else {
+
+      robotContainer.driverController.getHID().setRumble(GenericHID.RumbleType.kBothRumble,0);
     }
   }
 
