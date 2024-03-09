@@ -53,11 +53,12 @@ public class ModuleIOSparkFX implements ModuleIO {
     this.name = name;
     thrust = new TalonFX(thrustID);
     TalonFXConfiguration config = new TalonFXConfiguration();
+    thrust.getConfigurator().refresh(config);
     config.Audio.BeepOnConfig = false;
     config.Audio.BeepOnBoot = false;
     config.Audio.AllowMusicDurDisable = true;
     config.Slot0.kV = thrustKV.get();
-    thrust.getConfigurator().refresh(config.CustomParams);
+    config.Slot0.kP=thrustP.get();
     offsetTun = new LoggedTunableNumber(name + "_offset");
     if (thrustID == 20) {
       off = 0.824;
