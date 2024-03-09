@@ -55,80 +55,17 @@ public class Vision extends PeriodicRunnable {
     for (int i = 0; i < ios.length; i++) {
       ios[i].updateInputs(inputs[i]);
       Logger.processInputs("Vision/Inputs_" + i, inputs[i]);
-      if (inputs[i].ids.isPresent()
-          && inputs[i].pose.isPresent()
-          && inputs[i].timestamp.isPresent()
-          && inputs[i].errors.isPresent()) {
-        if (inputs[i].ids.get().length > 0 && inputs[i].errors.get() < maxRMSError.get()) {
-          Pose3d outPose = new Pose3d();
-          if (inputs[i].ids.get().length == 1) {
-            Rotation3d r1 =
-                new Rotation3d(
-                        new Quaternion(
-                            inputs[i].pose.get()[3],
-                            inputs[i].pose.get()[4],
-                            inputs[i].pose.get()[5],
-                            inputs[i].pose.get()[6]))
-                    .unaryMinus()
-                    .rotateBy(new Rotation3d(0, 0, Math.PI))
-                    .unaryMinus();
-            Pose3d tagpose =
-                layout.getTagPose(Integer.parseInt(inputs[i].ids.get()[0])).orElse(new Pose3d());
-            Rotation3d rot =
-                new Rotation3d(
-                    r1.getX(),
-                    r1.getY(),
-                    drivetrain
-                        .getPE()
-                        .getPose(inputs[i].timestamp.get())
-                        .orElseGet(drivetrain::getPosition)
-                        .relativeTo(tagpose.toPose2d())
-                        .getRotation()
-                        .unaryMinus()
-                        .interpolate(r1.toRotation2d(), 0.01)
-                        .getRadians());
-
-            Transform3d as =
-                new Transform3d(
-                    new Translation3d(
-                        inputs[i].pose.get()[0], inputs[i].pose.get()[1], inputs[i].pose.get()[2]),
-                    rot);
-
-            outPose = tagpose.plus(as.inverse());
-          } else if (inputs[i].ids.get().length > 1) {
-            outPose =
-                new Pose3d(
-                    inputs[i].pose.get()[0],
-                    inputs[i].pose.get()[1],
-                    inputs[i].pose.get()[2],
-                    new Rotation3d(
-                        new Quaternion(
-                            inputs[i].pose.get()[3],
-                            inputs[i].pose.get()[4],
-                            inputs[i].pose.get()[5],
-                            inputs[i].pose.get()[6])));
-          }
-          Pose3d poseOfBot = outPose.plus(camPoses[i].inverse());
-          Logger.recordOutput("Vision/EstPose_" + i, poseOfBot);
-          if (!Overrides.disableVision.get()
-              && (ShootWhileMove.getFieldRelativeSpeeds(drivetrain.getVelocity(), new Rotation2d())
-                      .getNorm()
-                  < 0.8)
-              && Math.abs(drivetrain.getVelocity().omegaRadiansPerSecond) < 0.5) {
-            drivetrain.addVisionUpdate(
-                poseOfBot.toPose2d(),
-                VecBuilder.fill(
-                    inputs[i].ids.get().length > 1
-                        ? multiTagTranslationStdDev.get()
-                        : oneTagTranslationStdDev.get(),
-                    inputs[i].ids.get().length > 1
-                        ? multiTagTranslationStdDev.get()
-                        : oneTagTranslationStdDev.get(),
-                    inputs[i].ids.get().length > 1
-                        ? multiTagRotationStdDev.get()
-                        : oneTagRotationStdDev.get()),
-                inputs[i].timestamp.get());
-          }
+      if (inputs[i].pose.isPresent() && inputs[i].timestamp.isPresent()) {
+        Pose3d outPose = inputs[i].pose.get();
+        Pose3d poseOfBot = outPose.plus(camPoses[i].inverse());
+        Logger.recordOutput("Vision/EstPose_" + i, poseOfBot);
+        if (!Overrides.disableVision.get()
+            && (ShootWhileMove.getFieldRelativeSpeeds(drivetrain.getVelocity(), new Rotation2d())
+                    .getNorm()
+                < 0.8)
+            && Math.abs(drivetrain.getVelocity().omegaRadiansPerSecond) < 0.5) {
+          drivetrain.addVisionUpdate(
+              poseOfBot.toPose2d(), VecBuilder.fill(1, 1, 1), inputs[i].timestamp.get());
         }
       }
     }
