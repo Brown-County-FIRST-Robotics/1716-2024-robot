@@ -30,7 +30,7 @@ public class ModuleIOSparkFX implements ModuleIO {
   double offset;
 
   String name;
-  LoggedTunableNumber thrustP = new LoggedTunableNumber("Thrust P", 30.0 / 6380.0);
+  LoggedTunableNumber thrustP = new LoggedTunableNumber("Thrust P", 300.0 / 6380.0);
   LoggedTunableNumber thrustI = new LoggedTunableNumber("Thrust I", 0);
   LoggedTunableNumber thrustD = new LoggedTunableNumber("Thrust D", 0);
   LoggedTunableNumber thrustKV = new LoggedTunableNumber("Thrust KV", 60.0 / 6380.0);
@@ -57,6 +57,7 @@ public class ModuleIOSparkFX implements ModuleIO {
     config.Audio.BeepOnBoot = false;
     config.Audio.AllowMusicDurDisable = true;
     config.Slot0.kV = thrustKV.get();
+    config.Slot0.kP=thrustP.get();
     thrust.getConfigurator().refresh(config.CustomParams);
     offsetTun = new LoggedTunableNumber(name + "_offset");
     if (thrustID == 20) {
