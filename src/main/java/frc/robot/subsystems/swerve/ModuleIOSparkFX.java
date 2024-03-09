@@ -30,7 +30,7 @@ public class ModuleIOSparkFX implements ModuleIO {
   double offset;
 
   String name;
-  LoggedTunableNumber thrustP = new LoggedTunableNumber("Thrust P", 30.0 / 6380.0);
+  LoggedTunableNumber thrustP = new LoggedTunableNumber("Thrust P", 1.6/(6380.0/60.0));
   LoggedTunableNumber thrustI = new LoggedTunableNumber("Thrust I", 0);
   LoggedTunableNumber thrustD = new LoggedTunableNumber("Thrust D", 0);
   LoggedTunableNumber thrustKV = new LoggedTunableNumber("Thrust KV", 60.0 / 6380.0);
@@ -53,11 +53,14 @@ public class ModuleIOSparkFX implements ModuleIO {
     this.name = name;
     thrust = new TalonFX(thrustID);
     TalonFXConfiguration config = new TalonFXConfiguration();
+    thrust.getConfigurator().refresh(config);
     config.Audio.BeepOnConfig = false;
     config.Audio.BeepOnBoot = false;
+    config.MotorOutput.PeakForwardDutyCycle=1;
+    config.MotorOutput.PeakReverseDutyCycle=-1;
     config.Audio.AllowMusicDurDisable = true;
     config.Slot0.kV = thrustKV.get();
-    thrust.getConfigurator().refresh(config.CustomParams);
+    config.Slot0.kP=thrustP.get();
     offsetTun = new LoggedTunableNumber(name + "_offset");
     if (thrustID == 20) {
       off = 0.824;
@@ -103,6 +106,8 @@ public class ModuleIOSparkFX implements ModuleIO {
     steerP.attach(pid::setP);
     steerI.attach(pid::setI);
     steerD.attach(pid::setD);
+    BaseStatusSignal.refreshAll(velSignal, posSignal, errSignal, tempSignal);
+
 
     steer.burnFlash();
     Logger.recordOutput("Firmware/" + name + "_Steer", steer.getFirmwareString());
