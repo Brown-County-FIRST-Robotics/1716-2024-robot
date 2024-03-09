@@ -52,8 +52,8 @@ public class FeederIOSpark550 implements FeederIO {
     inputs.current = motor.getOutputCurrent();
     inputs.closedContact = closedContact.get();
     inputs.openContact = openContact.get();
-    inputs.temperature=motor.getMotorTemperature();
-    inputs.appliedOutput=motor.getAppliedOutput();
+    inputs.temperature = motor.getMotorTemperature();
+    inputs.appliedOutput = motor.getAppliedOutput();
   }
 
   @Override
