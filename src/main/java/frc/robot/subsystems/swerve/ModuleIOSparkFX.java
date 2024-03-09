@@ -57,7 +57,7 @@ public class ModuleIOSparkFX implements ModuleIO {
     config.Audio.BeepOnBoot = false;
     config.Audio.AllowMusicDurDisable = true;
     config.Slot0.kV = thrustKV.get();
-    thrust.getConfigurator().refresh(config.CustomParams);
+    config.Slot0.kP=thrustP.get();
     offsetTun = new LoggedTunableNumber(name + "_offset");
     if (thrustID == 20) {
       off = 0.824;
