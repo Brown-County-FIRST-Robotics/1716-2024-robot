@@ -16,7 +16,8 @@ public interface ArmIO {
     double appliedOutput = 0.0;
     /** The temperature of the arm motor (Celsius) */
     double temperature = 0.0;
-    double current=0.0;
+
+    double current = 0.0;
   }
   /**
    * Updates the inputs
