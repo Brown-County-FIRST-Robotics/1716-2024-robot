@@ -59,15 +59,25 @@ public class AutoFactories {
 
     return Intake.fromFloor(shooter, arm)
         .raceWith(
-            trajectoryCommand.alongWith(
-                Commands.run(
-                    () ->
-                        trajectoryCommand.setCustomRotation(
-                            Optional.of(
-                                drivetrain
-                                    .getPosition()
-                                    .getTranslation()
-                                    .minus(target)
-                                    .getAngle())))));
+            trajectoryCommand
+                .alongWith(
+                    Commands.run(
+                        () ->
+                            trajectoryCommand.setCustomRotation(
+                                Optional.of(
+                                    drivetrain
+                                        .getPosition()
+                                        .getTranslation()
+                                        .minus(target)
+                                        .getAngle()))))
+                .andThen(Commands.waitSeconds(1)));
+  }
+
+  public static Command pickupWithBackup(
+      Drivetrain drivetrain, Arm arm, Shooter shooter, int pos, int backupPos) {
+    return pickup(drivetrain, arm, shooter, pos)
+        .andThen(
+            Commands.either(
+                Commands.none(), pickup(drivetrain, arm, shooter, backupPos), shooter::isHolding));
   }
 }
