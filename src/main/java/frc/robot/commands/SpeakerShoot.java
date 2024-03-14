@@ -4,7 +4,6 @@ import edu.wpi.first.math.geometry.*;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation3d;
-import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.FieldConstants;
 import frc.robot.subsystems.Drivetrain;
@@ -24,7 +23,6 @@ public class SpeakerShoot extends Command {
   boolean firing = false;
   LoggedTunableNumber shooterAngleThreshold = new LoggedTunableNumber("ang threshold", 0.003);
   LoggedTunableNumber botAngleThreshold = new LoggedTunableNumber("bot ang threshold", 0.008);
-  XboxController controller;
   LoggedTunableNumber sp = new LoggedTunableNumber("Shooter Speed", 11.3);
   private static final ShootWhileMove.ShooterKinematics kinematics =
       (cmd, botPose) ->
@@ -44,13 +42,11 @@ public class SpeakerShoot extends Command {
       Drivetrain drive,
       Arm arm,
       Consumer<Optional<Rotation2d>> rotationCommander,
-      Shooter shooter,
-      XboxController overrideController) {
+      Shooter shooter) {
     this.drive = drive;
     this.arm = arm;
     this.rotationCommander = rotationCommander;
     this.shooter = shooter;
-    controller = overrideController;
     addRequirements(arm, shooter); // DO NOT add drive
   }
 

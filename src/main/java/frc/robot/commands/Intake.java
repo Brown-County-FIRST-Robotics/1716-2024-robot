@@ -36,6 +36,10 @@ public class Intake extends Command {
     return new Intake(shooter, arm, overrideController, armPreset);
   }
 
+  public static Intake fromFloor(Shooter shooter, Arm arm) {
+    return new Intake(shooter, arm, armPreset);
+  }
+
   /**
    * Makes a new command to intake from the source
    *
@@ -48,13 +52,17 @@ public class Intake extends Command {
     return new Intake(shooter, arm, overrideController, armSourcePreset);
   }
 
-  private Intake(
-      Shooter shooter, Arm arm, XboxController overrideController, LoggedTunableNumber preset) {
+  private Intake(Shooter shooter, Arm arm, LoggedTunableNumber preset) {
     this.shooter = shooter;
     this.preset = preset;
     this.arm = arm;
-    controller = overrideController;
     addRequirements(shooter, arm);
+  }
+
+  private Intake(
+      Shooter shooter, Arm arm, XboxController overrideController, LoggedTunableNumber preset) {
+    this(shooter, arm, preset);
+    controller = overrideController;
   }
 
   @Override
@@ -85,12 +93,16 @@ public class Intake extends Command {
   }
 
   private void setSpeedsAndPositions() {
-    if (!Overrides.disableArmAnglePresets.get() && !controller.getBButton()) {
+    if (controller != null) {
+      if (!Overrides.disableArmAnglePresets.get() && !controller.getBButton()) {
+        arm.setAngle(Rotation2d.fromRotations(preset.get()));
+      } else if (Overrides.disableArmAnglePresets.get()) {
+        arm.commandIncrement(
+            Rotation2d.fromRotations(
+                controller.getLeftY() * Overrides.armAngleOverrideIncrementScale.get()));
+      }
+    } else {
       arm.setAngle(Rotation2d.fromRotations(preset.get()));
-    } else if (Overrides.disableArmAnglePresets.get()) {
-      arm.commandIncrement(
-          Rotation2d.fromRotations(
-              controller.getLeftY() * Overrides.armAngleOverrideIncrementScale.get()));
     }
     shooter.cmdVel(topSpeed.get(), bottomSpeed.get());
   }

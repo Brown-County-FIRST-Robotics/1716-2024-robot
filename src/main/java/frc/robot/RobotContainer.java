@@ -212,9 +212,7 @@ public class RobotContainer {
                 .and(
                     new Trigger(Overrides.disableAutoAlign::get)
                         .negate())) // Make sure no overrides have been activated
-        .whileTrue(
-            new SpeakerShoot(
-                driveSys, arm, teleopDrive::setCustomRotation, shooter, secondController.getHID()));
+        .whileTrue(new SpeakerShoot(driveSys, arm, teleopDrive::setCustomRotation, shooter));
 
     // Speaker scoring without auto-aim
     driverController
