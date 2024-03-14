@@ -58,12 +58,12 @@ public class HolonomicTrajectoryFollower extends Command {
   public HolonomicTrajectoryFollower(Drivetrain drive, Supplier<Trajectory> trajectorySupplier) {
     this.drivetrain = drive;
     this.trajectorySupplier = trajectorySupplier;
-    activeTrajectory = trajectorySupplier.get();
     addRequirements(drive);
   }
 
   @Override
   public void initialize() {
+    activeTrajectory = trajectorySupplier.get();
     timer.reset();
     timer.start();
   }

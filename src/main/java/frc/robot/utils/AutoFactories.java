@@ -20,6 +20,7 @@ import java.util.Optional;
 
 /** A bunch of static factory methods for creating auto routines */
 public class AutoFactories {
+  private static final CustomAlerts.TimeLatchAlert failedAlert=new CustomAlerts.TimeLatchAlert(Alert.AlertType.WARNING,3.0,"Failed to pickup");
   /**
    * Makes a trajectory using the current position and velocity that goes to the given position with
    * the ending tangent line slope
@@ -64,6 +65,10 @@ public class AutoFactories {
         drive, new Pose2d(target, target.minus(drive.getPosition().getTranslation()).getAngle()));
   }
 
+  public static Command driveToPos(Drivetrain drivetrain, Translation2d target) {
+    return new HolonomicTrajectoryFollower(drivetrain, () -> makeTrajectory(drivetrain, target));
+  }
+
   /**
    * Makes a command to shoot into the speaker
    *
@@ -106,7 +111,7 @@ public class AutoFactories {
                                         .getTranslation()
                                         .minus(target)
                                         .getAngle()))))
-                .andThen(Commands.waitSeconds(1)));
+                .andThen(Commands.waitSeconds(1)).andThen(failedAlert::latch));
   }
   /**
    * Makes a command to pick up a game piece. If it is not successful, it will attempt to pick up

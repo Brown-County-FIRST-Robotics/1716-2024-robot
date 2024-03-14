@@ -33,9 +33,9 @@ import frc.robot.subsystems.swerve.SwerveDrivetrain;
 import frc.robot.subsystems.vision.Vision;
 import frc.robot.subsystems.vision.VisionIO;
 import frc.robot.subsystems.vision.VisionIOSecondSight;
+import frc.robot.utils.AutoFactories;
 import frc.robot.utils.LoggedTunableNumber;
 import frc.robot.utils.Overrides;
-import java.util.Optional;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -262,46 +262,15 @@ public class RobotContainer {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
-    // An example command will be run in autonomous
-    /*    var rt = new RotateTo(driveSys);
-    var rt2 = new RotateTo(driveSys, new Rotation2d(123));
-
-    return new SpeakerShoot(
-            driveSys, arm, rt::setCustomRotation, shooter, secondController.getHID())
-        .raceWith(rt.repeatedly())
-        .andThen(new RotateTo(driveSys, Rotation2d.fromRotations(0)))
+    // 3 note auto
+    // Shoot into speaker, pickup 7 (fallback on 6), drive closer to speaker ,shoot into speaker, pickup 2, shoot into speaker
+    return AutoFactories.speaker(driveSys, arm, shooter)
+        .andThen(AutoFactories.pickupWithBackup(driveSys, arm, shooter, 7, 6))
         .andThen(
-            new HolonomicTrajectoryFollower(
-                    driveSys,
-                    () -> {
-                      var conf = new TrajectoryConfig(0.5, 0.25);
-                      var target = FieldConstants.getGamePiece(1).minus(new Translation2d(0.3, 0));
-                      var startRot =
-                          driveSys.getPosition().getTranslation().minus(target).getAngle();
-                      var startSpeed =
-                          ShootWhileMove.getFieldRelativeSpeeds(
-                              driveSys.getVelocity(), driveSys.getPosition().getRotation());
-                      if (startSpeed.getNorm() > 0.1) {
-                        startRot = startSpeed.getAngle();
-                        conf = conf.setStartVelocity(startSpeed.getNorm());
-                      }
-                      return TrajectoryGenerator.generateTrajectory(
-                          new Pose2d(driveSys.getPosition().getTranslation(), startRot),
-                          List.of(),
-                          new Pose2d(target, Rotation2d.fromRotations(0)),
-                          conf);
-                    },
-                    Rotation2d.fromRotations(0))
-                .repeatedly()
-                .raceWith(Intake.fromFloor(shooter, arm, secondController.getHID())))
-        .andThen(new RotateTo(driveSys, Rotation2d.fromRotations(0.5)))
-        .andThen(Commands.waitSeconds(1))
-        .andThen(
-            new SpeakerShoot(
-                    driveSys, arm, rt2::setCustomRotation, shooter, secondController.getHID())
-                .raceWith(rt2.repeatedly()));*/
-
-    return new SimpleSpeakerShoot(
-        driveSys, arm, (Optional<Rotation2d> r) -> {}, shooter, secondController.getHID());
+            AutoFactories.driveToPos( // Drives to about 3 feet behind piece 2
+                driveSys, FieldConstants.getGamePiece(2).plus(new Translation2d(1, 0))))
+        .andThen(AutoFactories.speaker(driveSys, arm, shooter))
+        .andThen(AutoFactories.pickup(driveSys, arm, shooter, 2))
+        .andThen(AutoFactories.speaker(driveSys, arm, shooter));
   }
 }
