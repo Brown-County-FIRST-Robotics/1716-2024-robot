@@ -61,7 +61,7 @@ public class AutoFactories {
    */
   private static Trajectory makeTrajectory(Drivetrain drive, Translation2d target) {
     return makeTrajectory(
-        drive, new Pose2d(target, drive.getPosition().getTranslation().minus(target).getAngle()));
+        drive, new Pose2d(target, target.minus(drive.getPosition().getTranslation()).getAngle()));
   }
 
   /**
