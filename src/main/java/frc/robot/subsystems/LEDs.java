@@ -29,7 +29,7 @@ public class LEDs extends PeriodicRunnable {
   int p1 = 0;
   int p1score = 0;
   int p2 = 0;
-  int p2score = 26;
+  int p2score = 31;
   public LEDs() {
     super(); // Super call adds it to the registry, which calls the periodic method every tick
     leds = new AddressableLED(5);
@@ -137,24 +137,35 @@ public class LEDs extends PeriodicRunnable {
   if(gamemode == true) //Gamemode
   {
   
-    ledBuff.setHSV(13, 1, 255, 150);
-    ledBuff.setHSV(14, 1, 255, 150);
+    ledBuff.setHSV(13, 1, 255, 255);
+    ledBuff.setHSV(14, 1, 255, 255);
   
   
   p1score = (p1 / 10);
-  p2score = p2 / 10;
+  p2score = 31 - (p2 / 10);
   
   if((p1score != 13) && (p2score != 14))
   {
   ledBuff.setHSV(p1score, 175, 255, 150);
-  ledBuff.setHSV(p2score, 10, 255, 150);
+  ledBuff.setHSV(p2score, 150, 255, 150);
   }
+  
+  if(p1score > 11)
+  {
+for (var i = 0; i < ledBuff.getLength(); i++) { 
+      ledBuff.setHSV(i, 175, 255, brightness);
+
+    }
   }
 
-  if((p1score > 12) && (p1score != ledBuff.getLength()))
+  if(p2score < 16)
   {
-   p1score++;
+for (var i = 0; i < ledBuff.getLength(); i++) { 
+      ledBuff.setHSV(i, 150, 255, brightness);
+
+    }
   }
+}
 
     leds.setData(ledBuff);
   }
@@ -186,11 +197,25 @@ public void gamemode() { //Button Start button
     ledBuff.setHSV(i, 1, 255, 0);
   }
  p1score = 0;
- p2score = 26;
+ p2score = 31;
 mode1 = false;
 mode2 = false;
 mode3 = false;
 gamemode = true;
+
+}
+
+public void resetgame() {
+
+for (var i = 0; i < ledBuff.getLength(); i++) { 
+      ledBuff.setHSV(i, colour, 255, 0);
+
+    }
+
+    p1 = 0;
+    p2 = 0;
+    p1score = 0;
+    p2score = 31;
 
 }
 

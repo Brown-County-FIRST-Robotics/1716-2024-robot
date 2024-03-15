@@ -155,6 +155,7 @@ public class RobotContainer {
     driverController.a().onTrue(new InstantCommand(() -> leds.mode2()));
     driverController.x().onTrue(new InstantCommand(() -> leds.mode3()));
      driverController.start().onTrue(new InstantCommand(() -> leds.gamemode()));
+     driverController.back().onTrue(new InstantCommand(() -> leds.resetgame()));
     // driverController.rightTrigger().onTrue(new RunCommand(() -> leds.getControllerInput(driverController.getLeftTriggerAxis(), driverController.getRightTriggerAxis())));
     driverController.povUp().onTrue(new InstantCommand(() -> leds.increaseSpeed()));
     driverController.povDown().onTrue(new InstantCommand(() -> leds.decreaseSpeed()));
