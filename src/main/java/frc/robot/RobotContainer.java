@@ -6,8 +6,10 @@
 package frc.robot;
 
 import edu.wpi.first.math.geometry.*;
+import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.commands.*;
@@ -169,7 +171,12 @@ public class RobotContainer {
     // Intake commands
     driverController
         .leftTrigger(0.2)
-        .whileTrue(Intake.fromFloor(shooter, arm, secondController.getHID()));
+        .whileTrue(
+            Intake.fromFloor(shooter, arm, secondController.getHID())
+                .andThen(
+                    new StartEndCommand(
+                        () -> driverController.getHID().setRumble(RumbleType.kLeftRumble, 1.0),
+                        () -> driverController.getHID().setRumble(RumbleType.kLeftRumble, 0.0))));
     secondController
         .leftBumper()
         .whileTrue(Intake.fromSource(shooter, arm, secondController.getHID()));
@@ -263,7 +270,8 @@ public class RobotContainer {
    */
   public Command getAutonomousCommand() {
     // 3 note auto
-    // Shoot into speaker, pickup 7 (fallback on 6), drive closer to speaker ,shoot into speaker, pickup 2, shoot into speaker
+    // Shoot into speaker, pickup 7 (fallback on 6), drive closer to speaker ,shoot into speaker,
+    // pickup 2, shoot into speaker
     return AutoFactories.speaker(driveSys, arm, shooter)
         .andThen(AutoFactories.pickupWithBackup(driveSys, arm, shooter, 7, 6))
         .andThen(
