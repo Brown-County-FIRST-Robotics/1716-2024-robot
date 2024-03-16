@@ -59,15 +59,13 @@ public class LoggedShuffleBoardChooser<V> implements LoggedDashboardInput {
   @Override
   public void periodic() {
     if (!Logger.hasReplaySource()) {
-      inputs.selectedVal = (String) sendableChooser.getSelected();
+      inputs.selectedVal = sendableChooser.getSelected();
     }
 
     Logger.processInputs("DashboardInputs/" + key, inputs);
     if (inputs.selectedVal != null) {
       if (!Objects.equals(inputs.selectedVal, lastVal) && !inputs.selectedVal.isEmpty()) {
-        for (var listener : listeners) {
-          listener.accept(get());
-        }
+        listeners.forEach((listener) -> listener.accept(get()));
         lastVal = inputs.selectedVal;
       }
     }
