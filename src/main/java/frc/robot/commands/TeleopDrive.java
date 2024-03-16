@@ -19,22 +19,26 @@ import org.littletonrobotics.junction.Logger;
 public class TeleopDrive extends Command {
   private final Drivetrain drivetrain;
   private final CommandXboxController controller;
-  boolean foc = true;
-  boolean locked = false;
-  DualRateLimiter tVelLimiter = new DualRateLimiter(6, 100);
-  DualRateLimiter omegaLimiter = new DualRateLimiter(9, 100);
 
-  public void setCustomRotation(Optional<Rotation2d> customRotation) {
-    this.customRotation = customRotation;
-  }
+  boolean doFieldOriented = true;
+  boolean locked = false; //point wheels towards center in x pattern so we can't be pushed
+  DualRateLimiter translationLimiter = new DualRateLimiter(6, 100); //translational velocity limiter
+  DualRateLimiter rotationLimiter = new DualRateLimiter(9, 100); //angular velocity limiter (omega)
 
-  Optional<Rotation2d> customRotation = Optional.empty();
+  Optional<Rotation2d> customRotation = Optional.empty(); //used for auto align; if empty, no target is set
+
+  private static double deadbandSize = 0.08;
+
+  double slowModeSpeedModifier = 0.0;
+  double customAngleModifier = 0.0;
+  ChassisSpeeds commandedSpeeds = new ChassisSpeeds(0, 0, 0);
+  ChassisSpeeds finalSpeeds = new ChassisSpeeds(0, 0, 0);
 
   /**
    * Constructs a new command with a given controller and drivetrain
    *
    * @param drivetrain The drivetrain subsystem
-   * @param controller The driver controller
+   * @param controller The driver controller, used for various inputs
    */
   public TeleopDrive(Drivetrain drivetrain, CommandXboxController controller) {
     this.drivetrain = drivetrain;
@@ -44,32 +48,15 @@ public class TeleopDrive extends Command {
 
   /** The initial subroutine of a command. Called once when the command is initially scheduled. */
   @Override
-  public void initialize() {}
-
-  private static double dbd = 0.08;
-  /**
-   * Checks if the value is in the deadband
-   *
-   * @param val The value to check
-   * @return If it is in the deadband
-   */
-  static boolean deadband(double val) {
-    return Math.abs(val) < dbd;
+  public void initialize() {
+    translationLimiter.reset(0);
+    rotationLimiter.reset(0);
+    customRotation = Optional.empty();
   }
-
-  /**
-   * Applies a deadband, then scales the resultant value to make output continuous
-   *
-   * @param val The value
-   * @return The value with the deadband applied
-   */
-  static double deadscale(double val) {
-    return deadband(val) ? 0 : (val > 0 ? (val - dbd) / (1 - dbd) : (val + dbd) / (1 - dbd));
-  }
-
+  
   @Override
   public void execute() {
-    double ext =
+    customAngleModifier =
         customRotation
             .map(
                 rotation2d ->
@@ -77,84 +64,70 @@ public class TeleopDrive extends Command {
                         rotation2d,
                         drivetrain.getPosition().getRotation(),
                         drivetrain.getVelocity().omegaRadiansPerSecond))
-            .orElse(0.0);
+            .orElse(0.0); //The velocity added to the rotation to apply the custom angle
 
-    Logger.recordOutput("TeleopDrive/ext", ext);
-    double slow =
+    Logger.recordOutput("TeleopDrive/ext", customAngleModifier);
+    slowModeSpeedModifier =
         controller.getHID().getLeftBumper() || controller.getHID().getRightBumper() ? 0.2 : 1.0;
 
-    if (deadband(controller.getLeftY())
-        && deadband(controller.getLeftX())
-        && deadband(controller.getRightX())) {
-      drivetrain.humanDrive(new ChassisSpeeds(0, 0, ext));
+    if (withinDeadband(controller.getLeftY())
+        && withinDeadband(controller.getLeftX())
+        && withinDeadband(controller.getRightX())) {
+      drivetrain.humanDrive(new ChassisSpeeds(0, 0, customAngleModifier));
     } else {
       locked = false;
-      ChassisSpeeds cmd =
+      commandedSpeeds =
           new ChassisSpeeds(
               deadscale(controller.getLeftY())
                   * Math.abs(deadscale(controller.getLeftY()))
                   * Constants.Driver.MAX_X_SPEED
-                  * slow,
+                  * slowModeSpeedModifier,
               deadscale(controller.getLeftX())
                   * Math.abs(deadscale(controller.getLeftX()))
                   * Constants.Driver.MAX_Y_SPEED
-                  * slow,
-              omegaLimiter.calculate(
-                      deadscale(controller.getRightX()) * Constants.Driver.MAX_THETA_SPEED * slow)
-                  + ext);
-      var cmdAsTranslation = new Translation2d(cmd.vxMetersPerSecond, cmd.vyMetersPerSecond);
-      var realNorm = tVelLimiter.calculate(cmdAsTranslation.getNorm());
-      var realCmdAsTranslation = new Translation2d(realNorm, cmdAsTranslation.getAngle());
-      ChassisSpeeds sp =
-          new ChassisSpeeds(
-              -realCmdAsTranslation.getX(),
-              -realCmdAsTranslation.getY(),
-              -cmd.omegaRadiansPerSecond);
-      if (foc) {
-        Rotation2d rot =
+                  * slowModeSpeedModifier,
+              rotationLimiter.calculate(
+                      deadscale(controller.getRightX()) * Constants.Driver.MAX_THETA_SPEED * slowModeSpeedModifier)
+                  + customAngleModifier);
+      Translation2d cmdAsTranslation = new Translation2d(commandedSpeeds.vxMetersPerSecond, commandedSpeeds.vyMetersPerSecond);
+      double cappedNorm = translationLimiter.calculate(cmdAsTranslation.getNorm());
+      Translation2d cappedCmdAsTranslation = new Translation2d(cappedNorm, cmdAsTranslation.getAngle());
+      if (doFieldOriented) {
+        Rotation2d currentRotation =
             DriverStation.getAlliance().orElse(DriverStation.Alliance.Red)
                     == DriverStation.Alliance.Red
                 ? drivetrain.getPosition().getRotation()
                 : drivetrain.getPosition().getRotation().rotateBy(Rotation2d.fromRotations(0.5));
-        sp =
+        finalSpeeds =
             ChassisSpeeds.fromFieldRelativeSpeeds(
                 new ChassisSpeeds(
-                    cmd.vxMetersPerSecond, cmd.vyMetersPerSecond, -cmd.omegaRadiansPerSecond),
-                rot);
+                    commandedSpeeds.vxMetersPerSecond, commandedSpeeds.vyMetersPerSecond, -commandedSpeeds.omegaRadiansPerSecond),
+                currentRotation);
+      }
+      else {
+        finalSpeeds =
+          new ChassisSpeeds(
+              -cappedCmdAsTranslation.getX(),
+              -cappedCmdAsTranslation.getY(),
+              -commandedSpeeds.omegaRadiansPerSecond);
       }
 
-      drivetrain.humanDrive(sp);
+      drivetrain.humanDrive(finalSpeeds);
     }
+
     if (controller.getHID().getBackButtonPressed()) {
       drivetrain.setPosition(
           new Pose2d(drivetrain.getPosition().getTranslation(), Rotation2d.fromRotations(0.5)));
     }
+
+    doFieldOriented = Overrides.useFieldOriented.get();
     locked = controller.getHID().getXButtonPressed() || locked;
-    foc = Overrides.useFieldOriented.get();
     if (locked) {
       drivetrain.lockWheels();
     }
 
     Logger.recordOutput("TeleopDrive/locked", locked);
-    Logger.recordOutput("TeleopDrive/foc", foc);
-  }
-
-  /**
-   * Returns whether this command has finished. Once a command finishes -- indicated by this method
-   * returning true -- the scheduler will call its {@link #end(boolean)} method.
-   *
-   * <p>Returning false will result in the command never ending automatically. It may still be
-   * cancelled manually or interrupted by another command. Hard coding this command to always return
-   * true will result in the command executing once and finishing immediately. It is recommended to
-   * use * {@link edu.wpi.first.wpilibj2.command.InstantCommand InstantCommand} for such an
-   * operation.
-   *
-   * @return whether this command has finished.
-   */
-  @Override
-  public boolean isFinished() {
-    // TODO: Make this return true when this Command no longer needs to run execute()
-    return false;
+    Logger.recordOutput("TeleopDrive/foc", doFieldOriented);
   }
 
   /**
@@ -168,5 +141,29 @@ public class TeleopDrive extends Command {
   @Override
   public void end(boolean interrupted) {
     drivetrain.humanDrive(new ChassisSpeeds());
+  }
+
+  public void setCustomRotation(Optional<Rotation2d> customRotation) {
+    this.customRotation = customRotation;
+  }
+
+  /**
+   * Checks if the value is in the deadband
+   *
+   * @param val The value to check
+   * @return Whether val is in the deadband
+   */
+  static boolean withinDeadband(double val) {
+    return Math.abs(val) < deadbandSize;
+  }
+
+  /**
+   * Applies a deadband, then scales the resultant value to make output continuous
+   *
+   * @param val The value to scale
+   * @return The value with the deadband applied
+   */
+  static double deadscale(double val) {
+    return withinDeadband(val) ? 0 : (val > 0 ? (val - deadbandSize) / (1 - deadbandSize) : (val + deadbandSize) / (1 - deadbandSize));
   }
 }
