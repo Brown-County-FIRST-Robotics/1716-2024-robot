@@ -9,7 +9,7 @@ import frc.robot.utils.LoggedTunableNumber;
 public class ArmIOSparkFlex implements ArmIO {
   CANSparkMax controller;
   SparkPIDController pid;
-  RelativeEncoder absencoder;
+  AbsoluteEncoder absencoder;
   private static final double GEAR_RATIO = 25.0 * 72.0 / 15.0;
   private static final double FREE_RPM = 5676.0;
   LoggedTunableNumber ffTuner = new LoggedTunableNumber("Arm/ff_tuner", GEAR_RATIO / FREE_RPM);
@@ -21,7 +21,7 @@ public class ArmIOSparkFlex implements ArmIO {
   public ArmIOSparkFlex(int id) {
     controller = new CANSparkMax(id, CANSparkLowLevel.MotorType.kBrushless);
     pid = controller.getPIDController();
-    absencoder = controller.getAlternateEncoder(8192);
+    absencoder = controller.getAbsoluteEncoder(SparkAbsoluteEncoder.Type.kDutyCycle);
     controller.restoreFactoryDefaults();
     absencoder.setInverted(true);
     controller.setInverted(true);
