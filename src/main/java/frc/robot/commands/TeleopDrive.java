@@ -2,7 +2,6 @@ package frc.robot.commands;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -12,6 +11,8 @@ import frc.robot.subsystems.Drivetrain;
 import frc.robot.utils.DualRateLimiter;
 import frc.robot.utils.HolonomicTrajectoryFollower;
 import frc.robot.utils.Overrides;
+import frc.robot.utils.Vector;
+
 import java.util.Optional;
 import org.littletonrobotics.junction.Logger;
 
@@ -90,15 +91,13 @@ public class TeleopDrive extends Command {
                       deadscale(controller.getRightX()) * Constants.Driver.MAX_THETA_SPEED * slowModeSpeedModifier)
                   + customAngleModifier);
 
-      
-      Translation2d cmdAsTranslation = new Translation2d(commandedSpeeds.vxMetersPerSecond, commandedSpeeds.vyMetersPerSecond);
-      Translation2d squaredTranslation = new Translation2d(cmdAsTranslation.getNorm() * Math.abs(cmdAsTranslation.getNorm()), cmdAsTranslation.getAngle());
+      Vector commandedVector = new Vector(commandedSpeeds.vxMetersPerSecond, commandedSpeeds.vyMetersPerSecond);
+      commandedVector.setNorm(commandedVector.getNorm() * Math.abs(commandedVector.getNorm()));
+      Vector currentVector = new Vector(drivetrain.getVelocity().vxMetersPerSecond, drivetrain.getVelocity().vyMetersPerSecond);
+      double frictionClampedVelocityChange = clamp(commandedVector.minus(currentVector).getNorm(), maxFrictionalAcceleration / 50); //TODO: CHANGE NAME
 
-      Translation2d currentVelocity = new Translation2d(drivetrain.getVelocity().vxMetersPerSecond, drivetrain.getVelocity().vyMetersPerSecond);
-      double frictionClampedVelocityChange = clamp(squaredTranslation.minus(currentVelocity).getNorm(), maxFrictionalAcceleration / 50);
-
-      double cappedNorm = currentVelocity.getNorm() + frictionClampedVelocityChange;
-      Translation2d cappedCmdAsTranslation = new Translation2d(cappedNorm, cmdAsTranslation.getAngle());
+      double cappedNorm = currentVector.getNorm() + frictionClampedVelocityChange;
+      commandedVector.setNorm(cappedNorm);
 
       if (doFieldOriented) {
         Rotation2d currentRotation =
@@ -109,15 +108,15 @@ public class TeleopDrive extends Command {
         finalSpeeds =
             ChassisSpeeds.fromFieldRelativeSpeeds(
                 new ChassisSpeeds(
-                    cappedCmdAsTranslation.getX(), cappedCmdAsTranslation.getY(), -commandedSpeeds.omegaRadiansPerSecond),
+                    commandedVector.getX(), commandedVector.getY(), -commandedSpeeds.omegaRadiansPerSecond),
                 currentRotation);
       }
 
       else {
         finalSpeeds =
           new ChassisSpeeds(
-              -cappedCmdAsTranslation.getX(),
-              -cappedCmdAsTranslation.getY(),
+              -commandedVector.getX(),
+              -commandedVector.getY(),
               -commandedSpeeds.omegaRadiansPerSecond);
       }
 
