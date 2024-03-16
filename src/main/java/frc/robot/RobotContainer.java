@@ -233,9 +233,7 @@ public class RobotContainer {
                   shooter.setFeeder(-8000);
                   shooter.cmdVel(-2000, 2000);
                 },
-                () -> {
-                  shooter.setFeeder(0);
-                },
+                () -> shooter.setFeeder(0),
                 shooter));
 
     // Climb

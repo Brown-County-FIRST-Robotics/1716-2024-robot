@@ -83,8 +83,10 @@ public class Intake extends Command {
     shooter.cmdVel(0, 0);
     shooter.setFeeder(0);
     arm.commandNeutral();
-    LEDs.getInstance().mode1();
-    LEDs.getInstance().intakelight();
+    if(!interrupted){
+      LEDs.getInstance().mode1();
+      LEDs.getInstance().intakelight();
+    }
   }
 
   @Override
