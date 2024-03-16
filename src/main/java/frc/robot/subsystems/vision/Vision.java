@@ -65,7 +65,7 @@ public class Vision extends PeriodicRunnable {
                 < 0.8)
             && Math.abs(drivetrain.getVelocity().omegaRadiansPerSecond) < 0.5) {
           drivetrain.addVisionUpdate(
-              poseOfBot.toPose2d(), VecBuilder.fill(0.1, 0.1, 1), inputs[i].timestamp.get());
+              poseOfBot.toPose2d(), VecBuilder.fill(0.3, 0.3, 1), inputs[i].timestamp.get());
         }
       }
     }
