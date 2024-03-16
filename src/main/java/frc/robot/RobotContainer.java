@@ -97,7 +97,7 @@ public class RobotContainer {
             arm = new Arm(new ArmIOSparkFlex(9));
             break;
           case SHOOTER:
-            shooter = new Shooter(new ShooterIOSparkFlexes(58, 57), new FeederIOSpark550(41, 0, 1));
+            shooter = new Shooter(new ShooterIOSparkFlexes(58, 57), new FeederIOSpark550(41, 1, 0));
             break;
           case CLIMBER:
             climber = new Climber(new ClimberIOSparkMaxes(29, 35, 6, 7, 8, 9)); // TODO: UPDATE IDs
@@ -233,9 +233,7 @@ public class RobotContainer {
                   shooter.setFeeder(-8000);
                   shooter.cmdVel(-2000, 2000);
                 },
-                () -> {
-                  shooter.setFeeder(0);
-                },
+                () -> shooter.setFeeder(0),
                 shooter));
 
     // Climb
