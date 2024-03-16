@@ -34,6 +34,8 @@ public class TeleopDrive extends Command {
   ChassisSpeeds commandedSpeeds = new ChassisSpeeds(0, 0, 0);
   ChassisSpeeds finalSpeeds = new ChassisSpeeds(0, 0, 0);
 
+  double maxFrictionalAcceleration = 5.0; // The maximum acceleration in m/s^2 to avoid slipping
+
   /**
    * Constructs a new command with a given controller and drivetrain
    *
@@ -79,19 +81,25 @@ public class TeleopDrive extends Command {
       commandedSpeeds =
           new ChassisSpeeds(
               deadscale(controller.getLeftY())
-                  * Math.abs(deadscale(controller.getLeftY()))
                   * Constants.Driver.MAX_X_SPEED
                   * slowModeSpeedModifier,
               deadscale(controller.getLeftX())
-                  * Math.abs(deadscale(controller.getLeftX()))
                   * Constants.Driver.MAX_Y_SPEED
                   * slowModeSpeedModifier,
               rotationLimiter.calculate(
                       deadscale(controller.getRightX()) * Constants.Driver.MAX_THETA_SPEED * slowModeSpeedModifier)
                   + customAngleModifier);
+
+      
       Translation2d cmdAsTranslation = new Translation2d(commandedSpeeds.vxMetersPerSecond, commandedSpeeds.vyMetersPerSecond);
-      double cappedNorm = translationLimiter.calculate(cmdAsTranslation.getNorm());
+      Translation2d squaredTranslation = new Translation2d(cmdAsTranslation.getNorm() * Math.abs(cmdAsTranslation.getNorm()), cmdAsTranslation.getAngle());
+
+      Translation2d currentVelocity = new Translation2d(drivetrain.getVelocity().vxMetersPerSecond, drivetrain.getVelocity().vyMetersPerSecond);
+      double frictionClampedVelocityChange = clamp(squaredTranslation.minus(currentVelocity).getNorm(), maxFrictionalAcceleration / 50);
+
+      double cappedNorm = currentVelocity.getNorm() + frictionClampedVelocityChange;
       Translation2d cappedCmdAsTranslation = new Translation2d(cappedNorm, cmdAsTranslation.getAngle());
+
       if (doFieldOriented) {
         Rotation2d currentRotation =
             DriverStation.getAlliance().orElse(DriverStation.Alliance.Red)
@@ -101,9 +109,10 @@ public class TeleopDrive extends Command {
         finalSpeeds =
             ChassisSpeeds.fromFieldRelativeSpeeds(
                 new ChassisSpeeds(
-                    commandedSpeeds.vxMetersPerSecond, commandedSpeeds.vyMetersPerSecond, -commandedSpeeds.omegaRadiansPerSecond),
+                    cappedCmdAsTranslation.getX(), cappedCmdAsTranslation.getY(), -commandedSpeeds.omegaRadiansPerSecond),
                 currentRotation);
       }
+
       else {
         finalSpeeds =
           new ChassisSpeeds(
@@ -165,5 +174,16 @@ public class TeleopDrive extends Command {
    */
   static double deadscale(double val) {
     return withinDeadband(val) ? 0 : (val > 0 ? (val - deadbandSize) / (1 - deadbandSize) : (val + deadbandSize) / (1 - deadbandSize));
+  }
+
+  // Clamps the value to the max, applies in both negative and positive
+  private double clamp(double x, double max) {
+    if (x > max) {
+      x = max;
+    }
+    else if (x < -max) {
+      x = -max;
+    }
+    return x;
   }
 }
