@@ -20,6 +20,8 @@ import frc.robot.utils.Overrides;
 import frc.robot.utils.PoseEstimator;
 import java.util.List;
 import java.util.Set;
+
+import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
 /** The swerve drivetrain subsystem */
@@ -215,6 +217,11 @@ public class SwerveDrivetrain implements Drivetrain {
   @Override
   public double[] getAcceleration() {
     return new double[] {imuInputs.xAccelMPS, imuInputs.yAccelMPS, imuInputs.zAccelMPS};
+  }
+
+  @AutoLogOutput
+  public double getRoll(){
+    return getGyro().getX();
   }
 
   @Override
