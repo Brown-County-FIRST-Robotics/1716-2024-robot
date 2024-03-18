@@ -1,11 +1,14 @@
 package frc.robot.subsystems.vision;
 
 import edu.wpi.first.apriltag.AprilTagFields;
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.networktables.*;
 import java.util.Optional;
+
+import org.littletonrobotics.junction.Logger;
 import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonPoseEstimator;
 
@@ -50,6 +53,8 @@ public class VisionIOSecondSight implements VisionIO {
     if (k.isPresent()) {
       inputs.pose = Optional.ofNullable(k.get().estimatedPose);
       inputs.timestamp = Optional.of(k.get().timestampSeconds);
+      var zz=AprilTagFields.k2024Crescendo.loadAprilTagLayoutField().getTagPose(k.get().targetsUsed.get(0).getFiducialId()).get().minus(inputs.pose.get());
+      Logger.recordOutput("asdf", new Pose3d(zz.getTranslation(),zz.getRotation()));
     } else {
       inputs.pose = Optional.empty();
       inputs.timestamp = Optional.empty();
