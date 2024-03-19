@@ -125,6 +125,10 @@ public class Robot extends LoggedRobot {
           "Source side", FieldConstants.flip(new Pose2d(0.5, 4.1, Rotation2d.fromRotations(0.25))));
       poseChooser.addOption(
           "Amp side", FieldConstants.flip(new Pose2d(0.5, 7, Rotation2d.fromRotations(0.75))));
+      poseChooser.addOption(
+          "Source side tangent", FieldConstants.flip(new Pose2d(0.7, 4.3, Rotation2d.fromDegrees(120))));
+      poseChooser.addOption(
+          "Amp side tangent", FieldConstants.flip(new Pose2d(0.7, 6.8, Rotation2d.fromDegrees(240))));
       poseChooser.attach(robotContainer::setPose);
       builtPoseSetter = true;
     }

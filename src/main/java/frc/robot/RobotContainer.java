@@ -262,14 +262,8 @@ public class RobotContainer {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
-    // 3 note auto
-    // Shoot into speaker, pickup 7 (fallback on 6), drive closer to speaker ,shoot into speaker, pickup 2, shoot into speaker
+    // 2 note auto
     return AutoFactories.speaker(driveSys, arm, shooter)
-        .andThen(AutoFactories.pickupWithBackup(driveSys, arm, shooter, 7, 6))
-        .andThen(
-            AutoFactories.driveToPos( // Drives to about 3 feet behind piece 2
-                driveSys, FieldConstants.getGamePiece(2).plus(new Translation2d(1, 0))))
-        .andThen(AutoFactories.speaker(driveSys, arm, shooter))
         .andThen(AutoFactories.pickup(driveSys, arm, shooter, 2))
         .andThen(AutoFactories.speaker(driveSys, arm, shooter));
   }
