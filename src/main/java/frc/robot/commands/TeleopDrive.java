@@ -35,7 +35,7 @@ public class TeleopDrive extends Command {
   ChassisSpeeds commandedSpeeds = new ChassisSpeeds(0, 0, 0);
   ChassisSpeeds finalSpeeds = new ChassisSpeeds(0, 0, 0);
 
-  double maxFrictionalAcceleration = 5.0; // The maximum acceleration in m/s^2 to avoid slipping
+  double maxFrictionalAcceleration = 50000.0; // The maximum acceleration in m/s^2 to avoid slipping
 
   /**
    * Constructs a new command with a given controller and drivetrain
@@ -82,10 +82,8 @@ public class TeleopDrive extends Command {
       commandedSpeeds =
           new ChassisSpeeds(
               deadscale(controller.getLeftY())
-                  * Constants.Driver.MAX_X_SPEED
                   * slowModeSpeedModifier,
               deadscale(controller.getLeftX())
-                  * Constants.Driver.MAX_Y_SPEED
                   * slowModeSpeedModifier,
               rotationLimiter.calculate(
                       deadscale(controller.getRightX()) * Constants.Driver.MAX_THETA_SPEED * slowModeSpeedModifier)
