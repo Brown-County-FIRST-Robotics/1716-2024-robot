@@ -13,6 +13,7 @@ import frc.robot.utils.HolonomicTrajectoryFollower;
 import frc.robot.utils.Overrides;
 import frc.robot.utils.Vector;
 
+import java.lang.System;
 import java.util.Optional;
 import org.littletonrobotics.junction.Logger;
 
@@ -35,7 +36,7 @@ public class TeleopDrive extends Command {
   ChassisSpeeds commandedSpeeds = new ChassisSpeeds(0, 0, 0);
   ChassisSpeeds finalSpeeds = new ChassisSpeeds(0, 0, 0);
 
-  double maxFrictionalAcceleration = 5.0; // The maximum acceleration in m/s^2 to avoid slipping
+  double maxFrictionalAcceleration = 50000.0; // The maximum acceleration in m/s^2 to avoid slipping
 
   /**
    * Constructs a new command with a given controller and drivetrain
@@ -82,21 +83,22 @@ public class TeleopDrive extends Command {
       commandedSpeeds =
           new ChassisSpeeds(
               deadscale(controller.getLeftY())
-                  * Constants.Driver.MAX_X_SPEED
                   * slowModeSpeedModifier,
               deadscale(controller.getLeftX())
-                  * Constants.Driver.MAX_Y_SPEED
                   * slowModeSpeedModifier,
               rotationLimiter.calculate(
                       deadscale(controller.getRightX()) * Constants.Driver.MAX_THETA_SPEED * slowModeSpeedModifier)
-                  + customAngleModifier);
+                  + customAngleModifier); // This needs to be a different type, the speeds need to be percentage at this step, not velocity
 
       Vector commandedVector = new Vector(commandedSpeeds.vxMetersPerSecond, commandedSpeeds.vyMetersPerSecond);
+      commandedVector.setNorm(clamp(commandedVector.getNorm(), 1.0));
       commandedVector.setNorm(commandedVector.getNorm() * Math.abs(commandedVector.getNorm()));
       Vector currentVector = new Vector(drivetrain.getVelocity().vxMetersPerSecond, drivetrain.getVelocity().vyMetersPerSecond);
       double frictionClampedVelocityChange = clamp(commandedVector.minus(currentVector).getNorm(), maxFrictionalAcceleration / 50); //TODO: CHANGE NAME
+      System.out.println(frictionClampedVelocityChange);
 
       double cappedNorm = currentVector.getNorm() + frictionClampedVelocityChange;
+      System.out.println(cappedNorm);
       commandedVector.setNorm(cappedNorm);
 
       if (doFieldOriented) {
