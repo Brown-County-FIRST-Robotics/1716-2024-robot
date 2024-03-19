@@ -13,6 +13,7 @@ import frc.robot.utils.HolonomicTrajectoryFollower;
 import frc.robot.utils.Overrides;
 import frc.robot.utils.Vector;
 
+import java.lang.System;
 import java.util.Optional;
 import org.littletonrobotics.junction.Logger;
 
@@ -34,8 +35,6 @@ public class TeleopDrive extends Command {
   double customAngleModifier = 0.0;
   ChassisSpeeds commandedSpeeds = new ChassisSpeeds(0, 0, 0);
   ChassisSpeeds finalSpeeds = new ChassisSpeeds(0, 0, 0);
-
-  double maxFrictionalAcceleration = 5.0; // The maximum acceleration in m/s^2 to avoid slipping
 
   /**
    * Constructs a new command with a given controller and drivetrain
@@ -82,22 +81,24 @@ public class TeleopDrive extends Command {
       commandedSpeeds =
           new ChassisSpeeds(
               deadscale(controller.getLeftY())
-                  * Constants.Driver.MAX_X_SPEED
                   * slowModeSpeedModifier,
               deadscale(controller.getLeftX())
-                  * Constants.Driver.MAX_Y_SPEED
                   * slowModeSpeedModifier,
               rotationLimiter.calculate(
                       deadscale(controller.getRightX()) * Constants.Driver.MAX_THETA_SPEED * slowModeSpeedModifier)
-                  + customAngleModifier);
+                  + customAngleModifier); // This needs to be a different type, the speeds need to be percentage at this step, not velocity
 
       Vector commandedVector = new Vector(commandedSpeeds.vxMetersPerSecond, commandedSpeeds.vyMetersPerSecond);
-      commandedVector.setNorm(commandedVector.getNorm() * Math.abs(commandedVector.getNorm()));
+      commandedVector.setNorm(clamp(commandedVector.getNorm(), 1.0));
+      commandedVector.setNorm(commandedVector.getNorm() * Math.abs(commandedVector.getNorm())); //square it
+      commandedVector.setNorm(commandedVector.getNorm() * Constants.Driver.MAX_SPEED); //convert to m/s from percent
       Vector currentVector = new Vector(drivetrain.getVelocity().vxMetersPerSecond, drivetrain.getVelocity().vyMetersPerSecond);
-      double frictionClampedVelocityChange = clamp(commandedVector.minus(currentVector).getNorm(), maxFrictionalAcceleration / 50); //TODO: CHANGE NAME
+      double frictionClampedVelocityChange = clamp(commandedVector.minus(currentVector).getNorm(), Constants.Driver.MAX_FRICTION_ACCELERATION / 50); //TODO: CHANGE NAME
+      Logger.recordOutput("Current Speed", currentVector.getNorm());
 
       double cappedNorm = currentVector.getNorm() + frictionClampedVelocityChange;
       commandedVector.setNorm(cappedNorm);
+      Logger.recordOutput("Commanded Speed", commandedVector.getNorm());
 
       if (doFieldOriented) {
         Rotation2d currentRotation =
