@@ -35,7 +35,7 @@ public class TeleopDrive extends Command {
   ChassisSpeeds commandedSpeeds = new ChassisSpeeds(0, 0, 0);
   ChassisSpeeds finalSpeeds = new ChassisSpeeds(0, 0, 0);
 
-  double maxFrictionalAcceleration = 5.0; // The maximum acceleration in m/s^2 to avoid slipping
+  double maxFrictionalAcceleration = 50000.0; // The maximum acceleration in m/s^2 to avoid slipping
 
   /**
    * Constructs a new command with a given controller and drivetrain
