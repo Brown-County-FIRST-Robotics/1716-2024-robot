@@ -3,9 +3,13 @@ package frc.robot;
 import edu.wpi.first.hal.HALUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Filesystem;
+import edu.wpi.first.wpilibj.GenericHID.RumbleType;
+import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.utils.Alert;
 import frc.robot.utils.CustomAlerts;
 import frc.robot.utils.LoggedShuffleBoardChooser;
@@ -35,6 +39,9 @@ public class Robot extends LoggedRobot {
   private RobotContainer robotContainer;
   LoggedShuffleBoardChooser<Pose2d> poseChooser =
       new LoggedShuffleBoardChooser<>("Pre Match", "Position chooser");
+
+  private XboxController driverController = new XboxController(0);
+  private boolean hasRumbledMatchTime = false; // hasStarted, hasEnded
 
   /**
    * This function is run when the robot is first started up and should be used for any
@@ -169,7 +176,14 @@ public class Robot extends LoggedRobot {
 
   /** This function is called periodically during operator control. */
   @Override
-  public void teleopPeriodic() {}
+  public void teleopPeriodic() {
+    if (DriverStation.getMatchTime() <= 30.0
+        && DriverStation.isFMSAttached()
+        && !hasRumbledMatchTime) {
+      Commands.runOnce(() -> driverController.setRumble(RumbleType.kRightRumble, 1.0)).andThen(Commands.waitSeconds(0.5).andThen(Commands.runOnce(() -> driverController.setRumble(RumbleType.kRightRumble, 0.0)))).schedule();
+      hasRumbledMatchTime = true;
+    }
+  }
 
   @Override
   public void testInit() {
