@@ -4,6 +4,7 @@ import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.VelocityDutyCycle;
+import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
@@ -41,6 +42,7 @@ public class ModuleIOSparkFX implements ModuleIO {
       new LoggedTunableNumber("Steer KV", STEER_GEAR_RATIO / STEER_FREE_RPM);
   LoggedTunableNumber offsetTun;
   double off;
+  VelocityVoltage thrustCommand;
 
   /**
    * Makes a new instance using CAN IDs
