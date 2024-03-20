@@ -6,6 +6,12 @@ public class Vector {
     private double magnitude;
     private Rotation2d angle;
 
+    // new empty vector
+    public Vector() {
+        magnitude = 0;
+        angle = Rotation2d.fromDegrees(0);
+    }
+
     public Vector(double magnitude, Rotation2d angle) {
         this.magnitude = magnitude;
         this.angle = angle;
@@ -49,6 +55,9 @@ public class Vector {
         angle = new Rotation2d(x, y);
     }
 
+    public Vector plus(Vector toAdd) {
+        return new Vector(getX() + toAdd.getX(), getY() + toAdd.getY());
+    }
     public Vector minus(Vector toSubtract) {
         return new Vector(getX() - toSubtract.getX(), getY() - toSubtract.getY());
     }
