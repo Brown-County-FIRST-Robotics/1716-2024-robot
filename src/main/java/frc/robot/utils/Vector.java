@@ -49,6 +49,9 @@ public class Vector {
         angle = new Rotation2d(x, y);
     }
 
+    public Vector plus(Vector toAdd) {
+        return new Vector(getX() + toAdd.getX(), getY() + toAdd.getY());
+    }
     public Vector minus(Vector toSubtract) {
         return new Vector(getX() - toSubtract.getX(), getY() - toSubtract.getY());
     }
