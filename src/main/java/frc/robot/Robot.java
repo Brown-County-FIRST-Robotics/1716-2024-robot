@@ -178,9 +178,9 @@ public class Robot extends LoggedRobot {
   @Override
   public void teleopPeriodic() {
     if (DriverStation.getMatchTime() <= 30.0
-        && DriverStation.isFMSAttached()
+        //TEMP: RE-ADD FMS CONNECTED AS A REQUIREMENT
         && !hasRumbledMatchTime) {
-      Commands.runOnce(() -> driverController.setRumble(RumbleType.kRightRumble, 1.0)).andThen(Commands.waitSeconds(0.5).andThen(Commands.runOnce(() -> driverController.setRumble(RumbleType.kRightRumble, 0.0)))).schedule();
+      Commands.runOnce(() -> driverController.setRumble(RumbleType.kRightRumble, 1.0)).andThen(Commands.waitSeconds(1.5).andThen(Commands.runOnce(() -> driverController.setRumble(RumbleType.kRightRumble, 0.0)))).schedule();
       hasRumbledMatchTime = true;
     }
   }
