@@ -180,7 +180,7 @@ public class Robot extends LoggedRobot {
     if (DriverStation.getMatchTime() <= 30.0
         && DriverStation.isFMSAttached()
         && !hasRumbledMatchTime) {
-      Commands.runOnce(() -> driverController.setRumble(RumbleType.kRightRumble, 1.0)).andThen(Commands.waitSeconds(0.5).andThen(Commands.runOnce(() -> driverController.setRumble(RumbleType.kRightRumble, 0.0)))).schedule();
+      Commands.runOnce(() -> driverController.setRumble(RumbleType.kRightRumble, 1.0)).andThen(Commands.waitSeconds(1.0).andThen(Commands.runOnce(() -> driverController.setRumble(RumbleType.kRightRumble, 0.0)))).schedule();
       hasRumbledMatchTime = true;
     }
   }
