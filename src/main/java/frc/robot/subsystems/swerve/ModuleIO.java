@@ -15,6 +15,7 @@ public interface ModuleIO {
     public double relativeSensorOmega = 0.0;
     public double absSensorOmega = 0.0;
     public double absSensorAngle = 0.0;
+    public double steerOutput=0.0;
 
     /** The temperature of the steer motor in Celsius */
     public double steerTempC = 0.0;

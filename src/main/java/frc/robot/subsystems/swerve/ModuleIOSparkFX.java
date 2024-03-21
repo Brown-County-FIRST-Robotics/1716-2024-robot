@@ -99,8 +99,8 @@ public class ModuleIOSparkFX implements ModuleIO {
     pid.setOutputRange(-1, 1);
     pid.setSmartMotionMaxVelocity(STEER_FREE_RPM / STEER_GEAR_RATIO, 0);
     pid.setSmartMotionMinOutputVelocity(0, 0);
-    pid.setSmartMotionMaxAccel(5 * STEER_FREE_RPM / STEER_GEAR_RATIO, 0);
-    pid.setSmartMotionAllowedClosedLoopError(0.01, 0);
+    pid.setSmartMotionMaxAccel(7.0 * STEER_FREE_RPM / STEER_GEAR_RATIO, 0);
+    pid.setSmartMotionAllowedClosedLoopError(0.003, 0);
     steer.setSmartCurrentLimit(Constants.CurrentLimits.NEO);
 
     steerKV.attach(pid::setFF);
@@ -128,6 +128,7 @@ public class ModuleIOSparkFX implements ModuleIO {
     inputs.thrustErr = errSignal.getValue();
     inputs.thrustTempC = tempSignal.getValue();
     inputs.offset = offsetTun.get();
+    inputs.steerOutput=steer.getAppliedOutput();
   }
 
   @Override
