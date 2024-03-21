@@ -21,7 +21,7 @@ public class TeleopDrive extends Command {
   private final Drivetrain drivetrain;
   private final CommandXboxController controller;
 
-  boolean doFieldOriented = true;
+  boolean doFieldOriented = false;
   boolean locked = false; //point wheels towards center in x pattern so we can't be pushed
   DualRateLimiter translationLimiter = new DualRateLimiter(6, 100); //translational velocity limiter
   DualRateLimiter rotationLimiter = new DualRateLimiter(9, 100); //angular velocity limiter (omega)
@@ -83,7 +83,7 @@ public class TeleopDrive extends Command {
               rotationLimiter.calculate(
                       deadscale(controller.getRightX()) * Constants.Driver.MAX_THETA_SPEED * slowModeSpeedModifier)
                   + customAngleModifier); // This needs to be a different type, the speeds need to be percentage at this step, not velocity
-
+      System.out.println(drivetrain.getVelocity().omegaRadiansPerSecond);
       if (doFieldOriented) {
         Rotation2d currentRotation =
             DriverStation.getAlliance().orElse(DriverStation.Alliance.Red)
@@ -105,6 +105,22 @@ public class TeleopDrive extends Command {
       }
 
       Vector commandedVector = new Vector(commandedSpeeds.vxMetersPerSecond, commandedSpeeds.vyMetersPerSecond);
+
+      double angle = commandedVector.getAngle().getDegrees();
+      int angleLockDegrees = 5;
+      if (angle < -180 + angleLockDegrees || angle > 180 - angleLockDegrees) {
+        commandedVector.setAngle(Rotation2d.fromDegrees(180));
+      }
+      else if (angle > -90 - angleLockDegrees && angle < -90 + angleLockDegrees) {
+        commandedVector.setAngle(Rotation2d.fromDegrees(-90));
+      }
+      else if (angle > -angleLockDegrees && angle < angleLockDegrees) {
+        commandedVector.setAngle(Rotation2d.fromDegrees(0));
+      }
+      else if (angle > 90 - angleLockDegrees && angle < 90 + angleLockDegrees) {
+        commandedVector.setAngle(Rotation2d.fromDegrees(90));
+      }
+
       commandedVector.setNorm(clamp(commandedVector.getNorm(), 1.0));
       commandedVector.setNorm(commandedVector.getNorm() * Math.abs(commandedVector.getNorm())); //square it
       commandedVector.setNorm(commandedVector.getNorm() * Constants.Driver.MAX_SPEED); //convert to m/s from percent
