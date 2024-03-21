@@ -83,7 +83,7 @@ public class TeleopDrive extends Command {
               rotationLimiter.calculate(
                       deadscale(controller.getRightX()) * Constants.Driver.MAX_THETA_SPEED * slowModeSpeedModifier)
                   + customAngleModifier); // This needs to be a different type, the speeds need to be percentage at this step, not velocity
-
+      System.out.println(drivetrain.getVelocity().omegaRadiansPerSecond);
       if (doFieldOriented) {
         Rotation2d currentRotation =
             DriverStation.getAlliance().orElse(DriverStation.Alliance.Red)
