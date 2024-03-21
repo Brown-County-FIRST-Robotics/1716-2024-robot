@@ -58,7 +58,7 @@ public final class Constants {
     /** The maximum acceleration in m/s^2 (does not include decelleration) */
     public static final double MAX_ACCELERATION = MAX_SPEED;
     /** The maximum acceleration to prevent slipping in m/s^2 */
-    public static final double MAX_FRICTION_ACCELERATION = 9.8*2;
+    public static final double MAX_FRICTION_ACCELERATION = 9.8*1.0;
     /** The port the driver controller is on */
     public static final int DRIVER_CONTROLLER_PORT = 0;
   }
