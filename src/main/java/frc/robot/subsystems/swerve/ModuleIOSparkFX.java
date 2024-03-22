@@ -4,6 +4,7 @@ import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.VelocityDutyCycle;
+import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
@@ -27,6 +28,7 @@ public class ModuleIOSparkFX implements ModuleIO {
   StatusSignal<Double> posSignal;
   StatusSignal<Double> errSignal;
   StatusSignal<Double> tempSignal;
+  StatusSignal<Double> outputSignal;
   double offset;
 
   String name;
@@ -41,6 +43,7 @@ public class ModuleIOSparkFX implements ModuleIO {
       new LoggedTunableNumber("Steer KV", STEER_GEAR_RATIO / STEER_FREE_RPM);
   LoggedTunableNumber offsetTun;
   double off;
+  VelocityVoltage thrustCommand;
 
   /**
    * Makes a new instance using CAN IDs
@@ -80,9 +83,11 @@ public class ModuleIOSparkFX implements ModuleIO {
     posSignal = thrust.getRotorPosition();
     errSignal = thrust.getClosedLoopError();
     tempSignal = thrust.getDeviceTemp();
+    outputSignal=thrust.getClosedLoopOutput();
     velSignal.setUpdateFrequency(50.0);
     posSignal.setUpdateFrequency(50.0);
     errSignal.setUpdateFrequency(50.0);
+    outputSignal.setUpdateFrequency(50.0);
     tempSignal.setUpdateFrequency(20.0);
     thrust.optimizeBusUtilization();
     steer = new CANSparkMax(steerID, CANSparkLowLevel.MotorType.kBrushless);
@@ -107,7 +112,7 @@ public class ModuleIOSparkFX implements ModuleIO {
     steerP.attach(pid::setP);
     steerI.attach(pid::setI);
     steerD.attach(pid::setD);
-    BaseStatusSignal.refreshAll(velSignal, posSignal, errSignal, tempSignal);
+    BaseStatusSignal.refreshAll(velSignal, posSignal, errSignal, tempSignal,outputSignal);
 
     steer.burnFlash();
     Logger.recordOutput("Firmware/" + name + "_Steer", steer.getFirmwareString());
@@ -117,7 +122,7 @@ public class ModuleIOSparkFX implements ModuleIO {
 
   @Override
   public void updateInputs(ModuleIOInputs inputs) {
-    BaseStatusSignal.refreshAll(velSignal, posSignal, errSignal, tempSignal);
+    BaseStatusSignal.refreshAll(velSignal, posSignal, errSignal, tempSignal,outputSignal);
     inputs.absSensorAngle = analogEncoder.getPosition();
     inputs.absSensorOmega = analogEncoder.getVelocity();
     inputs.relativeSensorAngle = relativeEncoder.getPosition();
@@ -128,6 +133,7 @@ public class ModuleIOSparkFX implements ModuleIO {
     inputs.thrustErr = errSignal.getValue();
     inputs.thrustTempC = tempSignal.getValue();
     inputs.offset = offsetTun.get();
+    inputs.thrustOutput=outputSignal.getValue();
   }
 
   @Override
