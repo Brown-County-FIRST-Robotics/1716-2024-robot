@@ -52,7 +52,7 @@ public class Module {
         || Math.abs(inputs.relativeSensorOmega) > maxMotionAllowed.get()) {
       noMotionTimer.restart();
     }
-    if (noMotionTimer.hasElapsed(minNoMotionTime.get())) {
+    if (noMotionTimer.hasElapsed(minNoMotionTime.get())&&false) {
       reZero();
     }
   }

@@ -21,11 +21,11 @@ public class VisionIOSecondSight implements VisionIO {
   PhotonCamera cam = new PhotonCamera("Arducam_OV2311_USB_Camera (1)");
   Transform3d robotToCam =
       new Transform3d(
-          new Translation3d(8 * 0.0254, 11 * 0.0254, 22 * 0.0254),
+          new Translation3d(0 * 0.0254, 0 * 0.0254, 22 * 0.0254),
           new Rotation3d(
               0,
               -8.0 * Math.PI / 180,
-              0)); // Cam mounted facing forward, half a meter forward of center, half a meter up
+              0.0*Math.PI / 180)); // Cam mounted facing forward, half a meter forward of center, half a meter up
   // from center.
 
   // Construct PhotonPoseEstimator
