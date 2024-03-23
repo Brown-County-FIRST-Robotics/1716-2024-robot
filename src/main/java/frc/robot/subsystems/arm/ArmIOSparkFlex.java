@@ -13,7 +13,7 @@ public class ArmIOSparkFlex implements ArmIO {
   private static final double GEAR_RATIO = 25.0 * 72.0 / 15.0;
   private static final double FREE_RPM = 5676.0;
   LoggedTunableNumber ffTuner = new LoggedTunableNumber("Arm/ff_tuner", GEAR_RATIO / FREE_RPM);
-  LoggedTunableNumber pTuner = new LoggedTunableNumber("Arm/p_tuner", 0 * GEAR_RATIO / FREE_RPM);
+  LoggedTunableNumber pTuner = new LoggedTunableNumber("Arm/p_tuner", GEAR_RATIO / FREE_RPM);
   LoggedTunableNumber iTuner = new LoggedTunableNumber("Arm/i_tuner", 0.0);
   LoggedTunableNumber dTuner = new LoggedTunableNumber("Arm/d_tuner", 0.0);
   LoggedTunableNumber offset = new LoggedTunableNumber("Arm/offset", 0.496);
@@ -32,7 +32,7 @@ public class ArmIOSparkFlex implements ArmIO {
     pid.setOutputRange(-1, 1);
     pid.setSmartMotionMaxVelocity(FREE_RPM / GEAR_RATIO, 0);
     pid.setSmartMotionMinOutputVelocity(0, 0);
-    pid.setSmartMotionMaxAccel(0.5 * FREE_RPM / GEAR_RATIO, 0);
+    pid.setSmartMotionMaxAccel(FREE_RPM / GEAR_RATIO, 0);
     pid.setSmartMotionAllowedClosedLoopError(0.004, 0);
     ffTuner.attach(pid::setFF);
     pTuner.attach(pid::setP);
