@@ -92,13 +92,13 @@ public class ShootWhileMove {
   public static ShootingCommand calcSimpleCommand(
       Translation3d target, Translation3d botPose, Translation2d botVel) {
     double g = 9.8065;
-    double v = 12;
+    double v = 10.5;
     var pbmt = target.minus(botPose);
     double px = pbmt.getX();
     double py = pbmt.getY();
     double pz = pbmt.getZ();
-    double bx = 0; // botVel.getX();
-    double by = 0; // botVel.getY();
+    double bx = botVel.getX();
+    double by = botVel.getY();
 
     double theta_s = Math.asin(Math.sqrt(2 * g * pz) / v) * 1.01;
     double theta_b = Math.atan2(py, px);
@@ -131,6 +131,7 @@ public class ShootWhileMove {
     }
     if (Double.isNaN(theta_s)) {
       nanLatch.latch();
+      theta_s=0;
     }
     return new ShootingCommand(Rotation2d.fromRadians(theta_b), Rotation2d.fromRadians(theta_s));
   }
