@@ -97,8 +97,8 @@ public class ShootWhileMove {
     double px = pbmt.getX();
     double py = pbmt.getY();
     double pz = pbmt.getZ();
-    double bx = 0; // botVel.getX();
-    double by = 0; // botVel.getY();
+    double bx = botVel.getX();
+    double by = botVel.getY();
 
     double theta_s = Math.asin(Math.sqrt(2 * g * pz) / v) * 1.01;
     double theta_b = Math.atan2(py, px);
