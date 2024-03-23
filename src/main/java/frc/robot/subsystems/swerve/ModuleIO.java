@@ -13,6 +13,7 @@ public interface ModuleIO {
     public double thrustPos = 0.0;
     public double relativeSensorAngle = 0.0;
     public double relativeSensorOmega = 0.0;
+    public double thrustOutput = 0.0;
     public double absSensorOmega = 0.0;
     public double absSensorAngle = 0.0;
 
