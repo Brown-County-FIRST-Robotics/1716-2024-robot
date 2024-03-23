@@ -14,7 +14,8 @@ public class FieldConstants {
    * @return The position of the speaker, based on alliance color
    */
   public static Translation3d getSpeaker() {
-    return flip(new Translation3d(0.458597 - 10 * 0.0254, 5.544566 - 0.6, 2.0505114 - 0.15));
+    // TEMP: fudge factors
+    return flip(new Translation3d(-.04 + 5*.0254, 4.984566, 80*0.0254));
   }
 
   public static Translation2d getGamePiece(int ind) {
