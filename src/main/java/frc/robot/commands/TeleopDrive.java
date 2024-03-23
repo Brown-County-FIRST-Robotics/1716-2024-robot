@@ -82,7 +82,7 @@ public class TeleopDrive extends Command {
                   * slowModeSpeedModifier,
               rotationLimiter.calculate(
                       deadscale(controller.getRightX()) * Constants.Driver.MAX_THETA_SPEED * slowModeSpeedModifier)
-                  + customAngleModifier); // This needs to be a different type, the speeds need to be percentage at this step, not velocity
+                  - customAngleModifier); // This needs to be a different type, the speeds need to be percentage at this step, not velocity
 
       if (doFieldOriented) {
         Rotation2d currentRotation =
