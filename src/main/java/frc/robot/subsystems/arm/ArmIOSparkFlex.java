@@ -30,14 +30,18 @@ public class ArmIOSparkFlex implements ArmIO {
     controller.setSmartCurrentLimit(Constants.CurrentLimits.NEO);
     pid.setFeedbackDevice(absencoder);
     pid.setOutputRange(-1, 1);
-    pid.setSmartMotionMaxVelocity(FREE_RPM / GEAR_RATIO, 0);
+    pid.setSmartMotionMaxVelocity(0.5*FREE_RPM / GEAR_RATIO, 0);
     pid.setSmartMotionMinOutputVelocity(0, 0);
-    pid.setSmartMotionMaxAccel(0.5 * FREE_RPM / GEAR_RATIO, 0);
+    pid.setSmartMotionMaxAccel(0.2*FREE_RPM / GEAR_RATIO, 0);
     pid.setSmartMotionAllowedClosedLoopError(0.004, 0);
     ffTuner.attach(pid::setFF);
     pTuner.attach(pid::setP);
     iTuner.attach(pid::setI);
     dTuner.attach(pid::setD);
+
+    controller.setPeriodicFramePeriod(CANSparkLowLevel.PeriodicFrame.kStatus5,20);
+    controller.setPeriodicFramePeriod(CANSparkLowLevel.PeriodicFrame.kStatus6,20);
+
     controller.burnFlash();
     CustomAlerts.makeOverTempAlert(controller, 60, 50, "Arm motor");
   }
