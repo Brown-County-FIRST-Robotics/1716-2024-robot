@@ -3,7 +3,6 @@ package frc.robot.subsystems.swerve;
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
-import com.ctre.phoenix6.controls.VelocityDutyCycle;
 import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
@@ -32,10 +31,10 @@ public class ModuleIOSparkFX implements ModuleIO {
   double offset;
 
   String name;
-  LoggedTunableNumber thrustP = new LoggedTunableNumber("Thrust P", 12.0*3.0 / (6380.0 / 60.0));
+  LoggedTunableNumber thrustP = new LoggedTunableNumber("Thrust P", 12.0 * 3.0 / (6380.0 / 60.0));
   LoggedTunableNumber thrustI = new LoggedTunableNumber("Thrust I", 1);
   LoggedTunableNumber thrustD = new LoggedTunableNumber("Thrust D", 0);
-  LoggedTunableNumber thrustKV = new LoggedTunableNumber("Thrust KV", 12.0*60.0 / 6380.0);
+  LoggedTunableNumber thrustKV = new LoggedTunableNumber("Thrust KV", 12.0 * 60.0 / 6380.0);
   LoggedTunableNumber steerP = new LoggedTunableNumber("Steer P", 0);
   LoggedTunableNumber steerI = new LoggedTunableNumber("Steer I", 0);
   LoggedTunableNumber steerD = new LoggedTunableNumber("Steer D", 0);
@@ -68,7 +67,7 @@ public class ModuleIOSparkFX implements ModuleIO {
     if (thrustID == 20) {
       off = 0.812; // BR
     } else if (thrustID == 21) {
-      off = 0.01;  // BL
+      off = 0.01; // BL
     } else if (thrustID == 22) {
       off = -0.03; // FL
     } else if (thrustID == 23) {
@@ -82,7 +81,7 @@ public class ModuleIOSparkFX implements ModuleIO {
     posSignal = thrust.getRotorPosition();
     errSignal = thrust.getClosedLoopError();
     tempSignal = thrust.getDeviceTemp();
-    outputSignal=thrust.getClosedLoopOutput();
+    outputSignal = thrust.getClosedLoopOutput();
     velSignal.setUpdateFrequency(50.0);
     posSignal.setUpdateFrequency(50.0);
     errSignal.setUpdateFrequency(50.0);
@@ -111,7 +110,7 @@ public class ModuleIOSparkFX implements ModuleIO {
     steerP.attach(pid::setP);
     steerI.attach(pid::setI);
     steerD.attach(pid::setD);
-    BaseStatusSignal.refreshAll(velSignal, posSignal, errSignal, tempSignal,outputSignal);
+    BaseStatusSignal.refreshAll(velSignal, posSignal, errSignal, tempSignal, outputSignal);
 
     steer.burnFlash();
     Logger.recordOutput("Firmware/" + name + "_Steer", steer.getFirmwareString());
@@ -121,7 +120,7 @@ public class ModuleIOSparkFX implements ModuleIO {
 
   @Override
   public void updateInputs(ModuleIOInputs inputs) {
-    BaseStatusSignal.refreshAll(velSignal, posSignal, errSignal, tempSignal,outputSignal);
+    BaseStatusSignal.refreshAll(velSignal, posSignal, errSignal, tempSignal, outputSignal);
     inputs.absSensorAngle = analogEncoder.getPosition();
     inputs.absSensorOmega = analogEncoder.getVelocity();
     inputs.relativeSensorAngle = relativeEncoder.getPosition();
@@ -132,7 +131,7 @@ public class ModuleIOSparkFX implements ModuleIO {
     inputs.thrustErr = errSignal.getValue();
     inputs.thrustTempC = tempSignal.getValue();
     inputs.offset = offsetTun.get();
-    inputs.thrustOutput=outputSignal.getValue();
+    inputs.thrustOutput = outputSignal.getValue();
   }
 
   @Override

@@ -15,7 +15,7 @@ public class FieldConstants {
    */
   public static Translation3d getSpeaker() {
     // TEMP: fudge factors
-    return flip(new Translation3d(-.04 + 5*.0254, 4.984566+7.5*0.0254, 80*0.0254));
+    return flip(new Translation3d(-.04 + 5 * .0254, 5.55, 80 * 0.0254));
   }
 
   public static Translation2d getGamePiece(int ind) {

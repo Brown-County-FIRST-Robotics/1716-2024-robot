@@ -10,9 +10,9 @@ package frc.robot.utils;
 import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.subsystems.LEDs;
@@ -85,13 +85,25 @@ public class Alert {
     }
     this.active = active;
     if (active && type == AlertType.WARNING) {
-      Commands.runOnce(() -> secondController.setRumble(RumbleType.kLeftRumble, 1.0)).andThen(Commands.waitSeconds(0.5).andThen(Commands.runOnce(() -> secondController.setRumble(RumbleType.kLeftRumble, 0.0)))).schedule();
+      Commands.runOnce(() -> secondController.setRumble(RumbleType.kLeftRumble, 1.0))
+          .andThen(
+              Commands.waitSeconds(0.5)
+                  .andThen(
+                      Commands.runOnce(
+                          () -> secondController.setRumble(RumbleType.kLeftRumble, 0.0))))
+          .schedule();
     }
     if (active && type == AlertType.ERROR) {
       LEDs.getInstance().mode1();
       LEDs.getInstance().errorLight();
 
-      Commands.runOnce(() -> secondController.setRumble(RumbleType.kRightRumble, 1.0)).andThen(Commands.waitSeconds(0.5).andThen(Commands.runOnce(() -> secondController.setRumble(RumbleType.kRightRumble, 0.0)))).schedule();
+      Commands.runOnce(() -> secondController.setRumble(RumbleType.kRightRumble, 1.0))
+          .andThen(
+              Commands.waitSeconds(0.5)
+                  .andThen(
+                      Commands.runOnce(
+                          () -> secondController.setRumble(RumbleType.kRightRumble, 0.0))))
+          .schedule();
     }
   }
 

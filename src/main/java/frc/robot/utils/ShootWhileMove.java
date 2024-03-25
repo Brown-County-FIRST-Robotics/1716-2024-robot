@@ -131,7 +131,7 @@ public class ShootWhileMove {
     }
     if (Double.isNaN(theta_s)) {
       nanLatch.latch();
-      theta_s=0;
+      theta_s = 0;
     }
     return new ShootingCommand(Rotation2d.fromRadians(theta_b), Rotation2d.fromRadians(theta_s));
   }

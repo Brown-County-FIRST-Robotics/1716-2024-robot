@@ -133,9 +133,11 @@ public class Robot extends LoggedRobot {
       poseChooser.addOption(
           "Amp side", FieldConstants.flip(new Pose2d(0.5, 7, Rotation2d.fromRotations(0.75))));
       poseChooser.addOption(
-          "Source side tangent", FieldConstants.flip(new Pose2d(0.7, 4.3, Rotation2d.fromDegrees(120))));
+          "Source side tangent",
+          FieldConstants.flip(new Pose2d(0.7, 4.3, Rotation2d.fromDegrees(120))));
       poseChooser.addOption(
-          "Amp side tangent", FieldConstants.flip(new Pose2d(0.7, 6.8, Rotation2d.fromDegrees(240))));
+          "Amp side tangent",
+          FieldConstants.flip(new Pose2d(0.7, 6.8, Rotation2d.fromDegrees(240))));
       poseChooser.attach(robotContainer::setPose);
       builtPoseSetter = true;
     }
@@ -180,7 +182,13 @@ public class Robot extends LoggedRobot {
     if (DriverStation.getMatchTime() <= 30.0
         && DriverStation.isFMSAttached()
         && !hasRumbledMatchTime) {
-      Commands.runOnce(() -> driverController.setRumble(RumbleType.kRightRumble, 1.0)).andThen(Commands.waitSeconds(1.0).andThen(Commands.runOnce(() -> driverController.setRumble(RumbleType.kRightRumble, 0.0)))).schedule();
+      Commands.runOnce(() -> driverController.setRumble(RumbleType.kRightRumble, 1.0))
+          .andThen(
+              Commands.waitSeconds(1.0)
+                  .andThen(
+                      Commands.runOnce(
+                          () -> driverController.setRumble(RumbleType.kRightRumble, 0.0))))
+          .schedule();
       hasRumbledMatchTime = true;
     }
   }

@@ -12,7 +12,6 @@ import frc.robot.utils.DualRateLimiter;
 import frc.robot.utils.HolonomicTrajectoryFollower;
 import frc.robot.utils.Overrides;
 import frc.robot.utils.Vector;
-
 import java.util.Optional;
 import org.littletonrobotics.junction.Logger;
 
@@ -22,11 +21,13 @@ public class TeleopDrive extends Command {
   private final CommandXboxController controller;
 
   boolean doFieldOriented = true;
-  boolean locked = false; //point wheels towards center in x pattern so we can't be pushed
-  DualRateLimiter translationLimiter = new DualRateLimiter(6, 100); //translational velocity limiter
-  DualRateLimiter rotationLimiter = new DualRateLimiter(9, 100); //angular velocity limiter (omega)
+  boolean locked = false; // point wheels towards center in x pattern so we can't be pushed
+  DualRateLimiter translationLimiter =
+      new DualRateLimiter(6, 100); // translational velocity limiter
+  DualRateLimiter rotationLimiter = new DualRateLimiter(9, 100); // angular velocity limiter (omega)
 
-  Optional<Rotation2d> customRotation = Optional.empty(); //used for auto align; if empty, no target is set
+  Optional<Rotation2d> customRotation =
+      Optional.empty(); // used for auto align; if empty, no target is set
 
   private static double deadbandSize = 0.08;
 
@@ -56,7 +57,7 @@ public class TeleopDrive extends Command {
     rotationLimiter.reset(0);
     customRotation = Optional.empty();
   }
-  
+
   @Override
   public void execute() {
     customAngleModifier =
@@ -67,67 +68,88 @@ public class TeleopDrive extends Command {
                         rotation2d,
                         drivetrain.getPosition().getRotation(),
                         drivetrain.getVelocity().omegaRadiansPerSecond))
-            .orElse(0.0); //The velocity added to the rotation to apply the custom angle
+            .orElse(0.0); // The velocity added to the rotation to apply the custom angle
 
     Logger.recordOutput("TeleopDrive/ext", customAngleModifier);
     slowModeSpeedModifier =
         controller.getHID().getLeftBumper() || controller.getHID().getRightBumper() ? 0.2 : 1.0;
 
-      locked = false;
-      commandedSpeeds =
-          new ChassisSpeeds(
-              deadscale(controller.getLeftY())
-                  * slowModeSpeedModifier,
-              deadscale(controller.getLeftX())
-                  * slowModeSpeedModifier,
-              rotationLimiter.calculate(
-                      deadscale(controller.getRightX()) * Constants.Driver.MAX_THETA_SPEED * slowModeSpeedModifier)
-                  - customAngleModifier); // This needs to be a different type, the speeds need to be percentage at this step, not velocity
+    locked = false;
+    commandedSpeeds =
+        new ChassisSpeeds(
+            deadscale(controller.getLeftY()) * slowModeSpeedModifier,
+            deadscale(controller.getLeftX()) * slowModeSpeedModifier,
+            rotationLimiter.calculate(
+                    deadscale(controller.getRightX())
+                        * Constants.Driver.MAX_THETA_SPEED
+                        * slowModeSpeedModifier)
+                - customAngleModifier); // This needs to be a different type, the speeds need to be
+    // percentage at this step, not velocity
 
-      if (doFieldOriented) {
-        Rotation2d currentRotation =
-            DriverStation.getAlliance().orElse(DriverStation.Alliance.Red)
-                    == DriverStation.Alliance.Red
-                ? drivetrain.getPosition().getRotation()
-                : drivetrain.getPosition().getRotation().rotateBy(Rotation2d.fromRotations(0.5)); //current rotation relative to the driver
-        commandedSpeeds =
-            ChassisSpeeds.fromFieldRelativeSpeeds(
-                new ChassisSpeeds(
-                    commandedSpeeds.vxMetersPerSecond, commandedSpeeds.vyMetersPerSecond, -commandedSpeeds.omegaRadiansPerSecond),
-                currentRotation);
-      }
-      else {
-        commandedSpeeds =
+    if (doFieldOriented) {
+      Rotation2d currentRotation =
+          DriverStation.getAlliance().orElse(DriverStation.Alliance.Red)
+                  == DriverStation.Alliance.Red
+              ? drivetrain.getPosition().getRotation()
+              : drivetrain
+                  .getPosition()
+                  .getRotation()
+                  .rotateBy(
+                      Rotation2d.fromRotations(0.5)); // current rotation relative to the driver
+      commandedSpeeds =
+          ChassisSpeeds.fromFieldRelativeSpeeds(
+              new ChassisSpeeds(
+                  commandedSpeeds.vxMetersPerSecond,
+                  commandedSpeeds.vyMetersPerSecond,
+                  -commandedSpeeds.omegaRadiansPerSecond),
+              currentRotation);
+    } else {
+      commandedSpeeds =
           new ChassisSpeeds(
               -commandedSpeeds.vxMetersPerSecond,
               -commandedSpeeds.vyMetersPerSecond,
               -commandedSpeeds.omegaRadiansPerSecond);
-      }
+    }
 
-      Vector commandedVector = new Vector(commandedSpeeds.vxMetersPerSecond, commandedSpeeds.vyMetersPerSecond);
-      commandedVector.setNorm(clamp(commandedVector.getNorm(), 1.0));
-      commandedVector.setNorm(commandedVector.getNorm() * Math.abs(commandedVector.getNorm())); //square it
-      commandedVector.setNorm(commandedVector.getNorm() * Constants.Driver.MAX_SPEED); //convert to m/s from percent
-      
-      //make sure command never gets too far from reality
-      Vector realVelocity = new Vector(drivetrain.getVelocity().vxMetersPerSecond, drivetrain.getVelocity().vyMetersPerSecond);
-      Vector currentRealityDistortion = previousCommand.minus(realVelocity);
-      Vector currentVector = realVelocity.plus(new Vector( clamp(currentRealityDistortion.getNorm(), Constants.Driver.MAX_SPEED / 5.0), currentRealityDistortion.getAngle()));
-      
-      Vector velocityChange = commandedVector.minus(currentVector);
-      double frictionClampedVelocityChange = clamp(velocityChange.getNorm(), Constants.Driver.MAX_FRICTION_ACCELERATION / 50); //TODO: CHANGE NAME
-      Vector cappedAcceleration = new Vector(frictionClampedVelocityChange, velocityChange.getAngle());
-      commandedVector = currentVector.plus(cappedAcceleration);
+    Vector commandedVector =
+        new Vector(commandedSpeeds.vxMetersPerSecond, commandedSpeeds.vyMetersPerSecond);
+    commandedVector.setNorm(clamp(commandedVector.getNorm(), 1.0));
+    commandedVector.setNorm(
+        commandedVector.getNorm() * Math.abs(commandedVector.getNorm())); // square it
+    commandedVector.setNorm(
+        commandedVector.getNorm() * Constants.Driver.MAX_SPEED); // convert to m/s from percent
 
-      double jeff = commandedVector.getNorm() - currentVector.getNorm();
-      if (jeff > Constants.Driver.MAX_ACCELERATION / 50) {
-        commandedVector.setNorm(currentVector.getNorm() + Constants.Driver.MAX_ACCELERATION / 50);
-      }
+    // make sure command never gets too far from reality
+    Vector realVelocity =
+        new Vector(
+            drivetrain.getVelocity().vxMetersPerSecond, drivetrain.getVelocity().vyMetersPerSecond);
+    Vector currentRealityDistortion = previousCommand.minus(realVelocity);
+    Vector currentVector =
+        realVelocity.plus(
+            new Vector(
+                clamp(currentRealityDistortion.getNorm(), Constants.Driver.MAX_SPEED / 5.0),
+                currentRealityDistortion.getAngle()));
 
-      Logger.recordOutput("Current Speed", currentVector.getNorm());
+    Vector velocityChange = commandedVector.minus(currentVector);
+    double frictionClampedVelocityChange =
+        clamp(
+            velocityChange.getNorm(),
+            Constants.Driver.MAX_FRICTION_ACCELERATION / 50); // TODO: CHANGE NAME
+    Vector cappedAcceleration =
+        new Vector(frictionClampedVelocityChange, velocityChange.getAngle());
+    commandedVector = currentVector.plus(cappedAcceleration);
 
-      drivetrain.humanDrive(new ChassisSpeeds(commandedVector.getX(), commandedVector.getY(), commandedSpeeds.omegaRadiansPerSecond));
-      previousCommand = commandedVector;
+    double jeff = commandedVector.getNorm() - currentVector.getNorm();
+    if (jeff > Constants.Driver.MAX_ACCELERATION / 50) {
+      commandedVector.setNorm(currentVector.getNorm() + Constants.Driver.MAX_ACCELERATION / 50);
+    }
+
+    Logger.recordOutput("Current Speed", currentVector.getNorm());
+
+    drivetrain.humanDrive(
+        new ChassisSpeeds(
+            commandedVector.getX(), commandedVector.getY(), commandedSpeeds.omegaRadiansPerSecond));
+    previousCommand = commandedVector;
 
     if (controller.getHID().getBackButtonPressed()) {
       drivetrain.setPosition(
@@ -178,15 +200,18 @@ public class TeleopDrive extends Command {
    * @return The value with the deadband applied
    */
   static double deadscale(double val) {
-    return withinDeadband(val) ? 0 : (val > 0 ? (val - deadbandSize) / (1 - deadbandSize) : (val + deadbandSize) / (1 - deadbandSize));
+    return withinDeadband(val)
+        ? 0
+        : (val > 0
+            ? (val - deadbandSize) / (1 - deadbandSize)
+            : (val + deadbandSize) / (1 - deadbandSize));
   }
 
   // Clamps the value to the max, applies in both negative and positive
   private double clamp(double x, double max) {
     if (x > max) {
       x = max;
-    }
-    else if (x < -max) {
+    } else if (x < -max) {
       x = -max;
     }
     return x;

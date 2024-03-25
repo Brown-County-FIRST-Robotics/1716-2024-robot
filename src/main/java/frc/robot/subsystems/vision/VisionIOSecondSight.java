@@ -22,10 +22,7 @@ public class VisionIOSecondSight implements VisionIO {
   Transform3d robotToCam =
       new Transform3d(
           new Translation3d(2 * 0.0254, 0 * 0.0254, 24 * 0.0254),
-          new Rotation3d(
-              0,
-              -25.0 * Math.PI / 180,
-              0.0*Math.PI / 180));
+          new Rotation3d(0, -25.0 * Math.PI / 180, 0.0 * Math.PI / 180));
 
   // Construct PhotonPoseEstimator
   PhotonPoseEstimator photonPoseEstimator =
