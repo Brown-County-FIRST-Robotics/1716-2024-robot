@@ -4,6 +4,7 @@ import edu.wpi.first.math.geometry.*;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation3d;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.FieldConstants;
 import frc.robot.subsystems.Drivetrain;
@@ -24,6 +25,7 @@ public class SpeakerShoot extends Command {
   LoggedTunableNumber shooterAngleThreshold = new LoggedTunableNumber("ang threshold", 0.003);
   LoggedTunableNumber botAngleThreshold = new LoggedTunableNumber("bot ang threshold", 0.008);
   LoggedTunableNumber sp = new LoggedTunableNumber("Shooter Speed", 11.3);
+  Timer ft = new Timer();
   private static final ShootWhileMove.ShooterKinematics kinematics =
       (cmd, botPose) ->
           new Pose3d(
@@ -54,6 +56,7 @@ public class SpeakerShoot extends Command {
   public void initialize() {
     shooter.setFiringBlocked(true);
     shooter.shoot(-4000, 4000);
+    ft.restart();
   }
 
   @Override
@@ -79,8 +82,13 @@ public class SpeakerShoot extends Command {
             || shooterAngleThreshold.get()
                 < Math.abs(cmd.shooterAngle.minus(arm.getAngle()).getRotations())
             || drive.getVelocity().omegaRadiansPerSecond > 0.2;
-    shooter.setFiringBlocked(blocked);
-    firing = firing || (!blocked);
+
+    if (blocked) {
+      ft.restart();
+    }
+    boolean rb = !ft.hasElapsed(0.5);
+    shooter.setFiringBlocked(rb);
+    firing = firing || (!rb);
   }
 
   @Override
