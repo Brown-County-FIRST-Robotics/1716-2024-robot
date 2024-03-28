@@ -63,32 +63,29 @@ public class SpeakerShoot extends Command {
   public void execute() {
     // Calculates position of the tip of the shooter
     Pose2d pos = drive.getPosition();
+    Rotation2d angleToSpeaker=FieldConstants.getSpeaker().toTranslation2d().minus(pos.getTranslation()).getAngle().minus(Rotation2d.fromDegrees(180));
     var cmd =
         ShootWhileMove.calcCommandWithKinematics(
             pos.getTranslation(),
-            FieldConstants.getSpeaker(),
+            FieldConstants.getSpeaker().plus(new Translation3d(0,angleToSpeaker.getDegrees()/300,0)),
             ShootWhileMove.getFieldRelativeSpeeds(
                 drive.getVelocity(), drive.getPosition().getRotation()),
             kinematics);
     shooter.setSpeed(9.88); // Max speed
     rotationCommander.accept(Optional.of(cmd.botAngle));
-    arm.setAngle(cmd.shooterAngle);
+    cmd.shooterAngle=cmd.shooterAngle.minus(Rotation2d.fromDegrees(6));
     if (!Double.isNaN(cmd.shooterAngle.getRadians())) {
       arm.setAngle(cmd.shooterAngle);
     }
     // Prevent firing if angles are not close enough
     boolean blocked =
-        0.006 < Math.abs(cmd.botAngle.minus(drive.getPosition().getRotation()).getRotations())
+        0.01 < Math.abs(cmd.botAngle.minus(drive.getPosition().getRotation()).getRotations())
             || shooterAngleThreshold.get()
                 < Math.abs(cmd.shooterAngle.minus(arm.getAngle()).getRotations())
-            || drive.getVelocity().omegaRadiansPerSecond > 0.2;
+            || drive.getVelocity().omegaRadiansPerSecond > 0.5;
 
-    if (blocked) {
-      ft.restart();
-    }
-    boolean rb = !ft.hasElapsed(0.5);
-    shooter.setFiringBlocked(rb);
-    firing = firing || (!rb);
+    shooter.setFiringBlocked(blocked);
+    firing = firing || (!blocked);
   }
 
   @Override
