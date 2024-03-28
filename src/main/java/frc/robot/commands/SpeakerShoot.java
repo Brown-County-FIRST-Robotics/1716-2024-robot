@@ -74,7 +74,7 @@ public class SpeakerShoot extends Command {
     rotationCommander.accept(Optional.of(cmd.botAngle));
     arm.setAngle(cmd.shooterAngle);
     if (!Double.isNaN(cmd.shooterAngle.getRadians())) {
-      arm.setAngle(cmd.shooterAngle);
+      arm.setAngle(cmd.shooterAngle.minus(Rotation2d.fromDegrees(10)));
     }
     // Prevent firing if angles are not close enough
     boolean blocked =
@@ -86,7 +86,7 @@ public class SpeakerShoot extends Command {
     if (blocked) {
       ft.restart();
     }
-    boolean rb = !ft.hasElapsed(0.5);
+    boolean rb = !ft.hasElapsed(0.1);
     shooter.setFiringBlocked(rb);
     firing = firing || (!rb);
   }
