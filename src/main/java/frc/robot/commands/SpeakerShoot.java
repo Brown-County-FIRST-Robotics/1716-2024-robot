@@ -86,7 +86,7 @@ public class SpeakerShoot extends Command {
     if (blocked) {
       ft.restart();
     }
-    boolean rb = !ft.hasElapsed(0.5);
+    boolean rb = !ft.hasElapsed(0.1);
     shooter.setFiringBlocked(rb);
     firing = firing || (!rb);
   }
