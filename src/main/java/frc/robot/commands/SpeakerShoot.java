@@ -74,19 +74,19 @@ public class SpeakerShoot extends Command {
     rotationCommander.accept(Optional.of(cmd.botAngle));
     arm.setAngle(cmd.shooterAngle);
     if (!Double.isNaN(cmd.shooterAngle.getRadians())) {
-      arm.setAngle(cmd.shooterAngle);
+      arm.setAngle(cmd.shooterAngle.minus(Rotation2d.fromDegrees(10)));
     }
     // Prevent firing if angles are not close enough
     boolean blocked =
-        0.006 < Math.abs(cmd.botAngle.minus(drive.getPosition().getRotation()).getRotations())
+        0.1 < Math.abs(cmd.botAngle.minus(drive.getPosition().getRotation()).getRotations())
             || shooterAngleThreshold.get()
                 < Math.abs(cmd.shooterAngle.minus(arm.getAngle()).getRotations())
-            || drive.getVelocity().omegaRadiansPerSecond > 0.2;
+            || drive.getVelocity().omegaRadiansPerSecond > 0.5;
 
     if (blocked) {
       ft.restart();
     }
-    boolean rb = !ft.hasElapsed(0.5);
+    boolean rb = !ft.hasElapsed(0.1);
     shooter.setFiringBlocked(rb);
     firing = firing || (!rb);
   }
