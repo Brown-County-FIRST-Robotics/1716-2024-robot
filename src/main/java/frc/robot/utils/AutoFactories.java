@@ -70,6 +70,11 @@ public class AutoFactories {
     return new HolonomicTrajectoryFollower(drivetrain, () -> makeTrajectory(drivetrain, target));
   }
 
+  public static Command driveToPos(Drivetrain drivetrain, Pose2d target) {
+    return new HolonomicTrajectoryFollower(drivetrain, () -> makeTrajectory(drivetrain, target));
+  }
+
+
   /**
    * Makes a command to shoot into the speaker
    *
