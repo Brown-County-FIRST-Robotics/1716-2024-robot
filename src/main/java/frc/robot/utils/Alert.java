@@ -85,13 +85,13 @@ public class Alert {
     }
     this.active = active;
     if (active && type == AlertType.WARNING) {
-      Commands.runOnce(() -> secondController.setRumble(RumbleType.kLeftRumble, 1.0))
-          .andThen(
-              Commands.waitSeconds(0.5)
-                  .andThen(
-                      Commands.runOnce(
-                          () -> secondController.setRumble(RumbleType.kLeftRumble, 0.0))))
-          .schedule();
+//      Commands.runOnce(() -> secondController.setRumble(RumbleType.kLeftRumble, 1.0))
+//          .andThen(
+//              Commands.waitSeconds(0.5)
+//                  .andThen(
+//                      Commands.runOnce(
+//                          () -> secondController.setRumble(RumbleType.kLeftRumble, 0.0))))
+//          .schedule();
     }
     if (active && type == AlertType.ERROR) {
       LEDs.getInstance().mode1();
