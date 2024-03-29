@@ -13,7 +13,7 @@ public class Shooter extends SubsystemBase {
   ShooterIOInputsAutoLogged shooterInputs = new ShooterIOInputsAutoLogged();
   double cmdTopSpeed;
   double cmdBottomSpeed;
-  LoggedTunableNumber speedThreshold = new LoggedTunableNumber("Shooting speed threshold", 0.05);
+  LoggedTunableNumber speedThreshold = new LoggedTunableNumber("Shooting speed threshold", 0.02);
   LoggedTunableNumber firingTime = new LoggedTunableNumber("Firing Time", 0.5);
 
   boolean isShooting = false;
@@ -99,7 +99,7 @@ public class Shooter extends SubsystemBase {
 
   public void setSpeed(double exitVel) {
     double factor = 3500 / 9.88;
-    cmdTopSpeed = -factor * exitVel;
+    cmdTopSpeed = -factor * exitVel-100;
     cmdBottomSpeed = factor * exitVel;
   }
 
