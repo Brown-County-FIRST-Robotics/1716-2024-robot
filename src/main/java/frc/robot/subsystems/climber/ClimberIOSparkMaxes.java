@@ -31,6 +31,8 @@ public class ClimberIOSparkMaxes implements ClimberIO {
 
     leftMotor.setIdleMode(CANSparkMax.IdleMode.kBrake);
     rightMotor.setIdleMode(CANSparkMax.IdleMode.kBrake);
+    leftMotor.setInverted(true);
+    rightMotor.setInverted(true);
 
     leftMotor.burnFlash();
     rightMotor.burnFlash();
