@@ -104,6 +104,8 @@ public class Robot extends LoggedRobot {
     // Start AdvantageKit logger
     Logger.start();
     CustomAlerts.makeCANFailAlerts(0.9);
+    new XboxController(0).setRumble(RumbleType.kBothRumble,0);
+    new XboxController(1).setRumble(RumbleType.kBothRumble,0);
     robotContainer = new RobotContainer();
     // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
     // autonomous chooser on the dashboard.
