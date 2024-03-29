@@ -82,9 +82,7 @@ public class Alert {
           System.out.println(text);
           break;
       }
-    }
-    this.active = active;
-    if (active && type == AlertType.WARNING) {
+      if (type == AlertType.WARNING) {
       Commands.runOnce(() -> secondController.setRumble(RumbleType.kLeftRumble, 1.0))
           .andThen(
               Commands.waitSeconds(0.5)
@@ -93,7 +91,7 @@ public class Alert {
                           () -> secondController.setRumble(RumbleType.kLeftRumble, 0.0))))
           .schedule();
     }
-    if (active && type == AlertType.ERROR) {
+    if (type == AlertType.ERROR) {
       LEDs.getInstance().mode1();
       LEDs.getInstance().errorLight();
 
@@ -105,6 +103,9 @@ public class Alert {
                           () -> secondController.setRumble(RumbleType.kRightRumble, 0.0))))
           .schedule();
     }
+    }
+    this.active = active;
+
   }
 
   /** Updates current alert text. */
