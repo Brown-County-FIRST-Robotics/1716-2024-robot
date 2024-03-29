@@ -13,9 +13,9 @@ public class ShooterIOSparkFlexes implements ShooterIO {
   CANSparkFlex motor2;
   RelativeEncoder encoder1;
   RelativeEncoder encoder2;
-  LoggedTunableNumber ffTuner = new LoggedTunableNumber("Shooter FF", 1.0 / 6784);
-  LoggedTunableNumber pTuner = new LoggedTunableNumber("Shooter P", 2.0 / 6784);
-  LoggedTunableNumber iTuner = new LoggedTunableNumber("Shooter I", 0);
+  LoggedTunableNumber ffTuner = new LoggedTunableNumber("Shooter FF", 1.03*12.0/9.0 / 6784);
+  LoggedTunableNumber pTuner = new LoggedTunableNumber("Shooter P", 0.000025);//.0001);
+  LoggedTunableNumber iTuner = new LoggedTunableNumber("Shooter I", 0.0000001);
   LoggedTunableNumber dTuner = new LoggedTunableNumber("Shooter D", 0);
 
   public ShooterIOSparkFlexes(int motorID1, int motorID2) {
@@ -34,6 +34,9 @@ public class ShooterIOSparkFlexes implements ShooterIO {
     pid1.setOutputRange(-1, 1, 0);
     pid2.setFeedbackDevice(encoder2);
     pid2.setOutputRange(-1, 1, 0);
+
+    pid1.setIZone(100);
+    pid2.setIZone(100);
 
     ffTuner.attach(
         (Double v) -> {
@@ -55,6 +58,8 @@ public class ShooterIOSparkFlexes implements ShooterIO {
           pid1.setD(v, 0);
           pid2.setD(v, 0);
         });
+    motor1.enableVoltageCompensation(9);
+        motor2.enableVoltageCompensation(9);
     CustomAlerts.makeOverTempAlert(motor1, 60, 50, "Shooter motor 1");
     CustomAlerts.makeOverTempAlert(motor2, 60, 50, "Shooter motor 2");
   }
