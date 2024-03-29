@@ -62,6 +62,7 @@ public class ModuleIOSparkFX implements ModuleIO {
     config.Audio.AllowMusicDurDisable = true;
     config.Slot0.kV = thrustKV.get();
     config.Slot0.kP = thrustP.get();
+    config.Slot0.kI=thrustI.get();
     config.MotorOutput.DutyCycleNeutralDeadband = 0.01;
     offsetTun = new LoggedTunableNumber(name + "_offset");
     if (thrustID == 20) {
@@ -72,6 +73,8 @@ public class ModuleIOSparkFX implements ModuleIO {
       off = -0.03; // FL
     } else if (thrustID == 23) {
       off = 0.45; // FR
+    } else if (thrustID == 24) {
+      off = 0.069; // FR (backup)
     }
     offsetTun.initDefault(off);
     config.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RotorSensor;
