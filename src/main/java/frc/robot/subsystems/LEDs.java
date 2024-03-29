@@ -34,16 +34,16 @@ public class LEDs extends PeriodicRunnable {
 
   private LEDs() {
     super(); // Super call adds it to the registry, which calls the periodic method every tick
-    // leds = new AddressableLED(5);
-    // ledBuff = new AddressableLEDBuffer(100); // something around 280 length for LED
-    // leds.setLength(ledBuff.getLength());
-    // leds.setData(ledBuff);
-    // leds.start();
-    // // resetLeds();
+     leds = new AddressableLED(5);
+     ledBuff = new AddressableLEDBuffer(100); // something around 280 length for LED
+     leds.setLength(ledBuff.getLength());
+     leds.setData(ledBuff);
+     leds.start();
+     // resetLeds();
 
-    // for (var i = 0; i != ledBuff.getLength(); i++) {
-    //   raindrop[i] = random.nextInt(255);
-    // }
+     for (var i = 0; i != ledBuff.getLength(); i++) {
+       raindrop[i] = random.nextInt(255);
+     }
   }
 
   @Override
