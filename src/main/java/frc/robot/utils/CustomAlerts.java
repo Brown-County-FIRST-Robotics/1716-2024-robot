@@ -110,7 +110,7 @@ public class CustomAlerts {
 
   public static void makeCANFailAlerts(double errUtilization) {
     new CustomAlert(
-        Alert.AlertType.ERROR,
+        Alert.AlertType.WARNING,
         () -> errUtilization < LoggedSystemStats.getInputs().canStatus.percentBusUtilization,
         () ->
             "CAN Bus utilization is "
