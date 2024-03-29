@@ -73,7 +73,7 @@ public class RobotContainer {
           driveSys =
               new SwerveDrivetrain(
                   new Module(new ModuleIOSparkFX(22, 10, "FL"), 0),
-                  new Module(new ModuleIOSparkFX(23, 12, "FR"), 1),
+                  new Module(new ModuleIOSparkFX(24, 12, "FR"), 1),
                   new Module(new ModuleIOSparkFX(21, 13, "BL"), 2),
                   new Module(new ModuleIOSparkFX(20, 11, "BR"), 3),
                   new IMUIONavx());
@@ -189,7 +189,18 @@ public class RobotContainer {
     LoggedTunableNumber ampBottom =
         new LoggedTunableNumber("Presets/Amp bottom", 500); // TODO: add value
 
-    // Amp scoring
+    // Amp scoring\
+    secondController
+        .povRight()
+        .whileTrue(
+            new RotateTo(driveSys, Rotation2d.fromDegrees(90))
+                .andThen(
+                    AutoFactories.driveToPos(
+                        driveSys, new Pose2d(2, 7.75, Rotation2d.fromDegrees(90))))
+                .alongWith(
+                    Commands.runOnce(
+                        () -> arm.setAngle(Rotation2d.fromRotations(ampPreset.get())))).andThen(Commands.runOnce(() -> shooter.shoot(ampTop.get(), ampBottom.get()), shooter)));
+
     secondController
         .leftTrigger(0.2)
         .whileTrue(
