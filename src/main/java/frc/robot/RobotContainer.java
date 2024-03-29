@@ -39,6 +39,8 @@ import frc.robot.utils.AutoFactories;
 import frc.robot.utils.LoggedTunableNumber;
 import frc.robot.utils.Overrides;
 
+import java.util.Optional;
+
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
  * "declarative" paradigm, very little robot logic should actually be handled in the {@link Robot}
@@ -73,7 +75,7 @@ public class RobotContainer {
           driveSys =
               new SwerveDrivetrain(
                   new Module(new ModuleIOSparkFX(22, 10, "FL"), 0),
-                  new Module(new ModuleIOSparkFX(23, 12, "FR"), 1),
+                  new Module(new ModuleIOSparkFX(24, 12, "FR"), 1),
                   new Module(new ModuleIOSparkFX(21, 13, "BL"), 2),
                   new Module(new ModuleIOSparkFX(20, 11, "BR"), 3),
                   new IMUIONavx());
@@ -189,7 +191,8 @@ public class RobotContainer {
     LoggedTunableNumber ampBottom =
         new LoggedTunableNumber("Presets/Amp bottom", 500); // TODO: add value
 
-    // Amp scoring
+    // Amp scoring\
+    secondController.povRight().onTrue(Commands.runOnce(()->teleopDrive.setCustomRotation(Optional.of(Rotation2d.fromDegrees(90))))).onFalse(Commands.runOnce(()->teleopDrive.setCustomRotation(Optional.empty())));
     secondController
         .leftTrigger(0.2)
         .whileTrue(
