@@ -131,7 +131,6 @@ public class ShootWhileMove {
     }
     if (Double.isNaN(theta_s)) {
       nanLatch.latch();
-      theta_s = 0;
     }
     return new ShootingCommand(Rotation2d.fromRadians(theta_b), Rotation2d.fromRadians(theta_s));
   }
@@ -166,6 +165,9 @@ public class ShootWhileMove {
     for (int i = 0; i < 100; i++) {
       Translation3d poseOfBot = kinematics.getPose(lastCommand, botPose);
       var canidateCmd = calcSimpleCommand(target, poseOfBot, botVelocity);
+      if (Double.isNaN(canidateCmd.shooterAngle.getRotations())) {
+        return canidateCmd;
+      }
       if (converged(canidateCmd, lastCommand)) {
         System.out.println("calcCommandWithKinematics converged in " + i + " iterations");
         return canidateCmd;
