@@ -73,7 +73,7 @@ public class RobotContainer {
           driveSys =
               new SwerveDrivetrain(
                   new Module(new ModuleIOSparkFX(22, 10, "FL"), 0),
-                  new Module(new ModuleIOSparkFX(23, 12, "FR"), 1),
+                  new Module(new ModuleIOSparkFX(24, 12, "FR"), 1),
                   new Module(new ModuleIOSparkFX(21, 13, "BL"), 2),
                   new Module(new ModuleIOSparkFX(20, 11, "BR"), 3),
                   new IMUIONavx());
