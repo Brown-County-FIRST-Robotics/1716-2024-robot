@@ -34,11 +34,11 @@ public class Climber extends SubsystemBase {
     } else if (left > 0 && (getSensors()[1][0] || getSensors()[1][1])) {
       left = 0;
     }
-    if (right < 0 && (getSensors()[2][0] || getSensors()[2][1])) {
-      right = 0;
-    } else if (right > 0 && (getSensors()[3][0] || getSensors()[3][1])) {
-      right = 0;
-    }
+//    if (right < 0 && (getSensors()[2][0] || getSensors()[2][1])) {
+//      right = 0;
+//    } else if (right > 0 && (getSensors()[3][0] || getSensors()[3][1])) {
+//      right = 0;
+//    }
     climberIO.setMotors(
         clamp(left, -1.0, 1.0), clamp(right, -1.0, 1.0)); // TODO: Make this full range again
   }
