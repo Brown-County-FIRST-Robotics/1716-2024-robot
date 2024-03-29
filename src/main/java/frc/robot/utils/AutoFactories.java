@@ -32,12 +32,12 @@ public class AutoFactories {
    * @return The trajectory to go to the given pose
    */
   private static Trajectory makeTrajectory(Drivetrain drive, Pose2d target) {
-    TrajectoryConfig trajectoryConfig = new TrajectoryConfig(5, 10);
+    TrajectoryConfig trajectoryConfig = new TrajectoryConfig(2, 2);
     Rotation2d realAng;
     if (ShootWhileMove.getFieldRelativeSpeeds(
                 drive.getVelocity(), drive.getPosition().getRotation())
             .getNorm()
-        < 0.1) {
+        < 0.01) {
       realAng = target.getTranslation().minus(drive.getPosition().getTranslation()).getAngle();
     } else {
       var speed =
@@ -69,6 +69,11 @@ public class AutoFactories {
   public static Command driveToPos(Drivetrain drivetrain, Translation2d target) {
     return new HolonomicTrajectoryFollower(drivetrain, () -> makeTrajectory(drivetrain, target));
   }
+
+  public static Command driveToPos(Drivetrain drivetrain, Pose2d target) {
+    return new HolonomicTrajectoryFollower(drivetrain, () -> makeTrajectory(drivetrain, target));
+  }
+
 
   /**
    * Makes a command to shoot into the speaker
