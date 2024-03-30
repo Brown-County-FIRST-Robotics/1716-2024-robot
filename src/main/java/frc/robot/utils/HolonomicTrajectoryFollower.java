@@ -14,10 +14,10 @@ import org.littletonrobotics.junction.Logger;
 
 public class HolonomicTrajectoryFollower extends Command {
   private static final TrapezoidProfile.Constraints constraints =
-      new TrapezoidProfile.Constraints(6, 9);
+      new TrapezoidProfile.Constraints(10, 10);
   public static LoggedTunableNumber allowedErr = new LoggedTunableNumber("Rotation Allowed Err", 3);
-  private static LoggedTunableNumber replanErr =
-      new LoggedTunableNumber("Replanning threshold", 0.1);
+  private static final LoggedTunableNumber replanErr =
+      new LoggedTunableNumber("Replanning threshold", 0.4);
 
   public static double getExt(
       Rotation2d cmdRotation, Rotation2d currentRotation, double currentVelocity) {
