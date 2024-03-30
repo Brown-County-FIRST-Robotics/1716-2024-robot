@@ -14,7 +14,7 @@ public class ClimbAndLevel extends Command {
   double leftPercent;
   double rightPercent;
 
-  LoggedTunableNumber deadzone = new LoggedTunableNumber("Climber/Deadzone", 0.05);
+  LoggedTunableNumber deadzone = new LoggedTunableNumber("Climber/Deadzone", 0.1);
 
   public ClimbAndLevel(Climber climber, DoubleSupplier movement, DoubleSupplier roll) {
     this.climber = climber;

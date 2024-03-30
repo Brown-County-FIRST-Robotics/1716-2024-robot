@@ -72,8 +72,8 @@ public class TeleopDrive extends Command {
 
     Logger.recordOutput("TeleopDrive/ext", customAngleModifier);
     slowModeSpeedModifier =
-        controller.getHID().getLeftBumper() || controller.getHID().getRightBumper() ? 0.2 : 1.0;
-
+        controller.getHID().getLeftBumper() ? 0.2 : 1.0;
+doFieldOriented=!controller.getHID().getRightBumper();
     locked = false;
     commandedSpeeds =
         new ChassisSpeeds(
