@@ -71,9 +71,8 @@ public class TeleopDrive extends Command {
             .orElse(0.0); // The velocity added to the rotation to apply the custom angle
 
     Logger.recordOutput("TeleopDrive/ext", customAngleModifier);
-    slowModeSpeedModifier =
-        controller.getHID().getLeftBumper() || controller.getHID().getRightBumper() ? 0.2 : 1.0;
-
+    slowModeSpeedModifier = controller.getHID().getLeftBumper() ? 0.2 : 1.0;
+    doFieldOriented = !controller.getHID().getRightBumper();
     locked = false;
     commandedSpeeds =
         new ChassisSpeeds(
