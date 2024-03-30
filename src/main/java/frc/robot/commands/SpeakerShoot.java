@@ -63,10 +63,18 @@ public class SpeakerShoot extends Command {
   public void execute() {
     // Calculates position of the tip of the shooter
     Pose2d pos = drive.getPosition();
+    Rotation2d angleToSpeaker =
+        FieldConstants.getSpeaker()
+            .toTranslation2d()
+            .minus(pos.getTranslation())
+            .getAngle()
+            .minus(Rotation2d.fromDegrees(180)) // TEMP: verify this works with other alliances
+            .unaryMinus();
     var cmd =
         ShootWhileMove.calcCommandWithKinematics(
             pos.getTranslation(),
-            FieldConstants.getSpeaker(),
+            FieldConstants.getSpeaker()
+                .plus(new Translation3d(0, angleToSpeaker.getDegrees() / 300, 0)),
             ShootWhileMove.getFieldRelativeSpeeds(
                 drive.getVelocity(), drive.getPosition().getRotation()),
             kinematics);
