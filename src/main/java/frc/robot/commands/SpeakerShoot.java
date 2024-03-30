@@ -83,7 +83,7 @@ public class SpeakerShoot extends Command {
     if (Double.isNaN(cmd.shooterAngle.getRadians())) {
       cancel();
     } else {
-      cmd.shooterAngle = cmd.shooterAngle.minus(Rotation2d.fromDegrees(6));
+      cmd.shooterAngle = cmd.shooterAngle.minus(Rotation2d.fromDegrees(2));
       arm.setAngle(cmd.shooterAngle);
     }
     // Prevent firing if angles are not close enough
