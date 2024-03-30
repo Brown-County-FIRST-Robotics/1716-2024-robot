@@ -1,4 +1,4 @@
-package frc.robot.utils;
+package frc.robot.utils.shuffleboard;
 
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;

@@ -36,9 +36,9 @@ import frc.robot.subsystems.vision.Vision;
 import frc.robot.subsystems.vision.VisionIO;
 import frc.robot.subsystems.vision.VisionIOSecondSight;
 import frc.robot.utils.AutoFactories;
-import frc.robot.utils.LoggedShuffleBoardChooser;
 import frc.robot.utils.LoggedTunableNumber;
 import frc.robot.utils.Overrides;
+import frc.robot.utils.shuffleboard.LoggedShuffleBoardChooser;
 import java.util.Set;
 
 /**
