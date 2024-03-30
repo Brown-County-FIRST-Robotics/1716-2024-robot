@@ -36,8 +36,10 @@ import frc.robot.subsystems.vision.Vision;
 import frc.robot.subsystems.vision.VisionIO;
 import frc.robot.subsystems.vision.VisionIOSecondSight;
 import frc.robot.utils.AutoFactories;
+import frc.robot.utils.LoggedShuffleBoardChooser;
 import frc.robot.utils.LoggedTunableNumber;
 import frc.robot.utils.Overrides;
+import java.util.Set;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -52,6 +54,8 @@ public class RobotContainer {
   private Arm arm;
   private Shooter shooter;
   private Climber climber;
+  LoggedShuffleBoardChooser<Command> autoChooser =
+      new LoggedShuffleBoardChooser<>("Pre Match", "Auto chooser");
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
@@ -148,6 +152,84 @@ public class RobotContainer {
       shooter = new Shooter(new ShooterIO() {}, new FeederIO() {});
     }
     configureBindings();
+    autoChooser.addDefaultOption("None", Commands.none());
+    autoChooser.addOption(
+        "Escape the confines of the white tape!!!!",
+        Commands.defer(
+            () ->
+                AutoFactories.driveToPos(
+                    driveSys,
+                    new Pose2d(
+                            driveSys.getPosition().getTranslation(),
+                            FieldConstants.flip(new Rotation2d()))
+                        .plus(new Transform2d(3, 0, Rotation2d.fromDegrees(0)))
+                        .getTranslation()),
+            Set.of(driveSys)));
+    autoChooser.addOption(
+        "Drive Shoot Pickup 0 drive shoot",
+        AutoFactories.driveToPos(driveSys, new Translation2d(2.2, 5.5))
+            .onlyIf(
+                () ->
+                    driveSys.getPosition().getTranslation().getDistance(new Translation2d(2, 5.5))
+                        > 0.5)
+            .andThen(AutoFactories.speaker(driveSys, arm, shooter))
+            .andThen(AutoFactories.pickup(driveSys, arm, shooter, 0))
+            .andThen(AutoFactories.driveToPos(driveSys, new Translation2d(2, 5.5)))
+            .andThen(AutoFactories.speaker(driveSys, arm, shooter)));
+    autoChooser.addOption(
+        "Drive Shoot Pickup 1 drive shoot",
+        AutoFactories.driveToPos(driveSys, new Translation2d(2.2, 5.5))
+            .onlyIf(
+                () ->
+                    driveSys.getPosition().getTranslation().getDistance(new Translation2d(2, 5.5))
+                        > 0.5)
+            .andThen(AutoFactories.speaker(driveSys, arm, shooter))
+            .andThen(AutoFactories.pickup(driveSys, arm, shooter, 1))
+            .andThen(AutoFactories.driveToPos(driveSys, new Translation2d(2, 5.5)))
+            .andThen(AutoFactories.speaker(driveSys, arm, shooter)));
+
+    autoChooser.addOption(
+        "Drive Shoot Pickup 2 drive shoot",
+        AutoFactories.driveToPos(driveSys, new Translation2d(2.2, 5.5))
+            .onlyIf(
+                () ->
+                    driveSys.getPosition().getTranslation().getDistance(new Translation2d(2, 5.5))
+                        > 0.5)
+            .andThen(AutoFactories.speaker(driveSys, arm, shooter))
+            .andThen(AutoFactories.pickup(driveSys, arm, shooter, 2))
+            .andThen(AutoFactories.driveToPos(driveSys, new Translation2d(2, 5.5)))
+            .andThen(AutoFactories.speaker(driveSys, arm, shooter)));
+
+    autoChooser.addOption(
+        "Shoot Pickup 2 drive shoot",
+        AutoFactories.speaker(driveSys, arm, shooter)
+            .andThen(AutoFactories.pickup(driveSys, arm, shooter, 2))
+            .andThen(AutoFactories.driveToPos(driveSys, new Translation2d(2, 5.5)))
+            .andThen(AutoFactories.speaker(driveSys, arm, shooter)));
+
+    autoChooser.addOption(
+        "Shoot Pickup 1 drive shoot",
+        AutoFactories.speaker(driveSys, arm, shooter)
+            .andThen(AutoFactories.pickup(driveSys, arm, shooter, 1))
+            .andThen(AutoFactories.driveToPos(driveSys, new Translation2d(2, 5.5)))
+            .andThen(AutoFactories.speaker(driveSys, arm, shooter)));
+
+    autoChooser.addOption(
+        "Shoot Pickup 0 drive shoot",
+        AutoFactories.speaker(driveSys, arm, shooter)
+            .andThen(AutoFactories.pickup(driveSys, arm, shooter, 0))
+            .andThen(AutoFactories.driveToPos(driveSys, new Translation2d(2, 5.5)))
+            .andThen(AutoFactories.speaker(driveSys, arm, shooter)));
+
+    autoChooser.addOption(
+        "Shoot Pickup 1 drive shoot pickup 2 drive shoot",
+        AutoFactories.speaker(driveSys, arm, shooter)
+            .andThen(AutoFactories.pickup(driveSys, arm, shooter, 1))
+            .andThen(AutoFactories.driveToPos(driveSys, new Translation2d(2, 5.5)))
+            .andThen(AutoFactories.speaker(driveSys, arm, shooter))
+            .andThen(AutoFactories.pickup(driveSys, arm, shooter, 2))
+            .andThen(AutoFactories.driveToPos(driveSys, new Translation2d(2, 5.5)))
+            .andThen(AutoFactories.speaker(driveSys, arm, shooter)));
   }
 
   /** Updates the pose estimator to use the correct initial pose */
@@ -282,9 +364,6 @@ public class RobotContainer {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
-    // 2 note auto
-    return AutoFactories.speaker(driveSys, arm, shooter)
-        .andThen(AutoFactories.pickup(driveSys, arm, shooter, 2))
-        .andThen(AutoFactories.speaker(driveSys, arm, shooter));
+    return autoChooser.get();
   }
 }
