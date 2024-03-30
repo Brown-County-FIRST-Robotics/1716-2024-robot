@@ -23,6 +23,11 @@ public class LoggedShuffleBoardBoolean implements LoggedDashboardInput {
   private final ArrayList<Consumer<Boolean>> listeners = new ArrayList<>();
   private boolean lastVal = false;
 
+  public LoggedShuffleBoardBoolean(String tab, String key, boolean defaultValue) {
+    this(tab, key);
+    set(defaultValue);
+  }
+
   public LoggedShuffleBoardBoolean(String tab, String key) {
     this.key = key;
     widget = Shuffleboard.getTab(tab).add(key, false);
@@ -30,6 +35,18 @@ public class LoggedShuffleBoardBoolean implements LoggedDashboardInput {
 
     periodic();
     Logger.registerDashboardInput(this);
+  }
+
+  public LoggedShuffleBoardBoolean withSize(int width, int height) {
+    widget.withSize(width, height);
+    entry = (BooleanEntry) widget.getEntry();
+    return this;
+  }
+
+  public LoggedShuffleBoardBoolean withPos(int cols, int rows) {
+    widget.withPosition(cols, rows);
+    entry = (BooleanEntry) widget.getEntry();
+    return this;
   }
 
   public boolean get() {
