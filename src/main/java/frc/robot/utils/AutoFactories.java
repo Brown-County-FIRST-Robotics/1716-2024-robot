@@ -103,7 +103,9 @@ public class AutoFactories {
     HolonomicTrajectoryFollower trajectoryCommand =
         new HolonomicTrajectoryFollower(
             drivetrain,
-            () -> makeTrajectory(drivetrain, new Pose2d(target, FieldConstants.flip(new Rotation2d()))));
+            () ->
+                makeTrajectory(
+                    drivetrain, new Pose2d(target, FieldConstants.flip(new Rotation2d()))));
 
     return new RotateTo(drivetrain, Rotation2d.fromDegrees(0))
         .andThen(
