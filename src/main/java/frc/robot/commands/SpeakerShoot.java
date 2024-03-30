@@ -80,8 +80,10 @@ public class SpeakerShoot extends Command {
             kinematics);
     shooter.setSpeed(9.88); // Max speed
     rotationCommander.accept(Optional.of(cmd.botAngle));
-    arm.setAngle(cmd.shooterAngle);
-    if (!Double.isNaN(cmd.shooterAngle.getRadians())) {
+    if (Double.isNaN(cmd.shooterAngle.getRadians())) {
+      cancel();
+    } else {
+      cmd.shooterAngle = cmd.shooterAngle.minus(Rotation2d.fromDegrees(6));
       arm.setAngle(cmd.shooterAngle);
     }
     // Prevent firing if angles are not close enough
