@@ -32,12 +32,12 @@ public class AutoFactories {
    * @return The trajectory to go to the given pose
    */
   private static Trajectory makeTrajectory(Drivetrain drive, Pose2d target) {
-    TrajectoryConfig trajectoryConfig = new TrajectoryConfig(5, 10);
+    TrajectoryConfig trajectoryConfig = new TrajectoryConfig(2, 2); // 2,2
     Rotation2d realAng;
     if (ShootWhileMove.getFieldRelativeSpeeds(
                 drive.getVelocity(), drive.getPosition().getRotation())
             .getNorm()
-        < 0.1) {
+        < 0.01) {
       realAng = target.getTranslation().minus(drive.getPosition().getTranslation()).getAngle();
     } else {
       var speed =
@@ -70,6 +70,10 @@ public class AutoFactories {
     return new HolonomicTrajectoryFollower(drivetrain, () -> makeTrajectory(drivetrain, target));
   }
 
+  public static Command driveToPos(Drivetrain drivetrain, Pose2d target) {
+    return new HolonomicTrajectoryFollower(drivetrain, () -> makeTrajectory(drivetrain, target));
+  }
+
   /**
    * Makes a command to shoot into the speaker
    *
@@ -97,23 +101,34 @@ public class AutoFactories {
   public static Command pickup(Drivetrain drivetrain, Arm arm, Shooter shooter, int pos) {
     Translation2d target = FieldConstants.getGamePiece(pos);
     HolonomicTrajectoryFollower trajectoryCommand =
-        new HolonomicTrajectoryFollower(drivetrain, () -> makeTrajectory(drivetrain, target));
+        new HolonomicTrajectoryFollower(
+            drivetrain,
+            () -> makeTrajectory(drivetrain, new Pose2d(target, Rotation2d.fromDegrees(0))));
 
-    return Intake.fromFloor(shooter, arm)
-        .raceWith(
-            trajectoryCommand
-                .alongWith(
-                    Commands.run(
-                        () ->
-                            trajectoryCommand.setCustomRotation(
-                                Optional.of(
-                                    drivetrain
+    return new RotateTo(drivetrain, Rotation2d.fromDegrees(0))
+        .andThen(
+            Intake.fromFloor(shooter, arm)
+                .raceWith(
+                    new HolonomicTrajectoryFollower(
+                            drivetrain,
+                            () ->
+                                makeTrajectory(
+                                    drivetrain,
+                                    new Pose2d(
+                                        target.minus(new Translation2d(1, 0)),
+                                        Rotation2d.fromDegrees(0))))
+                        .andThen(
+                            trajectoryCommand.alongWith(
+                                Commands.run(
+                                    () ->
+                                        trajectoryCommand.setCustomRotation(
+                                            Optional.of(Rotation2d.fromDegrees(0) /*drivetrain
                                         .getPosition()
                                         .getTranslation()
                                         .minus(target)
-                                        .getAngle()))))
-                .andThen(Commands.waitSeconds(1))
-                .andThen(failedAlert::latch));
+                                        .getAngle().unaryMinus()*/)))))
+                        .andThen(Commands.waitSeconds(1))
+                        .andThen(failedAlert::latch)));
   }
   /**
    * Makes a command to pick up a game piece. If it is not successful, it will attempt to pick up
