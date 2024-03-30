@@ -37,7 +37,7 @@ public class SpeakerShoot extends Command {
                   new Transform3d(
                       new Translation3d(11 * 0.0254, 0, 10 * 0.0254),
                       new Rotation3d(0, -cmd.shooterAngle.getRadians(), 0)))
-              .transformBy(new Transform3d(new Translation3d(0.3, 0, 0.115), new Rotation3d()))
+              .transformBy(new Transform3d(new Translation3d(0.33, 0, 0.155), new Rotation3d()))
               .getTranslation();
 
   public SpeakerShoot(
