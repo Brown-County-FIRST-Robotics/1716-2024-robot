@@ -43,7 +43,7 @@ public class AutoFactories {
       var speed =
           ShootWhileMove.getFieldRelativeSpeeds(
               drive.getVelocity(), drive.getPosition().getRotation());
-      trajectoryConfig.setEndVelocity(speed.getNorm());
+      trajectoryConfig.setStartVelocity(speed.getNorm());
       realAng = speed.getAngle();
     }
     return TrajectoryGenerator.generateTrajectory(
