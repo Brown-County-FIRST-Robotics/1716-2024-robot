@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.subsystems.LEDs;
@@ -56,7 +57,7 @@ public class Alert {
   public Alert(String group, String text, AlertType type) {
     if (!groups.containsKey(group)) {
       groups.put(group, new SendableAlerts());
-      SmartDashboard.putData(group, groups.get(group));
+      Shuffleboard.getTab("Teleop").add(group, groups.get(group));
     }
 
     this.text = text;
