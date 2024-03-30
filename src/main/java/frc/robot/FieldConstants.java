@@ -95,4 +95,14 @@ public class FieldConstants {
   public static Translation2d flip(Translation2d inp) {
     return flip(new Translation3d(inp.getX(), inp.getY(), 0)).toTranslation2d();
   }
+
+  /**
+   * Gets the position for scoring into the amp
+   *
+   * @return The position of the robot to score into the amp. Automatically flips based on FMS
+   *     alliance.
+   */
+  public static Translation2d getAmp() {
+    return flip(new Translation2d(2, 7.75));
+  }
 }

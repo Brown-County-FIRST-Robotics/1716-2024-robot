@@ -189,6 +189,19 @@ public class RobotContainer {
     LoggedTunableNumber ampBottom =
         new LoggedTunableNumber("Presets/Amp bottom", 500); // TODO: add value
 
+    // Amp align
+    secondController
+        .povRight()
+        .whileTrue(
+            new RotateTo(driveSys, Rotation2d.fromDegrees(90))
+                .andThen(
+                    AutoFactories.driveToPos(
+                        driveSys, new Pose2d(FieldConstants.getAmp(), Rotation2d.fromDegrees(90))))
+                .alongWith(
+                    Commands.runOnce(() -> arm.setAngle(Rotation2d.fromRotations(ampPreset.get()))))
+                .andThen(
+                    Commands.runOnce(() -> shooter.shoot(ampTop.get(), ampBottom.get()), shooter)));
+
     // Amp scoring
     secondController
         .leftTrigger(0.2)
