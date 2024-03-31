@@ -171,12 +171,13 @@ public class RobotContainer {
                         .plus(new Transform2d(3, 0, Rotation2d.fromDegrees(0)))
                         .getTranslation()),
             Set.of(driveSys)));
-    var returningShotPos = FieldConstants.flip(new Translation2d(2, 5.5));
+    var returningShotPos = FieldConstants.flip(new Translation2d(1.5, 5.5));
     var shootingFromPosition = FieldConstants.flip(new Translation2d(2.2, 5.5));
     autoChooser.addOption(
         "Drive Shoot Pickup 0 drive shoot",
         AutoFactories.driveToPos(driveSys, shootingFromPosition)
-            .onlyIf(() -> driveSys.getPosition().getTranslation().getDistance(returningShotPos) > 0.5)
+            .onlyIf(
+                () -> driveSys.getPosition().getTranslation().getDistance(returningShotPos) > 0.5)
             .andThen(AutoFactories.speaker(driveSys, arm, shooter))
             .andThen(AutoFactories.pickup(driveSys, arm, shooter, 0))
             .andThen(AutoFactories.driveToPos(driveSys, returningShotPos))
@@ -184,7 +185,8 @@ public class RobotContainer {
     autoChooser.addOption(
         "Drive Shoot Pickup 1 drive shoot",
         AutoFactories.driveToPos(driveSys, shootingFromPosition)
-            .onlyIf(() -> driveSys.getPosition().getTranslation().getDistance(returningShotPos) > 0.5)
+            .onlyIf(
+                () -> driveSys.getPosition().getTranslation().getDistance(returningShotPos) > 0.5)
             .andThen(AutoFactories.speaker(driveSys, arm, shooter))
             .andThen(AutoFactories.pickup(driveSys, arm, shooter, 1))
             .andThen(AutoFactories.driveToPos(driveSys, returningShotPos))
@@ -193,7 +195,8 @@ public class RobotContainer {
     autoChooser.addOption(
         "Drive Shoot Pickup 2 drive shoot",
         AutoFactories.driveToPos(driveSys, shootingFromPosition)
-            .onlyIf(() -> driveSys.getPosition().getTranslation().getDistance(returningShotPos) > 0.5)
+            .onlyIf(
+                () -> driveSys.getPosition().getTranslation().getDistance(returningShotPos) > 0.5)
             .andThen(AutoFactories.speaker(driveSys, arm, shooter))
             .andThen(AutoFactories.pickup(driveSys, arm, shooter, 2))
             .andThen(AutoFactories.driveToPos(driveSys, returningShotPos))
