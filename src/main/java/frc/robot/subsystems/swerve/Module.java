@@ -4,6 +4,8 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.Timer;
+import frc.robot.utils.Alert;
+import frc.robot.utils.CustomAlerts;
 import frc.robot.utils.LoggedTunableNumber;
 import org.littletonrobotics.junction.Logger;
 
@@ -12,6 +14,7 @@ public class Module {
       new LoggedTunableNumber("Min no motion time", 0.5);
   private static final LoggedTunableNumber maxMotionAllowed =
       new LoggedTunableNumber("Max motion", 0.05);
+
   ModuleIOInputsAutoLogged inputs = new ModuleIOInputsAutoLogged();
   ModuleIO io;
   int ind;
@@ -41,6 +44,10 @@ public class Module {
         name = "BR";
         break;
     }
+    new CustomAlerts.CustomAlert(
+        Alert.AlertType.WARNING,
+        () -> (inputs.thrustTempC >= 60),
+        () -> name + " thrust motor is currently " + inputs.thrustTempC + " degrees celsius");
     periodic();
     reZero();
   }
