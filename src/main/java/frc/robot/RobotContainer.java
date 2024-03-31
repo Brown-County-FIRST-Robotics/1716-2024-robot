@@ -36,6 +36,7 @@ import frc.robot.subsystems.vision.Vision;
 import frc.robot.subsystems.vision.VisionIO;
 import frc.robot.subsystems.vision.VisionIOSecondSight;
 import frc.robot.utils.AutoFactories;
+import frc.robot.utils.HolonomicTrajectoryFollower;
 import frc.robot.utils.LoggedTunableNumber;
 import frc.robot.utils.Overrides;
 import frc.robot.utils.shuffleboard.LoggedShuffleBoardChooser;
@@ -273,9 +274,7 @@ public class RobotContainer {
         .povRight()
         .whileTrue(
             new RotateTo(driveSys, Rotation2d.fromDegrees(90))
-                .andThen(
-                    AutoFactories.driveToPos(
-                        driveSys, new Pose2d(FieldConstants.getAmp(), Rotation2d.fromDegrees(90))))
+                .andThen(new HolonomicTrajectoryFollower(driveSys,()-> AutoFactories.makeTrajectory(driveSys,new Pose2d(FieldConstants.getAmp(), Rotation2d.fromDegrees(90))),Rotation2d.fromDegrees(90)))
                 .alongWith(
                     Commands.runOnce(() -> arm.setAngle(Rotation2d.fromRotations(ampPreset.get()))))
                 .andThen(
