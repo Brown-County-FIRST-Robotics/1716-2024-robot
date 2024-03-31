@@ -74,7 +74,7 @@ public class SpeakerShoot extends Command {
         ShootWhileMove.calcCommandWithKinematics(
             pos.getTranslation(),
             FieldConstants.getSpeaker()
-                .plus(new Translation3d(0, angleToSpeaker.getDegrees() / 300, 0)),
+                .plus(new Translation3d(0, angleToSpeaker.getDegrees() / 500, 0)),
             ShootWhileMove.getFieldRelativeSpeeds(
                 drive.getVelocity(), drive.getPosition().getRotation()),
             kinematics);
