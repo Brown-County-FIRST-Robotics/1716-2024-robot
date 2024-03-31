@@ -31,7 +31,7 @@ public class AutoFactories {
    *     trajectory
    * @return The trajectory to go to the given pose
    */
-  private static Trajectory makeTrajectory(Drivetrain drive, Pose2d target) {
+  public static Trajectory makeTrajectory(Drivetrain drive, Pose2d target) {
     TrajectoryConfig trajectoryConfig = new TrajectoryConfig(2, 2);
     Rotation2d realAng;
     if (ShootWhileMove.getFieldRelativeSpeeds(
