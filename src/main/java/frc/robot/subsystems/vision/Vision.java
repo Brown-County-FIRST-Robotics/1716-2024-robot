@@ -6,10 +6,7 @@ import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.*;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.vision.VisionIO.VisionIOInputs;
-import frc.robot.utils.LoggedTunableNumber;
-import frc.robot.utils.Overrides;
-import frc.robot.utils.PeriodicRunnable;
-import frc.robot.utils.ShootWhileMove;
+import frc.robot.utils.*;
 import org.littletonrobotics.junction.Logger;
 
 /** The vision subsystem */
@@ -28,6 +25,7 @@ public class Vision extends PeriodicRunnable {
   LoggedTunableNumber multiTagRotationStdDev =
       new LoggedTunableNumber("Vision/Multi tag Rotation StdDev", 1);
   LoggedTunableNumber maxRMSError = new LoggedTunableNumber("Vision/Max RMS Error", 0.85);
+  CustomAlerts.TimeoutAlert visionWatchDog=new CustomAlerts.TimeoutAlert(Alert.AlertType.WARNING,10,"Vision timeout");
 
   /**
    * Constructs a <code>Vision</code> subsystem
@@ -56,6 +54,7 @@ public class Vision extends PeriodicRunnable {
       ios[i].updateInputs(inputs[i]);
       Logger.processInputs("Vision/Inputs_" + i, inputs[i]);
       if (inputs[i].pose.isPresent() && inputs[i].timestamp.isPresent()) {
+        visionWatchDog.feed();
         Pose3d outPose = inputs[i].pose.get();
         Pose3d poseOfBot = outPose;
         Logger.recordOutput("Vision/EstPose_" + i, poseOfBot);
