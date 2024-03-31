@@ -231,6 +231,31 @@ public class RobotContainer {
             .andThen(AutoFactories.pickup(driveSys, arm, shooter, 2))
             .andThen(AutoFactories.driveToPos(driveSys, returningShotPos))
             .andThen(AutoFactories.speaker(driveSys, arm, shooter)));
+
+    autoChooser.addOption(
+        "3 note (2 then 0)",
+        AutoFactories.speaker(driveSys, arm, shooter)
+            .andThen(AutoFactories.pickup(driveSys, arm, shooter, 2))
+            .andThen(AutoFactories.driveToPos(driveSys, returningShotPos))
+            .andThen(AutoFactories.speaker(driveSys, arm, shooter))
+            .andThen(AutoFactories.pickup(driveSys, arm, shooter, 0))
+            .andThen(AutoFactories.driveToPos(driveSys, returningShotPos))
+            .andThen(AutoFactories.speaker(driveSys, arm, shooter)));
+
+    autoChooser.addOption(
+        "4 note (2 1 0)",
+        AutoFactories.speaker(driveSys, arm, shooter)
+            .andThen(AutoFactories.pickup(driveSys, arm, shooter, 2))
+            .andThen(
+                AutoFactories.driveToPos(
+                    driveSys, new Pose2d(returningShotPos, Rotation2d.fromDegrees(-90))))
+            .andThen(AutoFactories.speaker(driveSys, arm, shooter))
+            .andThen(AutoFactories.pickup(driveSys, arm, shooter, 1))
+            .andThen(AutoFactories.driveToPos(driveSys, returningShotPos))
+            .andThen(AutoFactories.speaker(driveSys, arm, shooter))
+            .andThen(AutoFactories.pickup(driveSys, arm, shooter, 0))
+            .andThen(AutoFactories.driveToPos(driveSys, returningShotPos))
+            .andThen(AutoFactories.speaker(driveSys, arm, shooter)));
   }
 
   /** Updates the pose estimator to use the correct initial pose */
