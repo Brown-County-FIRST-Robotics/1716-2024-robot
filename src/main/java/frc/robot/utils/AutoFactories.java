@@ -31,8 +31,8 @@ public class AutoFactories {
    *     trajectory
    * @return The trajectory to go to the given pose
    */
-  private static Trajectory makeTrajectory(Drivetrain drive, Pose2d target) {
-    TrajectoryConfig trajectoryConfig = new TrajectoryConfig(2, 2);
+  public static Trajectory makeTrajectory(Drivetrain drive, Pose2d target,double vel, double accel) {
+    TrajectoryConfig trajectoryConfig = new TrajectoryConfig(vel, accel);
     Rotation2d realAng;
     if (ShootWhileMove.getFieldRelativeSpeeds(
                 drive.getVelocity(), drive.getPosition().getRotation())
@@ -52,6 +52,9 @@ public class AutoFactories {
         target,
         trajectoryConfig);
   }
+
+  public static Trajectory makeTrajectory(Drivetrain drive, Pose2d target) {return makeTrajectory(drive,target,2,2);}
+
 
   /**
    * Makes a trajectory using the current position and velocity that goes to the given position in a
@@ -105,7 +108,7 @@ public class AutoFactories {
             drivetrain,
             () ->
                 makeTrajectory(
-                    drivetrain, new Pose2d(target, FieldConstants.flip(new Rotation2d()))));
+                    drivetrain, new Pose2d(target, FieldConstants.flip(new Rotation2d())),(pos==0)?1:2,(pos==0)?1:2));
 
     return new RotateTo(drivetrain, Rotation2d.fromDegrees(0))
         .andThen(
