@@ -15,9 +15,9 @@ import org.littletonrobotics.junction.Logger;
 public class HolonomicTrajectoryFollower extends Command {
   private static final TrapezoidProfile.Constraints constraints =
       new TrapezoidProfile.Constraints(10, 10);
-  public static LoggedTunableNumber allowedErr = new LoggedTunableNumber("Rotation Allowed Err", 3);
+  public static LoggedTunableNumber allowedErr = new LoggedTunableNumber("Rotation Allowed sadfsErr", 9);
   private static final LoggedTunableNumber replanErr =
-      new LoggedTunableNumber("Replanning threshold", 0.4);
+      new LoggedTunableNumber("Replanning threshold", 0.5);
 
   public static double getExt(
       Rotation2d cmdRotation, Rotation2d currentRotation, double currentVelocity) {
@@ -80,23 +80,24 @@ public class HolonomicTrajectoryFollower extends Command {
       timer.reset();
       timer.start();
     }
-    var state = activeTrajectory.sample(timer.get());
-    ChassisSpeeds speeds =
-        new ChassisSpeeds(
-            state.velocityMetersPerSecond * state.poseMeters.getRotation().getCos(),
-            state.velocityMetersPerSecond * state.poseMeters.getRotation().getSin(),
-            customRotation
-                .map(
-                    rotation2d ->
-                        getExt(
-                            rotation2d,
-                            drivetrain.getPosition().getRotation(),
-                            drivetrain.getVelocity().omegaRadiansPerSecond))
-                .orElse(0.0));
-    var discreteSpeeds =
-        ChassisSpeeds.fromFieldRelativeSpeeds(speeds, drivetrain.getPosition().getRotation());
-    drivetrain.humanDrive(discreteSpeeds);
-    Logger.recordOutput("Follower/CurrentTrajectory", activeTrajectory);
+    if(!timer.hasElapsed(activeTrajectory.getTotalTimeSeconds())){
+      var state = activeTrajectory.sample(timer.get());
+      ChassisSpeeds speeds =
+              new ChassisSpeeds(
+                      state.velocityMetersPerSecond * state.poseMeters.getRotation().getCos(),
+                      state.velocityMetersPerSecond * state.poseMeters.getRotation().getSin(),
+                      customRotation
+                              .map(
+                                      rotation2d ->
+                                              getExt(
+                                                      rotation2d,
+                                                      drivetrain.getPosition().getRotation(),
+                                                      drivetrain.getVelocity().omegaRadiansPerSecond))
+                              .orElse(0.0));
+      var discreteSpeeds =
+              ChassisSpeeds.fromFieldRelativeSpeeds(speeds, drivetrain.getPosition().getRotation());
+      drivetrain.humanDrive(discreteSpeeds);
+    }    Logger.recordOutput("Follower/CurrentTrajectory", activeTrajectory);
   }
 
   @Override
