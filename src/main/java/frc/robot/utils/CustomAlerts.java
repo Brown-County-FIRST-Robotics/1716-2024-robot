@@ -105,7 +105,9 @@ public class CustomAlerts {
             deviceName
                 + " is currently "
                 + spark.getMotorTemperature()
-                + " degrees celsius (max \" +errTemp+\")");
+                + " degrees celsius (max "
+                + errTemp
+                + ")");
   }
 
   public static void makeCANFailAlerts(double errUtilization) {
