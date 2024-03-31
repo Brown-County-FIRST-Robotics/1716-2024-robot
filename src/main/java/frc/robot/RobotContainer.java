@@ -152,9 +152,14 @@ public class RobotContainer {
       shooter = new Shooter(new ShooterIO() {}, new FeederIO() {});
     }
     configureBindings();
+    configureAutos();
+  }
+
+  private void configureAutos() {
     autoChooser.addDefaultOption("None", Commands.none());
+
     autoChooser.addOption(
-        "Escape the confines of the white tape!!!!",
+        "Leave zone",
         Commands.defer(
             () ->
                 AutoFactories.driveToPos(
@@ -165,70 +170,62 @@ public class RobotContainer {
                         .plus(new Transform2d(3, 0, Rotation2d.fromDegrees(0)))
                         .getTranslation()),
             Set.of(driveSys)));
+    var returningShotPos = FieldConstants.flip(new Translation2d(2, 5.5));
+    var shootingFromPosition = FieldConstants.flip(new Translation2d(2.2, 5.5));
     autoChooser.addOption(
         "Drive Shoot Pickup 0 drive shoot",
-        AutoFactories.driveToPos(driveSys, new Translation2d(2.2, 5.5))
-            .onlyIf(
-                () ->
-                    driveSys.getPosition().getTranslation().getDistance(new Translation2d(2, 5.5))
-                        > 0.5)
+        AutoFactories.driveToPos(driveSys, shootingFromPosition)
+            .onlyIf(() -> driveSys.getPosition().getTranslation().getDistance(returningShotPos) > 0.5)
             .andThen(AutoFactories.speaker(driveSys, arm, shooter))
             .andThen(AutoFactories.pickup(driveSys, arm, shooter, 0))
-            .andThen(AutoFactories.driveToPos(driveSys, new Translation2d(2, 5.5)))
+            .andThen(AutoFactories.driveToPos(driveSys, returningShotPos))
             .andThen(AutoFactories.speaker(driveSys, arm, shooter)));
     autoChooser.addOption(
         "Drive Shoot Pickup 1 drive shoot",
-        AutoFactories.driveToPos(driveSys, new Translation2d(2.2, 5.5))
-            .onlyIf(
-                () ->
-                    driveSys.getPosition().getTranslation().getDistance(new Translation2d(2, 5.5))
-                        > 0.5)
+        AutoFactories.driveToPos(driveSys, shootingFromPosition)
+            .onlyIf(() -> driveSys.getPosition().getTranslation().getDistance(returningShotPos) > 0.5)
             .andThen(AutoFactories.speaker(driveSys, arm, shooter))
             .andThen(AutoFactories.pickup(driveSys, arm, shooter, 1))
-            .andThen(AutoFactories.driveToPos(driveSys, new Translation2d(2, 5.5)))
+            .andThen(AutoFactories.driveToPos(driveSys, returningShotPos))
             .andThen(AutoFactories.speaker(driveSys, arm, shooter)));
 
     autoChooser.addOption(
         "Drive Shoot Pickup 2 drive shoot",
-        AutoFactories.driveToPos(driveSys, new Translation2d(2.2, 5.5))
-            .onlyIf(
-                () ->
-                    driveSys.getPosition().getTranslation().getDistance(new Translation2d(2, 5.5))
-                        > 0.5)
+        AutoFactories.driveToPos(driveSys, shootingFromPosition)
+            .onlyIf(() -> driveSys.getPosition().getTranslation().getDistance(returningShotPos) > 0.5)
             .andThen(AutoFactories.speaker(driveSys, arm, shooter))
             .andThen(AutoFactories.pickup(driveSys, arm, shooter, 2))
-            .andThen(AutoFactories.driveToPos(driveSys, new Translation2d(2, 5.5)))
+            .andThen(AutoFactories.driveToPos(driveSys, returningShotPos))
             .andThen(AutoFactories.speaker(driveSys, arm, shooter)));
 
     autoChooser.addOption(
         "Shoot Pickup 2 drive shoot",
         AutoFactories.speaker(driveSys, arm, shooter)
             .andThen(AutoFactories.pickup(driveSys, arm, shooter, 2))
-            .andThen(AutoFactories.driveToPos(driveSys, new Translation2d(2, 5.5)))
+            .andThen(AutoFactories.driveToPos(driveSys, returningShotPos))
             .andThen(AutoFactories.speaker(driveSys, arm, shooter)));
 
     autoChooser.addOption(
         "Shoot Pickup 1 drive shoot",
         AutoFactories.speaker(driveSys, arm, shooter)
             .andThen(AutoFactories.pickup(driveSys, arm, shooter, 1))
-            .andThen(AutoFactories.driveToPos(driveSys, new Translation2d(2, 5.5)))
+            .andThen(AutoFactories.driveToPos(driveSys, returningShotPos))
             .andThen(AutoFactories.speaker(driveSys, arm, shooter)));
-
     autoChooser.addOption(
         "Shoot Pickup 0 drive shoot",
         AutoFactories.speaker(driveSys, arm, shooter)
             .andThen(AutoFactories.pickup(driveSys, arm, shooter, 0))
-            .andThen(AutoFactories.driveToPos(driveSys, new Translation2d(2, 5.5)))
+            .andThen(AutoFactories.driveToPos(driveSys, returningShotPos))
             .andThen(AutoFactories.speaker(driveSys, arm, shooter)));
 
     autoChooser.addOption(
-        "Shoot Pickup 1 drive shoot pickup 2 drive shoot",
+        "3 note (1 then 2)",
         AutoFactories.speaker(driveSys, arm, shooter)
             .andThen(AutoFactories.pickup(driveSys, arm, shooter, 1))
-            .andThen(AutoFactories.driveToPos(driveSys, new Translation2d(2, 5.5)))
+            .andThen(AutoFactories.driveToPos(driveSys, returningShotPos))
             .andThen(AutoFactories.speaker(driveSys, arm, shooter))
             .andThen(AutoFactories.pickup(driveSys, arm, shooter, 2))
-            .andThen(AutoFactories.driveToPos(driveSys, new Translation2d(2, 5.5)))
+            .andThen(AutoFactories.driveToPos(driveSys, returningShotPos))
             .andThen(AutoFactories.speaker(driveSys, arm, shooter)));
   }
 
