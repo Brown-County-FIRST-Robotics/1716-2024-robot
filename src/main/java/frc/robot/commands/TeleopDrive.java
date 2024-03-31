@@ -24,7 +24,7 @@ public class TeleopDrive extends Command {
   boolean locked = false; // point wheels towards center in x pattern so we can't be pushed
   DualRateLimiter translationLimiter =
       new DualRateLimiter(6, 100); // translational velocity limiter
-  DualRateLimiter rotationLimiter = new DualRateLimiter(9, 100); // angular velocity limiter (omega)
+  DualRateLimiter rotationLimiter = new DualRateLimiter(8, 100); // angular velocity limiter (omega)
 
   Optional<Rotation2d> customRotation =
       Optional.empty(); // used for auto align; if empty, no target is set
