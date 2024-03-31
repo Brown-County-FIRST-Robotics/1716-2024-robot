@@ -36,6 +36,7 @@ import frc.robot.subsystems.vision.Vision;
 import frc.robot.subsystems.vision.VisionIO;
 import frc.robot.subsystems.vision.VisionIOSecondSight;
 import frc.robot.utils.AutoFactories;
+import frc.robot.utils.HolonomicTrajectoryFollower;
 import frc.robot.utils.LoggedTunableNumber;
 import frc.robot.utils.Overrides;
 import frc.robot.utils.shuffleboard.LoggedShuffleBoardChooser;
@@ -274,10 +275,31 @@ public class RobotContainer {
         .whileTrue(
             new RotateTo(driveSys, Rotation2d.fromDegrees(90))
                 .andThen(
-                    AutoFactories.driveToPos(
-                        driveSys, new Pose2d(FieldConstants.getAmp(), Rotation2d.fromDegrees(90))))
-                .alongWith(
-                    Commands.runOnce(() -> arm.setAngle(Rotation2d.fromRotations(ampPreset.get()))))
+                    new HolonomicTrajectoryFollower(
+                            driveSys,
+                            () ->
+                                AutoFactories.makeTrajectory(
+                                    driveSys,
+                                    new Pose2d(
+                                        FieldConstants.getAmp(), Rotation2d.fromDegrees(90))),
+                            Rotation2d.fromDegrees(90))
+                        .repeatedly()
+                        .until(
+                            () ->
+                                driveSys
+                                            .getPosition()
+                                            .getTranslation()
+                                            .getDistance(FieldConstants.getAmp())
+                                        < 0.085
+                                    && Math.abs(
+                                            driveSys
+                                                .getPosition()
+                                                .getRotation()
+                                                .minus(Rotation2d.fromDegrees(90))
+                                                .getDegrees())
+                                        < 5))
+                .raceWith(
+                    Commands.run(() -> arm.setAngle(Rotation2d.fromRotations(ampPreset.get()))))
                 .andThen(
                     Commands.runOnce(() -> shooter.shoot(ampTop.get(), ampBottom.get()), shooter)));
 
