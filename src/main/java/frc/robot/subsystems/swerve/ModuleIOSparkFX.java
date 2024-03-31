@@ -35,7 +35,7 @@ public class ModuleIOSparkFX implements ModuleIO {
   LoggedTunableNumber thrustI = new LoggedTunableNumber("Thrust I", 0);
   LoggedTunableNumber thrustD = new LoggedTunableNumber("Thrust D", 0);
   LoggedTunableNumber thrustKV = new LoggedTunableNumber("Thrust KV", 12.0 * 60.0 / 6380.0);
-  LoggedTunableNumber steerP = new LoggedTunableNumber("Steer P", 1.0 / STEER_FREE_RPM);
+  LoggedTunableNumber steerP = new LoggedTunableNumber("Steer P", 0.5 / STEER_FREE_RPM);
   LoggedTunableNumber steerI = new LoggedTunableNumber("Steer I", 0);
   LoggedTunableNumber steerD = new LoggedTunableNumber("Steer D", 0);
   LoggedTunableNumber steerKV =
