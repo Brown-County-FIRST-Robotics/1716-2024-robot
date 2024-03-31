@@ -35,11 +35,11 @@ public class ModuleIOSparkFX implements ModuleIO {
   LoggedTunableNumber thrustI = new LoggedTunableNumber("Thrust I", 0);
   LoggedTunableNumber thrustD = new LoggedTunableNumber("Thrust D", 0);
   LoggedTunableNumber thrustKV = new LoggedTunableNumber("Thrust KV", 12.0 * 60.0 / 6380.0);
-  LoggedTunableNumber steerP = new LoggedTunableNumber("Steer P", 1.0 / STEER_FREE_RPM);
+  LoggedTunableNumber steerP = new LoggedTunableNumber("Steer P", 0 / STEER_FREE_RPM);
   LoggedTunableNumber steerI = new LoggedTunableNumber("Steer I", 0);
   LoggedTunableNumber steerD = new LoggedTunableNumber("Steer D", 0);
   LoggedTunableNumber steerKV =
-      new LoggedTunableNumber("Steer KV", STEER_GEAR_RATIO / STEER_FREE_RPM);
+      new LoggedTunableNumber("Steer KV", 0.5*STEER_GEAR_RATIO / STEER_FREE_RPM);
   LoggedTunableNumber offsetTun;
   double off;
 
@@ -93,6 +93,7 @@ public class ModuleIOSparkFX implements ModuleIO {
     thrust.optimizeBusUtilization();
     steer = new CANSparkMax(steerID, CANSparkLowLevel.MotorType.kBrushless);
     steer.restoreFactoryDefaults();
+    steer.setIdleMode(CANSparkBase.IdleMode.kBrake);
     pid = steer.getPIDController();
     analogEncoder = steer.getAnalog(SparkAnalogSensor.Mode.kAbsolute);
     relativeEncoder = steer.getEncoder();
@@ -105,7 +106,7 @@ public class ModuleIOSparkFX implements ModuleIO {
     pid.setOutputRange(-1, 1);
     pid.setSmartMotionMaxVelocity(STEER_FREE_RPM / STEER_GEAR_RATIO, 0);
     pid.setSmartMotionMinOutputVelocity(0, 0);
-    pid.setSmartMotionMaxAccel(10 * STEER_FREE_RPM / STEER_GEAR_RATIO, 0);
+    pid.setSmartMotionMaxAccel(10*STEER_FREE_RPM / STEER_GEAR_RATIO, 0);
     pid.setSmartMotionAllowedClosedLoopError(0.002, 0);
     steer.setSmartCurrentLimit(Constants.CurrentLimits.NEO);
 
