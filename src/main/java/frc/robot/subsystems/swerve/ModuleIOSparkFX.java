@@ -39,7 +39,7 @@ public class ModuleIOSparkFX implements ModuleIO {
   LoggedTunableNumber steerI = new LoggedTunableNumber("Steer I", 0);
   LoggedTunableNumber steerD = new LoggedTunableNumber("Steer D", 0);
   LoggedTunableNumber steerKV =
-      new LoggedTunableNumber("Steer KV", STEER_GEAR_RATIO / STEER_FREE_RPM);
+      new LoggedTunableNumber("Steer KV", 0.7 * STEER_GEAR_RATIO / STEER_FREE_RPM);
   LoggedTunableNumber offsetTun;
   double off;
 
@@ -93,6 +93,7 @@ public class ModuleIOSparkFX implements ModuleIO {
     thrust.optimizeBusUtilization();
     steer = new CANSparkMax(steerID, CANSparkLowLevel.MotorType.kBrushless);
     steer.restoreFactoryDefaults();
+    steer.setIdleMode(CANSparkBase.IdleMode.kBrake);
     pid = steer.getPIDController();
     analogEncoder = steer.getAnalog(SparkAnalogSensor.Mode.kAbsolute);
     relativeEncoder = steer.getEncoder();

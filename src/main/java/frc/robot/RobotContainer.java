@@ -36,6 +36,7 @@ import frc.robot.subsystems.vision.Vision;
 import frc.robot.subsystems.vision.VisionIO;
 import frc.robot.subsystems.vision.VisionIOSecondSight;
 import frc.robot.utils.AutoFactories;
+import frc.robot.utils.HolonomicTrajectoryFollower;
 import frc.robot.utils.LoggedTunableNumber;
 import frc.robot.utils.Overrides;
 import frc.robot.utils.shuffleboard.LoggedShuffleBoardChooser;
@@ -175,7 +176,8 @@ public class RobotContainer {
     autoChooser.addOption(
         "Drive Shoot Pickup 0 drive shoot",
         AutoFactories.driveToPos(driveSys, shootingFromPosition)
-            .onlyIf(() -> driveSys.getPosition().getTranslation().getDistance(returningShotPos) > 0.5)
+            .onlyIf(
+                () -> driveSys.getPosition().getTranslation().getDistance(returningShotPos) > 0.5)
             .andThen(AutoFactories.speaker(driveSys, arm, shooter))
             .andThen(AutoFactories.pickup(driveSys, arm, shooter, 0))
             .andThen(AutoFactories.driveToPos(driveSys, returningShotPos))
@@ -183,7 +185,8 @@ public class RobotContainer {
     autoChooser.addOption(
         "Drive Shoot Pickup 1 drive shoot",
         AutoFactories.driveToPos(driveSys, shootingFromPosition)
-            .onlyIf(() -> driveSys.getPosition().getTranslation().getDistance(returningShotPos) > 0.5)
+            .onlyIf(
+                () -> driveSys.getPosition().getTranslation().getDistance(returningShotPos) > 0.5)
             .andThen(AutoFactories.speaker(driveSys, arm, shooter))
             .andThen(AutoFactories.pickup(driveSys, arm, shooter, 1))
             .andThen(AutoFactories.driveToPos(driveSys, returningShotPos))
@@ -192,7 +195,8 @@ public class RobotContainer {
     autoChooser.addOption(
         "Drive Shoot Pickup 2 drive shoot",
         AutoFactories.driveToPos(driveSys, shootingFromPosition)
-            .onlyIf(() -> driveSys.getPosition().getTranslation().getDistance(returningShotPos) > 0.5)
+            .onlyIf(
+                () -> driveSys.getPosition().getTranslation().getDistance(returningShotPos) > 0.5)
             .andThen(AutoFactories.speaker(driveSys, arm, shooter))
             .andThen(AutoFactories.pickup(driveSys, arm, shooter, 2))
             .andThen(AutoFactories.driveToPos(driveSys, returningShotPos))
@@ -267,17 +271,37 @@ public class RobotContainer {
         new LoggedTunableNumber("Presets/Amp top", -3000); // TODO: add value
     LoggedTunableNumber ampBottom =
         new LoggedTunableNumber("Presets/Amp bottom", 500); // TODO: add value
-
     // Amp align
     secondController
         .povRight()
         .whileTrue(
             new RotateTo(driveSys, Rotation2d.fromDegrees(90))
                 .andThen(
-                    AutoFactories.driveToPos(
-                        driveSys, new Pose2d(FieldConstants.getAmp(), Rotation2d.fromDegrees(90))))
-                .alongWith(
-                    Commands.runOnce(() -> arm.setAngle(Rotation2d.fromRotations(ampPreset.get()))))
+                    new HolonomicTrajectoryFollower(
+                            driveSys,
+                            () ->
+                                AutoFactories.makeTrajectory(
+                                    driveSys,
+                                    new Pose2d(
+                                        FieldConstants.getAmp(), Rotation2d.fromDegrees(90))),
+                            Rotation2d.fromDegrees(90))
+                        .repeatedly()
+                        .until(
+                            () ->
+                                driveSys
+                                            .getPosition()
+                                            .getTranslation()
+                                            .getDistance(FieldConstants.getAmp())
+                                        < 0.075
+                                    && Math.abs(
+                                            driveSys
+                                                .getPosition()
+                                                .getRotation()
+                                                .minus(Rotation2d.fromDegrees(90))
+                                                .getDegrees())
+                                        < 5))
+                .raceWith(
+                    Commands.run(() -> arm.setAngle(Rotation2d.fromRotations(ampPreset.get()))))
                 .andThen(
                     Commands.runOnce(() -> shooter.shoot(ampTop.get(), ampBottom.get()), shooter)));
 
