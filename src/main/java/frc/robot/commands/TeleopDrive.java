@@ -71,7 +71,7 @@ public class TeleopDrive extends Command {
             .orElse(0.0); // The velocity added to the rotation to apply the custom angle
 
     Logger.recordOutput("TeleopDrive/ext", customAngleModifier);
-    slowModeSpeedModifier = controller.getHID().getLeftBumper() ? 0.2 : 1.0;
+    slowModeSpeedModifier = controller.getHID().getLeftBumper() ? 0.5 : 1.0;
     doFieldOriented = !controller.getHID().getRightBumper();
     locked = false;
     commandedSpeeds =
@@ -146,8 +146,8 @@ public class TeleopDrive extends Command {
     Logger.recordOutput("Current Speed", currentVector.getNorm());
 
     drivetrain.humanDrive(
-        new ChassisSpeeds(
-            commandedVector.getX(), commandedVector.getY(), commandedSpeeds.omegaRadiansPerSecond));
+        ChassisSpeeds.discretize(new ChassisSpeeds(
+            commandedVector.getX(), commandedVector.getY(), commandedSpeeds.omegaRadiansPerSecond),0.02));
     previousCommand = commandedVector;
 
     if (controller.getHID().getBackButtonPressed()) {
