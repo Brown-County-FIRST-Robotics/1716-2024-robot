@@ -146,8 +146,12 @@ public class TeleopDrive extends Command {
     Logger.recordOutput("Current Speed", currentVector.getNorm());
 
     drivetrain.humanDrive(
-        new ChassisSpeeds(
-            commandedVector.getX(), commandedVector.getY(), commandedSpeeds.omegaRadiansPerSecond));
+        ChassisSpeeds.discretize(
+            new ChassisSpeeds(
+                commandedVector.getX(),
+                commandedVector.getY(),
+                commandedSpeeds.omegaRadiansPerSecond),
+            0.02));
     previousCommand = commandedVector;
 
     if (controller.getHID().getBackButtonPressed()) {
