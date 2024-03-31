@@ -103,6 +103,6 @@ public class FieldConstants {
    *     alliance.
    */
   public static Translation2d getAmp() {
-    return flip(new Translation2d(2, 7.75));
+    return flip(new Translation2d(1.85, 8));
   }
 }
