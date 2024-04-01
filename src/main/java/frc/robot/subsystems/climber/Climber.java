@@ -6,11 +6,10 @@ import org.littletonrobotics.junction.Logger;
 public class Climber extends SubsystemBase {
   ClimberIO climberIO;
   ClimberIOInputsAutoLogged inputs = new ClimberIOInputsAutoLogged();
-
-  boolean[] betweenSensors =
-      new boolean[] {
-        false, false, false, false
-      }; // leftBottomSensor, leftTopSensor, rightBottomSensor, rightTopSensor
+  private final double[] sensorOffsetFromBottom =
+      {4, 6}; // The bottom sensors are a certain distance from the hardware limit, this amount
+  private final double maxSpeed = 0.2;
+  boolean[] downLocked = {true, true}; //doesn't know the current position, so it can't move down (left, right)
 
   public Climber(ClimberIO io) {
     climberIO = io;
@@ -20,6 +19,15 @@ public class Climber extends SubsystemBase {
   public void periodic() {
     climberIO.updateInputs(inputs);
     Logger.processInputs("Climber/Inputs", inputs);
+    checkBottomSensors();
+    if (downLocked[0] && (inputs.leftPosition > sensorOffsetFromBottom[0] || inputs.leftTopSensor)) {
+      climberIO.setMotorEncoderPosition(false, 99999);
+      downLocked[0] = false; 
+    }
+    if (downLocked[1] && (inputs.rightPosition > sensorOffsetFromBottom[1] || inputs.rightTopSensor)) {
+      climberIO.setMotorEncoderPosition(true, 99999);
+      downLocked[1] = false; 
+    }
   }
 
   /**
@@ -29,34 +37,26 @@ public class Climber extends SubsystemBase {
    * @param right the percent to set the right motor to
    */
   public void setMotors(double left, double right) {
-    if (left < 0 && (getSensors()[0][0] || getSensors()[0][1])) {
+    if (left < 0 && (inputs.leftPosition < -sensorOffsetFromBottom[0] || downLocked[0])) {
       left = 0;
-    } else if (left > 0 && (getSensors()[1][0] || getSensors()[1][1])) {
+    } else if (left > 0 && inputs.leftTopSensor) {
       left = 0;
     }
-    if (right < 0 && (getSensors()[2][0] || getSensors()[2][1])) {
+    if (right < 0 && (inputs.rightPosition < -sensorOffsetFromBottom[1] || downLocked[1])) {
       right = 0;
-    } else if (right > 0 && (getSensors()[3][0] || getSensors()[3][1])) {
+    } else if (right > 0 && inputs.rightTopSensor) {
       right = 0;
     }
-    climberIO.setMotors(
-        clamp(left, -1.0, 1.0), clamp(right, -1.0, 1.0)); // TODO: Make this full range again
+    climberIO.setMotors(clamp(left, -maxSpeed, maxSpeed), clamp(right, -maxSpeed, maxSpeed));
   }
 
-  /**
-   * Get the values of the magnet sensors and whether the magnet is in the middle of the two
-   * sensors.
-   *
-   * @return an array containing the sensor values and whether the magnet is in the middle, it goes
-   *     bottom left, top left, bottom right, top right
-   */
-  public boolean[][] getSensors() {
-    return new boolean[][] {
-      {inputs.leftBottomSensor, betweenSensors[0]},
-      {inputs.leftTopSensor, betweenSensors[1]},
-      {inputs.rightBottomSensor, betweenSensors[2]},
-      {inputs.rightTopSensor, betweenSensors[3]}
-    };
+  private void checkBottomSensors() {
+    if (inputs.leftBottomSensor) {
+      climberIO.setMotorEncoderPosition(false, 0);
+    }
+    if (inputs.rightBottomSensor) {
+      climberIO.setMotorEncoderPosition(true, 0);
+    }
   }
 
   private double clamp(double value, double min, double max) {
