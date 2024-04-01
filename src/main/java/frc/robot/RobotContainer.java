@@ -283,8 +283,9 @@ public class RobotContainer {
             Intake.fromFloor(shooter, arm, secondController.getHID())
                 .andThen(
                     new StartEndCommand(
-                        () -> driverController.getHID().setRumble(RumbleType.kLeftRumble, 1.0),
-                        () -> driverController.getHID().setRumble(RumbleType.kLeftRumble, 0.0))));
+                            () -> driverController.getHID().setRumble(RumbleType.kLeftRumble, 1.0),
+                            () -> driverController.getHID().setRumble(RumbleType.kLeftRumble, 0.0))
+                        .withTimeout(1.0)));
     secondController
         .leftBumper()
         .whileTrue(Intake.fromSource(shooter, arm, secondController.getHID()));
