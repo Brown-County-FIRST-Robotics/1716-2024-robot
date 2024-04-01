@@ -105,6 +105,22 @@ public class TeleopDrive extends Command {
       }
 
       Vector commandedVector = new Vector(commandedSpeeds.vxMetersPerSecond, commandedSpeeds.vyMetersPerSecond);
+
+      double angle = commandedVector.getAngle().getDegrees();
+      int angleLockDegrees = 5;
+      if (angle < -180 + angleLockDegrees || angle > 180 - angleLockDegrees) {
+        commandedVector.setAngle(Rotation2d.fromDegrees(180));
+      }
+      else if (angle > -90 - angleLockDegrees && angle < -90 + angleLockDegrees) {
+        commandedVector.setAngle(Rotation2d.fromDegrees(-90));
+      }
+      else if (angle > -angleLockDegrees && angle < angleLockDegrees) {
+        commandedVector.setAngle(Rotation2d.fromDegrees(0));
+      }
+      else if (angle > 90 - angleLockDegrees && angle < 90 + angleLockDegrees) {
+        commandedVector.setAngle(Rotation2d.fromDegrees(90));
+      }
+
       commandedVector.setNorm(clamp(commandedVector.getNorm(), 1.0));
       commandedVector.setNorm(commandedVector.getNorm() * Math.abs(commandedVector.getNorm())); //square it
       commandedVector.setNorm(commandedVector.getNorm() * Constants.Driver.MAX_SPEED); //convert to m/s from percent
