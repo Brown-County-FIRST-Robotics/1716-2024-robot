@@ -151,26 +151,6 @@ public class TeleopDrive extends Command {
         new Vector(frictionClampedVelocityChange, velocityChange.getAngle());
     commandedVector = currentVector.plus(cappedAcceleration);
 
-    // make sure command never gets too far from reality
-    Vector realVelocity =
-        new Vector(
-            drivetrain.getVelocity().vxMetersPerSecond, drivetrain.getVelocity().vyMetersPerSecond);
-    Vector currentRealityDistortion = previousCommand.minus(realVelocity);
-    Vector currentVector =
-        realVelocity.plus(
-            new Vector(
-                clamp(currentRealityDistortion.getNorm(), Constants.Driver.MAX_SPEED / 5.0),
-                currentRealityDistortion.getAngle()));
-
-    Vector velocityChange = commandedVector.minus(currentVector);
-    double frictionClampedVelocityChange =
-        clamp(
-            velocityChange.getNorm(),
-            Constants.Driver.MAX_FRICTION_ACCELERATION / 50); // TODO: CHANGE NAME
-    Vector cappedAcceleration =
-        new Vector(frictionClampedVelocityChange, velocityChange.getAngle());
-    commandedVector = currentVector.plus(cappedAcceleration);
-
     double jeff = commandedVector.getNorm() - currentVector.getNorm();
     if (jeff > Constants.Driver.MAX_ACCELERATION / 50) {
       commandedVector.setNorm(currentVector.getNorm() + Constants.Driver.MAX_ACCELERATION / 50);
