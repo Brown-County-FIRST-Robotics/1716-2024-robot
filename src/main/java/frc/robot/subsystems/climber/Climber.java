@@ -6,10 +6,13 @@ import org.littletonrobotics.junction.Logger;
 public class Climber extends SubsystemBase {
   ClimberIO climberIO;
   ClimberIOInputsAutoLogged inputs = new ClimberIOInputsAutoLogged();
-  private final double[] sensorOffsetFromBottom =
-      {3.5, 6}; // The bottom sensors are a certain distance from the hardware limit, this amount
+  private final double[] sensorOffsetFromBottom = {
+    3.5, 6
+  }; // The bottom sensors are a certain distance from the hardware limit, this amount
   private final double maxSpeed = 1;
-  boolean[] downLocked = {true, true}; //doesn't know the current position, so it can't move down (left, right)
+  boolean[] downLocked = {
+    true, true
+  }; // doesn't know the current position, so it can't move down (left, right)
 
   public Climber(ClimberIO io) {
     climberIO = io;
@@ -20,13 +23,15 @@ public class Climber extends SubsystemBase {
     climberIO.updateInputs(inputs);
     Logger.processInputs("Climber/Inputs", inputs);
     checkBottomSensors();
-    if (downLocked[0] && (inputs.leftPosition > sensorOffsetFromBottom[0] || inputs.leftTopSensor)) {
+    if (downLocked[0]
+        && (inputs.leftPosition > sensorOffsetFromBottom[0] || inputs.leftTopSensor)) {
       climberIO.setMotorEncoderPosition(false, 99999);
-      downLocked[0] = false; 
+      downLocked[0] = false;
     }
-    if (downLocked[1] && (inputs.rightPosition > sensorOffsetFromBottom[1] || inputs.rightTopSensor)) {
+    if (downLocked[1]
+        && (inputs.rightPosition > sensorOffsetFromBottom[1] || inputs.rightTopSensor)) {
       climberIO.setMotorEncoderPosition(true, 99999);
-      downLocked[1] = false; 
+      downLocked[1] = false;
     }
   }
 
