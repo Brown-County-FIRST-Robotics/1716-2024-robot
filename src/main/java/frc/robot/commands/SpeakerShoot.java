@@ -4,6 +4,7 @@ import edu.wpi.first.math.geometry.*;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation3d;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.FieldConstants;
@@ -15,6 +16,7 @@ import frc.robot.utils.Overrides;
 import frc.robot.utils.ShootWhileMove;
 import java.util.Optional;
 import java.util.function.Consumer;
+import org.littletonrobotics.junction.Logger;
 
 public class SpeakerShoot extends Command {
   Drivetrain drive;
@@ -68,13 +70,19 @@ public class SpeakerShoot extends Command {
             .toTranslation2d()
             .minus(pos.getTranslation())
             .getAngle()
-            .minus(Rotation2d.fromDegrees(180)) // TEMP: verify this works with other alliances
-            .unaryMinus();
+            .minus(FieldConstants.flip(Rotation2d.fromDegrees(180)));
+    if (DriverStation.getAlliance().orElse(DriverStation.Alliance.Blue)
+        == DriverStation.Alliance.Blue) {
+      angleToSpeaker = angleToSpeaker.unaryMinus();
+    }
+    Translation3d target =
+        FieldConstants.getSpeaker()
+            .plus(new Translation3d(0, angleToSpeaker.getDegrees() / 500, 0));
+    Logger.recordOutput("AutoAim/Target", new Pose3d(target, new Rotation3d()));
     var cmd =
         ShootWhileMove.calcCommandWithKinematics(
             pos.getTranslation(),
-            FieldConstants.getSpeaker()
-                .plus(new Translation3d(0, angleToSpeaker.getDegrees() / 500, 0)),
+            target,
             ShootWhileMove.getFieldRelativeSpeeds(
                 drive.getVelocity(), drive.getPosition().getRotation()),
             kinematics);
