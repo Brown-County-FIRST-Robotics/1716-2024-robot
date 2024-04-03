@@ -14,7 +14,6 @@ public class FieldConstants {
    * @return The position of the speaker, based on alliance color
    */
   public static Translation3d getSpeaker() {
-    // TEMP: fudge factors
     return flip(new Translation3d(-.04 + 9 * .0254, 5.55, 81 * 0.0254));
   }
 

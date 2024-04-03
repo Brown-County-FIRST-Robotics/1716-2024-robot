@@ -128,9 +128,7 @@ public class AutoFactories {
                                         target.minus(
                                             (new Translation2d(
                                                 (pos == 0) ? 0.5 : 1,
-                                                FieldConstants.flip(
-                                                    new Rotation2d())))), // TEMP: verify this still
-                                        // works
+                                                FieldConstants.flip(new Rotation2d())))),
                                         Rotation2d.fromDegrees(0))))
                         .andThen(
                             trajectoryCommand.alongWith(
