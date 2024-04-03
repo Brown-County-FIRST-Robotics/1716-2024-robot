@@ -1,7 +1,8 @@
 package frc.robot.subsystems.swerve;
 
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.math.kinematics.SwerveModuleState;
+import frc.robot.SwerveSimManager;
 
 /** A simulated swerve module */
 public class ModuleIOSim implements ModuleIO {
@@ -21,19 +22,24 @@ public class ModuleIOSim implements ModuleIO {
    */
   public ModuleIOSim(int index) {
     this.index = index;
-    // TEMP: add real implementation
-    DriverStation.reportWarning("Simulation is currently broken, will fix soon?", false);
   }
 
   @Override
   public void updateInputs(ModuleIOInputs inputs) {
-    // TEMP: add real implementation
-    DriverStation.reportWarning("Simulation is currently broken, will fix soon?", false);
+    inputs.absSensorOmega = -SwerveSimManager.getInstance().getSteerVel(index);
+    inputs.relativeSensorOmega = SwerveSimManager.getInstance().getSteerVel(index);
+    inputs.offset = chassisOffsets[index].getRotations();
+    inputs.absSensorAngle =
+        SwerveSimManager.getInstance().getModPos(index).angle.unaryMinus().getRotations();
+    inputs.relativeSensorAngle =
+        SwerveSimManager.getInstance().getModPos(index).angle.getRotations();
+    inputs.thrustPos = SwerveSimManager.getInstance().getModPos(index).distanceMeters;
+    inputs.thrustVel = SwerveSimManager.getInstance().getModState(index).speedMetersPerSecond;
   }
 
   @Override
   public void setCmdState(double ang, double vel) {
-    // TEMP: add real implementation
-    DriverStation.reportWarning("Simulation is currently broken, will fix soon?", false);
+    SwerveSimManager.getInstance()
+        .commandState(index, new SwerveModuleState(vel, Rotation2d.fromRotations(ang)));
   }
 }
