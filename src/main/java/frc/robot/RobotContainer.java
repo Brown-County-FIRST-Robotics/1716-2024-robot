@@ -57,6 +57,7 @@ public class RobotContainer {
   private Climber climber;
   LoggedShuffleBoardChooser<Command> autoChooser =
       new LoggedShuffleBoardChooser<>("Pre Match", "Auto chooser");
+  boolean autoCmdsBuilt=false;
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
@@ -153,7 +154,6 @@ public class RobotContainer {
       shooter = new Shooter(new ShooterIO() {}, new FeederIO() {});
     }
     configureBindings();
-    configureAutos();
   }
 
   private void configureAutos() {
@@ -412,6 +412,10 @@ public class RobotContainer {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
+    if(!autoCmdsBuilt){
+      configureAutos();
+      autoCmdsBuilt=true;
+    }
     return autoChooser.get();
   }
 }
