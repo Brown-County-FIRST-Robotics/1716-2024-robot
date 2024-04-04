@@ -114,30 +114,33 @@ public class AutoFactories {
                     new Pose2d(target, FieldConstants.flip(new Rotation2d())),
                     (pos == 0) ? 1 : 2,
                     (pos == 0) ? 1 : 2));
-
-    return new RotateTo(drivetrain, Rotation2d.fromDegrees(0))
-        .andThen(
-            Intake.fromFloor(shooter, arm)
-                .raceWith(
-                    new HolonomicTrajectoryFollower(
-                            drivetrain,
+    HolonomicTrajectoryFollower drive2 =
+        new HolonomicTrajectoryFollower(
+            drivetrain,
+            () ->
+                makeTrajectory(
+                    drivetrain,
+                    new Pose2d(
+                        target.minus(
+                            (new Translation2d(
+                                (pos == 0) ? 0.5 : 1, FieldConstants.flip(new Rotation2d())))),
+                        FieldConstants.flip(new Rotation2d()))));
+    return Intake.fromFloor(shooter, arm)
+        .raceWith(
+            drive2
+                .alongWith(
+                    Commands.runOnce(
+                        () ->
+                            drive2.setCustomRotation(
+                                Optional.of(FieldConstants.flip(new Rotation2d())))))
+                .andThen(
+                    trajectoryCommand.alongWith(
+                        Commands.run(
                             () ->
-                                makeTrajectory(
-                                    drivetrain,
-                                    new Pose2d(
-                                        target.minus(
-                                            (new Translation2d(
-                                                (pos == 0) ? 0.5 : 1,
-                                                FieldConstants.flip(new Rotation2d())))),
-                                        FieldConstants.flip(new Rotation2d()))))
-                        .andThen(
-                            trajectoryCommand.alongWith(
-                                Commands.run(
-                                    () ->
-                                        trajectoryCommand.setCustomRotation(
-                                            Optional.of(FieldConstants.flip(new Rotation2d()))))))
-                        .andThen(Commands.waitSeconds(1))
-                        .andThen(failedAlert::latch)));
+                                trajectoryCommand.setCustomRotation(
+                                    Optional.of(FieldConstants.flip(new Rotation2d()))))))
+                .andThen(Commands.waitSeconds(1))
+                .andThen(failedAlert::latch));
   }
   /**
    * Makes a command to pick up a game piece. If it is not successful, it will attempt to pick up
