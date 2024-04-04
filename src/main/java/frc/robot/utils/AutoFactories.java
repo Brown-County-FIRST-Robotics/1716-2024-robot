@@ -129,13 +129,13 @@ public class AutoFactories {
                                             (new Translation2d(
                                                 (pos == 0) ? 0.5 : 1,
                                                 FieldConstants.flip(new Rotation2d())))),
-                                        Rotation2d.fromDegrees(0))))
+                                        FieldConstants.flip(new Rotation2d()))))
                         .andThen(
                             trajectoryCommand.alongWith(
                                 Commands.run(
                                     () ->
                                         trajectoryCommand.setCustomRotation(
-                                            Optional.of(Rotation2d.fromDegrees(0))))))
+                                            Optional.of(FieldConstants.flip(new Rotation2d()))))))
                         .andThen(Commands.waitSeconds(1))
                         .andThen(failedAlert::latch)));
   }
