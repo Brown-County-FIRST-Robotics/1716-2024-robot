@@ -57,8 +57,6 @@ public class RobotContainer {
   private Climber climber;
   LoggedShuffleBoardChooser<Command> autoChooser =
       new LoggedShuffleBoardChooser<>("Pre Match", "Auto chooser");
-  boolean autoCmdsBuilt=false;
-
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
     if (WhoAmI.mode != WhoAmI.Mode.REPLAY) {
@@ -156,7 +154,7 @@ public class RobotContainer {
     configureBindings();
   }
 
-  private void configureAutos() {
+  public void configureAutos() {
     autoChooser.addDefaultOption("None", Commands.none());
 
     autoChooser.addOption(
@@ -412,10 +410,6 @@ public class RobotContainer {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
-    if(!autoCmdsBuilt){
-      configureAutos();
-      autoCmdsBuilt=true;
-    }
     return autoChooser.get();
   }
 }

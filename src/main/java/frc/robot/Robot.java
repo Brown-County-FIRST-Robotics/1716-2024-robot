@@ -144,6 +144,7 @@ public class Robot extends LoggedRobot {
           FieldConstants.flip(new Pose2d(0.7, 6.8, Rotation2d.fromDegrees(240))));
       poseChooser.attach(robotContainer::setPose);
       builtPoseSetter = true;
+      robotContainer.configureAutos();
     }
   }
 
