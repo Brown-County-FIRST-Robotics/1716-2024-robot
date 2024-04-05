@@ -32,7 +32,7 @@ public class AutoFactories {
    * @return The trajectory to go to the given pose
    */
   public static Trajectory makeTrajectory(Drivetrain drive, Pose2d target) {
-    return makeTrajectory(drive, target, 2, 2);
+    return makeTrajectory(drive, target, 3, 5);
   }
 
   public static Trajectory makeTrajectory(
