@@ -32,7 +32,7 @@ public class AutoFactories {
    * @return The trajectory to go to the given pose
    */
   public static Trajectory makeTrajectory(Drivetrain drive, Pose2d target) {
-    return makeTrajectory(drive, target, 2, 2);
+    return makeTrajectory(drive, target, 3, 5);
   }
 
   public static Trajectory makeTrajectory(
@@ -127,7 +127,10 @@ public class AutoFactories {
                         FieldConstants.flip(new Rotation2d()))));
     return Intake.fromFloor(shooter, arm)
         .raceWith(
-            drive2
+            drive2.onlyWhile(()->{return drivetrain.getPosition().getTranslation().getDistance(target.minus(
+                            (new Translation2d(
+                                (pos == 0) ? 0.5 : 1, FieldConstants.flip(new Rotation2d()))))
+                        )<0.3;})
                 .alongWith(
                     Commands.runOnce(
                         () ->
