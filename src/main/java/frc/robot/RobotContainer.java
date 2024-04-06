@@ -155,7 +155,7 @@ public class RobotContainer {
   }
 
   public void configureAutos() {
-    autoChooser.addDefaultOption("None", Commands.none());
+    autoChooser.addOption("None", Commands.none());
 
     autoChooser.addOption(
         "Leave zone",
@@ -241,6 +241,16 @@ public class RobotContainer {
             .andThen(AutoFactories.speaker(driveSys, arm, shooter)));
 
     autoChooser.addOption(
+        "3 note (1 then 0)",
+        AutoFactories.speaker(driveSys, arm, shooter)
+            .andThen(AutoFactories.pickup(driveSys, arm, shooter, 1))
+            .andThen(AutoFactories.driveToPos(driveSys, returningShotPos))
+            .andThen(AutoFactories.speaker(driveSys, arm, shooter))
+            .andThen(AutoFactories.pickup(driveSys, arm, shooter, 0))
+            .andThen(AutoFactories.driveToPos(driveSys, returningShotPos))
+            .andThen(AutoFactories.speaker(driveSys, arm, shooter)));
+
+    autoChooser.addOption(
         "4 note (2 1 0)",
         AutoFactories.speaker(driveSys, arm, shooter)
             .andThen(AutoFactories.pickup(driveSys, arm, shooter, 2))
@@ -254,6 +264,12 @@ public class RobotContainer {
             .andThen(AutoFactories.pickup(driveSys, arm, shooter, 0))
             .andThen(AutoFactories.driveToPos(driveSys, returningShotPos))
             .andThen(AutoFactories.speaker(driveSys, arm, shooter)));
+
+            
+    autoChooser.addDefaultOption(
+        "1 note",
+        AutoFactories.speaker(driveSys, arm, shooter)
+    );
   }
 
   /** Updates the pose estimator to use the correct initial pose */
@@ -402,6 +418,8 @@ public class RobotContainer {
     secondController
         .rightTrigger(0.2)
         .whileTrue(Commands.run(() -> shooter.cmdVel(-4000, 4000), shooter));
+
+    driverController.x().onTrue(Commands.runOnce(()->{driveSys.setPosition(          FieldConstants.flip(new Pose2d(1.4, 5.5, Rotation2d.fromRotations(0.5)))      );;}));
   }
 
   /**
