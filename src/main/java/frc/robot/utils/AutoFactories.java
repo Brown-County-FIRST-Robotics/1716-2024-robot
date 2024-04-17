@@ -127,10 +127,26 @@ public class AutoFactories {
                         FieldConstants.flip(new Rotation2d()))));
     return Intake.fromFloor(shooter, arm)
         .raceWith(
-            drive2.onlyWhile(()->{return drivetrain.getPosition().getTranslation().getDistance(target.minus(
-                            (new Translation2d(
-                                (pos == 0) ? 0.5 : 1, FieldConstants.flip(new Rotation2d()))))
-                        )>0.3||Math.abs(drivetrain.getPosition().getRotation().minus(FieldConstants.flip(new Rotation2d())).getDegrees())>7;})
+            drive2
+                .onlyWhile(
+                    () -> {
+                      return drivetrain
+                                  .getPosition()
+                                  .getTranslation()
+                                  .getDistance(
+                                      target.minus(
+                                          (new Translation2d(
+                                              (pos == 0) ? 0.5 : 1,
+                                              FieldConstants.flip(new Rotation2d())))))
+                              > 0.3
+                          || Math.abs(
+                                  drivetrain
+                                      .getPosition()
+                                      .getRotation()
+                                      .minus(FieldConstants.flip(new Rotation2d()))
+                                      .getDegrees())
+                              > 7;
+                    })
                 .alongWith(
                     Commands.runOnce(
                         () ->

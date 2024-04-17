@@ -265,11 +265,7 @@ public class RobotContainer {
             .andThen(AutoFactories.driveToPos(driveSys, returningShotPos))
             .andThen(AutoFactories.speaker(driveSys, arm, shooter)));
 
-            
-    autoChooser.addOption(
-        "1 note",
-        AutoFactories.speaker(driveSys, arm, shooter)
-    );
+    autoChooser.addOption("1 note", AutoFactories.speaker(driveSys, arm, shooter));
   }
 
   /** Updates the pose estimator to use the correct initial pose */
@@ -419,7 +415,15 @@ public class RobotContainer {
         .rightTrigger(0.2)
         .whileTrue(Commands.run(() -> shooter.cmdVel(-4000, 4000), shooter));
 
-    driverController.x().onTrue(Commands.runOnce(()->{driveSys.setPosition(          FieldConstants.flip(new Pose2d(1.4, 5.5, Rotation2d.fromRotations(0.5)))      );;}));
+    driverController
+        .x()
+        .onTrue(
+            Commands.runOnce(
+                () -> {
+                  driveSys.setPosition(
+                      FieldConstants.flip(new Pose2d(1.4, 5.5, Rotation2d.fromRotations(0.5))));
+                  ;
+                }));
   }
 
   /**
