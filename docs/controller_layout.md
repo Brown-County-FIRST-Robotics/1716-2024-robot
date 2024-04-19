@@ -21,5 +21,6 @@
 | Left Stick Y                   | Change angle of arm when disable presets override is activated |
 | Right Stick Y                  | Climb                                                          |
 | A button                       | Eject game piece                                               |
+| B button                       | Intake without moving arm                                      |
 |                                |                                                                |
 | Mouse                          | Overrides                                                      |

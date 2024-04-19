@@ -3,6 +3,8 @@ package frc.robot.subsystems.arm;
 import edu.wpi.first.math.geometry.*;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
+import edu.wpi.first.wpilibj.util.Color;
+import edu.wpi.first.wpilibj.util.Color8Bit;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.utils.LoggedTunableNumber;
 import org.littletonrobotics.junction.Logger;
@@ -17,7 +19,7 @@ public class Arm extends SubsystemBase {
   ArmIOInputsAutoLogged inputs = new ArmIOInputsAutoLogged();
   Rotation2d cmdAng = new Rotation2d();
   LoggedTunableNumber gravFF = new LoggedTunableNumber("Arm Gravity FF", 0.0);
-  LoggedTunableNumber neutralPosition = new LoggedTunableNumber("Arm neutral position", 0.0);
+  LoggedTunableNumber neutralPosition = new LoggedTunableNumber("Arm neutral position", 0.2);
 
   /**
    * Constructs the subsystem from an IO object
@@ -25,6 +27,12 @@ public class Arm extends SubsystemBase {
    * @param io The IO interface to use
    */
   public Arm(ArmIO io) {
+    realArmStates.setColor(new Color8Bit(Color.kRed));
+    if (Logger.hasReplaySource()) {
+      cmdArmStates.setColor(new Color8Bit(Color.kYellow));
+    } else {
+      cmdArmStates.setColor(new Color8Bit(Color.kGreen));
+    }
     realStates.getRoot("Root", 50, 50).append(realArmStates);
     cmdStates.getRoot("Root", 50, 50).append(cmdArmStates);
     Logger.recordOutput("Arm/realState", realStates);
@@ -32,6 +40,7 @@ public class Arm extends SubsystemBase {
     this.io = io;
     io.updateInputs(inputs);
     Logger.processInputs("Arm/Inputs", inputs);
+    commandNeutral();
   }
 
   /**

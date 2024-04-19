@@ -1,10 +1,21 @@
 package frc.robot;
 
+import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.hal.HALUtil;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Filesystem;
+import edu.wpi.first.wpilibj.GenericHID.RumbleType;
+import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.Commands;
+import frc.robot.utils.Alert;
+import frc.robot.utils.CustomAlerts;
 import frc.robot.utils.PeriodicRunnable;
+import frc.robot.utils.shuffleboard.LoggedShuffleBoardChooser;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.text.SimpleDateFormat;
@@ -26,9 +37,13 @@ import org.littletonrobotics.junction.wpilog.WPILOGWriter;
  */
 public class Robot extends LoggedRobot {
   private Command autonomousCommand;
-  int ct = 0;
-
+  boolean builtPoseSetter = false;
   private RobotContainer robotContainer;
+  LoggedShuffleBoardChooser<Pose2d> poseChooser =
+      new LoggedShuffleBoardChooser<>("Pre Match", "Position chooser");
+
+  private XboxController driverController = new XboxController(0);
+  private boolean hasRumbledMatchTime = false; // hasStarted, hasEnded
 
   /**
    * This function is run when the robot is first started up and should be used for any
@@ -49,12 +64,17 @@ public class Robot extends LoggedRobot {
       reader.close();
     } catch (FileNotFoundException e) {
       tagName = "Deploy did not send git data";
+      new Alert(
+              "Git data was not included in deploy. This will make it impossible to determine what code was run from the logfile. ",
+              Alert.AlertType.WARNING)
+          .set(true);
     }
     try {
       Scanner reader = new Scanner(deployerFile);
       deployer = reader.nextLine();
       reader.close();
     } catch (FileNotFoundException e) {
+      new Alert("The identity of the deployer is unknown", Alert.AlertType.WARNING).set(true);
       deployer = "Unknown deployer";
     }
     Logger.recordMetadata("Tag Name", tagName);
@@ -85,7 +105,10 @@ public class Robot extends LoggedRobot {
     }
     // Start AdvantageKit logger
     Logger.start();
+    CustomAlerts.makeCANFailAlerts(0.9);
     robotContainer = new RobotContainer();
+    var capture = CameraServer.startAutomaticCapture();
+    Shuffleboard.getTab("Teleop").add(capture).withSize(6, 5).withPosition(3, 0);
     // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
     // autonomous chooser on the dashboard.
   }
@@ -105,10 +128,24 @@ public class Robot extends LoggedRobot {
     // block in order for anything in the Command-based framework to work.
     CommandScheduler.getInstance().run();
     PeriodicRunnable.runPeriodic();
-    if (ct == 3) {
-      robotContainer.useAlliance();
+    if (!builtPoseSetter) {
+      poseChooser.addDefaultOption(
+          "Front of Speaker",
+          FieldConstants.flip(new Pose2d(1.4, 5.5, Rotation2d.fromRotations(0.5))));
+      poseChooser.addOption(
+          "Source side", FieldConstants.flip(new Pose2d(0.5, 4.1, Rotation2d.fromRotations(0.25))));
+      poseChooser.addOption(
+          "Amp side", FieldConstants.flip(new Pose2d(0.5, 7, Rotation2d.fromRotations(0.75))));
+      poseChooser.addOption(
+          "Source side tangent",
+          FieldConstants.flip(new Pose2d(0.7, 4.3, Rotation2d.fromDegrees(120))));
+      poseChooser.addOption(
+          "Amp side tangent",
+          FieldConstants.flip(new Pose2d(0.7, 6.8, Rotation2d.fromDegrees(240))));
+      poseChooser.attach(robotContainer::setPose);
+      builtPoseSetter = true;
+      robotContainer.configureAutos();
     }
-    ct += 1;
   }
 
   /** This function is called once each time the robot enters Disabled mode. */
@@ -146,7 +183,20 @@ public class Robot extends LoggedRobot {
 
   /** This function is called periodically during operator control. */
   @Override
-  public void teleopPeriodic() {}
+  public void teleopPeriodic() {
+    if (DriverStation.getMatchTime() <= 30.0
+        && DriverStation.isFMSAttached()
+        && !hasRumbledMatchTime) {
+      Commands.runOnce(() -> driverController.setRumble(RumbleType.kRightRumble, 1.0))
+          .andThen(
+              Commands.waitSeconds(1.0)
+                  .andThen(
+                      Commands.runOnce(
+                          () -> driverController.setRumble(RumbleType.kRightRumble, 0.0))))
+          .schedule();
+      hasRumbledMatchTime = true;
+    }
+  }
 
   @Override
   public void testInit() {

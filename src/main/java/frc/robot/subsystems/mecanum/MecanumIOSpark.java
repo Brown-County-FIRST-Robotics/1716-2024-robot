@@ -4,6 +4,7 @@ import com.revrobotics.*;
 import edu.wpi.first.math.kinematics.MecanumDriveWheelPositions;
 import edu.wpi.first.math.kinematics.MecanumDriveWheelSpeeds;
 import frc.robot.Constants;
+import frc.robot.utils.CustomAlerts;
 import frc.robot.utils.LoggedTunableNumber;
 import org.littletonrobotics.junction.Logger;
 
@@ -110,6 +111,10 @@ public class MecanumIOSpark implements MecanumIO {
     Logger.recordOutput("Firmware/FRController", fr.getFirmwareString());
     Logger.recordOutput("Firmware/BLController", bl.getFirmwareString());
     Logger.recordOutput("Firmware/BRController", br.getFirmwareString());
+    CustomAlerts.makeOverTempAlert(fl, 60, 50, "FL motor");
+    CustomAlerts.makeOverTempAlert(fr, 60, 50, "FR motor");
+    CustomAlerts.makeOverTempAlert(bl, 60, 50, "BL motor");
+    CustomAlerts.makeOverTempAlert(br, 60, 50, "BR motor");
   }
 
   @Override

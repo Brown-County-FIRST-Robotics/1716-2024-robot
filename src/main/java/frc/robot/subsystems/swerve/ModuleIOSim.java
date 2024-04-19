@@ -1,7 +1,6 @@
 package frc.robot.subsystems.swerve;
 
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import frc.robot.SwerveSimManager;
 
@@ -27,25 +26,20 @@ public class ModuleIOSim implements ModuleIO {
 
   @Override
   public void updateInputs(ModuleIOInputs inputs) {
-    var realAng =
-        SwerveSimManager.getInstance()
-            .getModPos(index)
-            .angle
-            .plus(chassisOffsets[index])
-            .unaryMinus();
-    inputs.pos =
-        new SwerveModulePosition(
-            SwerveSimManager.getInstance().getModPos(index).distanceMeters, realAng);
-    inputs.vel =
-        new SwerveModuleState(
-            SwerveSimManager.getInstance().getModState(index).speedMetersPerSecond, realAng);
-    inputs.offset = 0;
+    inputs.absSensorOmega = -SwerveSimManager.getInstance().getSteerVel(index);
+    inputs.relativeSensorOmega = SwerveSimManager.getInstance().getSteerVel(index);
+    inputs.offset = chassisOffsets[index].getRotations();
+    inputs.absSensorAngle =
+        SwerveSimManager.getInstance().getModPos(index).angle.unaryMinus().getRotations();
+    inputs.relativeSensorAngle =
+        SwerveSimManager.getInstance().getModPos(index).angle.getRotations();
+    inputs.thrustPos = SwerveSimManager.getInstance().getModPos(index).distanceMeters;
+    inputs.thrustVel = SwerveSimManager.getInstance().getModState(index).speedMetersPerSecond;
   }
 
   @Override
-  public void setCmdState(SwerveModuleState state) {
-    var realRot = state.angle.unaryMinus().minus(chassisOffsets[index]);
+  public void setCmdState(double ang, double vel) {
     SwerveSimManager.getInstance()
-        .commandState(index, new SwerveModuleState(state.speedMetersPerSecond, realRot));
+        .commandState(index, new SwerveModuleState(vel, Rotation2d.fromRotations(ang)));
   }
 }

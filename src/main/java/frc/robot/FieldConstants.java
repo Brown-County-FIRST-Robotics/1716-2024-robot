@@ -1,5 +1,7 @@
 package frc.robot;
 
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -12,7 +14,7 @@ public class FieldConstants {
    * @return The position of the speaker, based on alliance color
    */
   public static Translation3d getSpeaker() {
-    return flip(new Translation3d(0.458597 - 10 * 0.0254, 5.544566, 2.1105114));
+    return flip(new Translation3d(-.04 + 9 * .0254, 5.55, 81 * 0.0254));
   }
 
   public static Translation2d getGamePiece(int ind) {
@@ -62,6 +64,28 @@ public class FieldConstants {
   }
 
   /**
+   * Flips the rotation based on alliance
+   *
+   * @param inp The rotation when on the blue alliance
+   * @return The rotation for the FMS alliance
+   */
+  public static Rotation2d flip(Rotation2d inp) {
+    return DriverStation.getAlliance().orElse(DriverStation.Alliance.Blue)
+            == DriverStation.Alliance.Blue
+        ? inp
+        : new Rotation2d(-inp.getCos(), inp.getSin());
+  }
+  /**
+   * Flips the pose based on alliance
+   *
+   * @param inp The pose when on the blue alliance
+   * @return The pose for the FMS alliance
+   */
+  public static Pose2d flip(Pose2d inp) {
+    return new Pose2d(flip(inp.getTranslation()), flip(inp.getRotation()));
+  }
+
+  /**
    * Flips the translation based on alliance
    *
    * @param inp The position for the blue alliance
@@ -69,5 +93,15 @@ public class FieldConstants {
    */
   public static Translation2d flip(Translation2d inp) {
     return flip(new Translation3d(inp.getX(), inp.getY(), 0)).toTranslation2d();
+  }
+
+  /**
+   * Gets the position for scoring into the amp
+   *
+   * @return The position of the robot to score into the amp. Automatically flips based on FMS
+   *     alliance.
+   */
+  public static Translation2d getAmp() {
+    return flip(new Translation2d(1.8, 7.87));
   }
 }

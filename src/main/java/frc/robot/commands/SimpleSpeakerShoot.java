@@ -18,8 +18,8 @@ public class SimpleSpeakerShoot extends Command {
   Consumer<Optional<Rotation2d>> rotationCommander;
   Shooter shooter;
   boolean firing = false;
-  LoggedTunableNumber shooterAngleThreshold = new LoggedTunableNumber("ang threshold", 0.01);
-  LoggedTunableNumber botAngleThreshold = new LoggedTunableNumber("bot ang threshold", 0.02);
+  LoggedTunableNumber shooterAngleThreshold = new LoggedTunableNumber("Simple ang threshold", 0.01);
+  LoggedTunableNumber botAngleThreshold = new LoggedTunableNumber("Simple bot ang threshold", 0.02);
   XboxController overrideController;
 
   public SimpleSpeakerShoot(
@@ -73,7 +73,7 @@ public class SimpleSpeakerShoot extends Command {
               overrideController.getLeftY() * Overrides.armAngleOverrideIncrementScale.get()));
       blocked = blocked || (!overrideController.getAButton()); // Use the A button to fire
     } else {
-      Rotation2d shooterAngle = Rotation2d.fromRadians(1);
+      Rotation2d shooterAngle = Rotation2d.fromDegrees(Overrides.kitbot.get());
       arm.setAngle(shooterAngle);
       blocked =
           blocked

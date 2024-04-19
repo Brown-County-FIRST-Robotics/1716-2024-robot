@@ -8,6 +8,7 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
+import frc.robot.utils.PoseEstimator;
 import java.util.List;
 
 /** This interface represents a holonomic drivetrain */
@@ -91,6 +92,8 @@ public interface Drivetrain extends Subsystem {
    * @return Array of accelerations (in MPS^2) as [x,y,z]
    */
   double[] getAcceleration();
+
+  PoseEstimator getPE();
 
   /** Locks the wheels. In mecanum, this does nothing. */
   default void lockWheels() {}

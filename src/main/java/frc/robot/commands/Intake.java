@@ -3,6 +3,7 @@ package frc.robot.commands;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.subsystems.LEDs;
 import frc.robot.subsystems.arm.Arm;
 import frc.robot.subsystems.shooter.Shooter;
 import frc.robot.utils.LoggedTunableNumber;
@@ -16,7 +17,7 @@ public class Intake extends Command {
   Shooter shooter;
   Arm arm;
   XboxController controller;
-  static LoggedTunableNumber armPreset = new LoggedTunableNumber("Presets/Intake_Arm", -0.14);
+  static LoggedTunableNumber armPreset = new LoggedTunableNumber("Presets/Intake_Arm", -0.16);
   static LoggedTunableNumber topSpeed = new LoggedTunableNumber("Presets/Intake_Top", 1700);
   static LoggedTunableNumber bottomSpeed = new LoggedTunableNumber("Presets/Intake_Bottom", -2000);
   static LoggedTunableNumber armSourcePreset =
@@ -35,6 +36,10 @@ public class Intake extends Command {
     return new Intake(shooter, arm, overrideController, armPreset);
   }
 
+  public static Intake fromFloor(Shooter shooter, Arm arm) {
+    return new Intake(shooter, arm, armPreset);
+  }
+
   /**
    * Makes a new command to intake from the source
    *
@@ -47,13 +52,17 @@ public class Intake extends Command {
     return new Intake(shooter, arm, overrideController, armSourcePreset);
   }
 
-  private Intake(
-      Shooter shooter, Arm arm, XboxController overrideController, LoggedTunableNumber preset) {
+  private Intake(Shooter shooter, Arm arm, LoggedTunableNumber preset) {
     this.shooter = shooter;
     this.preset = preset;
     this.arm = arm;
-    controller = overrideController;
     addRequirements(shooter, arm);
+  }
+
+  private Intake(
+      Shooter shooter, Arm arm, XboxController overrideController, LoggedTunableNumber preset) {
+    this(shooter, arm, preset);
+    controller = overrideController;
   }
 
   @Override
@@ -74,6 +83,8 @@ public class Intake extends Command {
     shooter.cmdVel(0, 0);
     shooter.setFeeder(0);
     arm.commandNeutral();
+    LEDs.getInstance().mode1();
+    LEDs.getInstance().intakelight();
   }
 
   @Override
@@ -82,12 +93,16 @@ public class Intake extends Command {
   }
 
   private void setSpeedsAndPositions() {
-    if (!Overrides.disableArmAnglePresets.get()) {
-      arm.setAngle(Rotation2d.fromRotations(preset.get()));
+    if (controller != null) {
+      if (!Overrides.disableArmAnglePresets.get() && !controller.getBButton()) {
+        arm.setAngle(Rotation2d.fromRotations(preset.get()));
+      } else if (Overrides.disableArmAnglePresets.get()) {
+        arm.commandIncrement(
+            Rotation2d.fromRotations(
+                controller.getLeftY() * Overrides.armAngleOverrideIncrementScale.get()));
+      }
     } else {
-      arm.commandIncrement(
-          Rotation2d.fromRotations(
-              controller.getLeftY() * Overrides.armAngleOverrideIncrementScale.get()));
+      arm.setAngle(Rotation2d.fromRotations(preset.get()));
     }
     shooter.cmdVel(topSpeed.get(), bottomSpeed.get());
   }

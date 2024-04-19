@@ -80,6 +80,16 @@ public class SwerveSimManager {
   }
 
   /**
+   * Gets the velocity of the steering motor of the swerve module
+   *
+   * @param mnum The index of the module
+   * @return The steer motor velocity
+   */
+  public double getSteerVel(int mnum) {
+    return steerStates[mnum].velocity;
+  }
+
+  /**
    * Gets the state of the swerve module
    *
    * @param mnum The index of the module
