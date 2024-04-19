@@ -134,9 +134,14 @@ loadScripts(document, 'script');</script>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Gets the state of the swerve module</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#propagate()" class="member-name-link">propagate</a>()</code></div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>double</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getSteerVel(int)" class="member-name-link">getSteerVel</a><wbr>(int&nbsp;mnum)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Gets the velocity of the steering motor of the swerve module</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#propagate()" class="member-name-link">propagate</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Step the simulation one tick (20 ms) forward.</div>
 </div>
 </div>
@@ -205,6 +210,19 @@ loadScripts(document, 'script');</script>
 <dd><code>mnum</code> - The index of the module</dd>
 <dt>Returns:</dt>
 <dd>The position of the module</dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="getSteerVel(int)">
+<h3>getSteerVel</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">double</span>&nbsp;<span class="element-name">getSteerVel</span><wbr><span class="parameters">(int&nbsp;mnum)</span></div>
+<div class="block">Gets the velocity of the steering motor of the swerve module</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>mnum</code> - The index of the module</dd>
+<dt>Returns:</dt>
+<dd>The steer motor velocity</dd>
 </dl>
 </section>
 </li>

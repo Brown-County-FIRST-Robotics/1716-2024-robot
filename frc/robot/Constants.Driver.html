@@ -96,19 +96,24 @@ loadScripts(document, 'script');</script>
 <div class="block">The port the driver controller is on</div>
 </div>
 <div class="col-first odd-row-color"><code>static final double</code></div>
-<div class="col-second odd-row-color"><code><a href="#MAX_THETA_SPEED" class="member-name-link">MAX_THETA_SPEED</a></code></div>
+<div class="col-second odd-row-color"><code><a href="#MAX_ACCELERATION" class="member-name-link">MAX_ACCELERATION</a></code></div>
 <div class="col-last odd-row-color">
-<div class="block">The maximum angular velocity during manual operation</div>
+<div class="block">The maximum acceleration in m/s^2 (does not include decelleration)</div>
 </div>
 <div class="col-first even-row-color"><code>static final double</code></div>
-<div class="col-second even-row-color"><code><a href="#MAX_X_SPEED" class="member-name-link">MAX_X_SPEED</a></code></div>
+<div class="col-second even-row-color"><code><a href="#MAX_FRICTION_ACCELERATION" class="member-name-link">MAX_FRICTION_ACCELERATION</a></code></div>
 <div class="col-last even-row-color">
-<div class="block">The maximum x velocity during manual operation</div>
+<div class="block">The maximum acceleration to prevent slipping in m/s^2</div>
 </div>
 <div class="col-first odd-row-color"><code>static final double</code></div>
-<div class="col-second odd-row-color"><code><a href="#MAX_Y_SPEED" class="member-name-link">MAX_Y_SPEED</a></code></div>
+<div class="col-second odd-row-color"><code><a href="#MAX_SPEED" class="member-name-link">MAX_SPEED</a></code></div>
 <div class="col-last odd-row-color">
-<div class="block">The maximum y velocity during manual operation</div>
+<div class="block">The maximum lateral velocity during manual operation in m/s</div>
+</div>
+<div class="col-first even-row-color"><code>static final double</code></div>
+<div class="col-second even-row-color"><code><a href="#MAX_THETA_SPEED" class="member-name-link">MAX_THETA_SPEED</a></code></div>
+<div class="col-last even-row-color">
+<div class="block">The maximum angular velocity during manual operation in rad/s</div>
 </div>
 </div>
 </section>
@@ -145,30 +150,15 @@ loadScripts(document, 'script');</script>
 <h2>Field Details</h2>
 <ul class="member-list">
 <li>
-<section class="detail" id="MAX_X_SPEED">
-<h3>MAX_X_SPEED</h3>
-<div class="member-signature"><span class="modifiers">public static final</span>&nbsp;<span class="return-type">double</span>&nbsp;<span class="element-name">MAX_X_SPEED</span></div>
-<div class="block">The maximum x velocity during manual operation</div>
+<section class="detail" id="MAX_SPEED">
+<h3>MAX_SPEED</h3>
+<div class="member-signature"><span class="modifiers">public static final</span>&nbsp;<span class="return-type">double</span>&nbsp;<span class="element-name">MAX_SPEED</span></div>
+<div class="block">The maximum lateral velocity during manual operation in m/s</div>
 <dl class="notes">
 <dt>See Also:</dt>
 <dd>
 <ul class="see-list">
-<li><a href="../../constant-values.html#frc.robot.Constants.Driver.MAX_X_SPEED">Constant Field Values</a></li>
-</ul>
-</dd>
-</dl>
-</section>
-</li>
-<li>
-<section class="detail" id="MAX_Y_SPEED">
-<h3>MAX_Y_SPEED</h3>
-<div class="member-signature"><span class="modifiers">public static final</span>&nbsp;<span class="return-type">double</span>&nbsp;<span class="element-name">MAX_Y_SPEED</span></div>
-<div class="block">The maximum y velocity during manual operation</div>
-<dl class="notes">
-<dt>See Also:</dt>
-<dd>
-<ul class="see-list">
-<li><a href="../../constant-values.html#frc.robot.Constants.Driver.MAX_Y_SPEED">Constant Field Values</a></li>
+<li><a href="../../constant-values.html#frc.robot.Constants.Driver.MAX_SPEED">Constant Field Values</a></li>
 </ul>
 </dd>
 </dl>
@@ -178,12 +168,42 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="MAX_THETA_SPEED">
 <h3>MAX_THETA_SPEED</h3>
 <div class="member-signature"><span class="modifiers">public static final</span>&nbsp;<span class="return-type">double</span>&nbsp;<span class="element-name">MAX_THETA_SPEED</span></div>
-<div class="block">The maximum angular velocity during manual operation</div>
+<div class="block">The maximum angular velocity during manual operation in rad/s</div>
 <dl class="notes">
 <dt>See Also:</dt>
 <dd>
 <ul class="see-list">
 <li><a href="../../constant-values.html#frc.robot.Constants.Driver.MAX_THETA_SPEED">Constant Field Values</a></li>
+</ul>
+</dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="MAX_ACCELERATION">
+<h3>MAX_ACCELERATION</h3>
+<div class="member-signature"><span class="modifiers">public static final</span>&nbsp;<span class="return-type">double</span>&nbsp;<span class="element-name">MAX_ACCELERATION</span></div>
+<div class="block">The maximum acceleration in m/s^2 (does not include decelleration)</div>
+<dl class="notes">
+<dt>See Also:</dt>
+<dd>
+<ul class="see-list">
+<li><a href="../../constant-values.html#frc.robot.Constants.Driver.MAX_ACCELERATION">Constant Field Values</a></li>
+</ul>
+</dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="MAX_FRICTION_ACCELERATION">
+<h3>MAX_FRICTION_ACCELERATION</h3>
+<div class="member-signature"><span class="modifiers">public static final</span>&nbsp;<span class="return-type">double</span>&nbsp;<span class="element-name">MAX_FRICTION_ACCELERATION</span></div>
+<div class="block">The maximum acceleration to prevent slipping in m/s^2</div>
+<dl class="notes">
+<dt>See Also:</dt>
+<dd>
+<ul class="see-list">
+<li><a href="../../constant-values.html#frc.robot.Constants.Driver.MAX_FRICTION_ACCELERATION">Constant Field Values</a></li>
 </ul>
 </dd>
 </dl>

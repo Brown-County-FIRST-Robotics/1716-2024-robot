@@ -91,33 +91,46 @@ loadScripts(document, 'script');</script>
 <div class="table-header col-second">Field</div>
 <div class="table-header col-last">Description</div>
 <div class="col-first even-row-color"><code>double</code></div>
+<div class="col-second even-row-color"><code><a href="#absSensorAngle" class="member-name-link">absSensorAngle</a></code></div>
+<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-first odd-row-color"><code>double</code></div>
+<div class="col-second odd-row-color"><code><a href="#absSensorOmega" class="member-name-link">absSensorOmega</a></code></div>
+<div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-first even-row-color"><code>double</code></div>
 <div class="col-second even-row-color"><code><a href="#offset" class="member-name-link">offset</a></code></div>
 <div class="col-last even-row-color">
 <div class="block">The swerve module offset</div>
 </div>
-<div class="col-first odd-row-color"><code>edu.wpi.first.math.kinematics.SwerveModulePosition</code></div>
-<div class="col-second odd-row-color"><code><a href="#pos" class="member-name-link">pos</a></code></div>
-<div class="col-last odd-row-color">
-<div class="block">The position according to the encoders</div>
-</div>
+<div class="col-first odd-row-color"><code>double</code></div>
+<div class="col-second odd-row-color"><code><a href="#relativeSensorAngle" class="member-name-link">relativeSensorAngle</a></code></div>
+<div class="col-last odd-row-color">&nbsp;</div>
 <div class="col-first even-row-color"><code>double</code></div>
-<div class="col-second even-row-color"><code><a href="#steerTempC" class="member-name-link">steerTempC</a></code></div>
-<div class="col-last even-row-color">
+<div class="col-second even-row-color"><code><a href="#relativeSensorOmega" class="member-name-link">relativeSensorOmega</a></code></div>
+<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-first odd-row-color"><code>double</code></div>
+<div class="col-second odd-row-color"><code><a href="#steerTempC" class="member-name-link">steerTempC</a></code></div>
+<div class="col-last odd-row-color">
 <div class="block">The temperature of the steer motor in Celsius</div>
 </div>
-<div class="col-first odd-row-color"><code>double</code></div>
-<div class="col-second odd-row-color"><code><a href="#thrustErr" class="member-name-link">thrustErr</a></code></div>
-<div class="col-last odd-row-color">
+<div class="col-first even-row-color"><code>double</code></div>
+<div class="col-second even-row-color"><code><a href="#thrustErr" class="member-name-link">thrustErr</a></code></div>
+<div class="col-last even-row-color">
 <div class="block">The closed-loop error of the thrust motor</div>
 </div>
+<div class="col-first odd-row-color"><code>double</code></div>
+<div class="col-second odd-row-color"><code><a href="#thrustOutput" class="member-name-link">thrustOutput</a></code></div>
+<div class="col-last odd-row-color">&nbsp;</div>
 <div class="col-first even-row-color"><code>double</code></div>
-<div class="col-second even-row-color"><code><a href="#thrustTempC" class="member-name-link">thrustTempC</a></code></div>
-<div class="col-last even-row-color">
+<div class="col-second even-row-color"><code><a href="#thrustPos" class="member-name-link">thrustPos</a></code></div>
+<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-first odd-row-color"><code>double</code></div>
+<div class="col-second odd-row-color"><code><a href="#thrustTempC" class="member-name-link">thrustTempC</a></code></div>
+<div class="col-last odd-row-color">
 <div class="block">The temperature of the thrust motor in Celsius</div>
 </div>
-<div class="col-first odd-row-color"><code>edu.wpi.first.math.kinematics.SwerveModuleState</code></div>
-<div class="col-second odd-row-color"><code><a href="#vel" class="member-name-link">vel</a></code></div>
-<div class="col-last odd-row-color">
+<div class="col-first even-row-color"><code>double</code></div>
+<div class="col-second even-row-color"><code><a href="#thrustVel" class="member-name-link">thrustVel</a></code></div>
+<div class="col-last even-row-color">
 <div class="block">The velocity according to the encoders</div>
 </div>
 </div>
@@ -155,17 +168,46 @@ loadScripts(document, 'script');</script>
 <h2>Field Details</h2>
 <ul class="member-list">
 <li>
-<section class="detail" id="vel">
-<h3>vel</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">edu.wpi.first.math.kinematics.SwerveModuleState</span>&nbsp;<span class="element-name">vel</span></div>
+<section class="detail" id="thrustVel">
+<h3>thrustVel</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">double</span>&nbsp;<span class="element-name">thrustVel</span></div>
 <div class="block">The velocity according to the encoders</div>
 </section>
 </li>
 <li>
-<section class="detail" id="pos">
-<h3>pos</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">edu.wpi.first.math.kinematics.SwerveModulePosition</span>&nbsp;<span class="element-name">pos</span></div>
-<div class="block">The position according to the encoders</div>
+<section class="detail" id="thrustPos">
+<h3>thrustPos</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">double</span>&nbsp;<span class="element-name">thrustPos</span></div>
+</section>
+</li>
+<li>
+<section class="detail" id="relativeSensorAngle">
+<h3>relativeSensorAngle</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">double</span>&nbsp;<span class="element-name">relativeSensorAngle</span></div>
+</section>
+</li>
+<li>
+<section class="detail" id="relativeSensorOmega">
+<h3>relativeSensorOmega</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">double</span>&nbsp;<span class="element-name">relativeSensorOmega</span></div>
+</section>
+</li>
+<li>
+<section class="detail" id="thrustOutput">
+<h3>thrustOutput</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">double</span>&nbsp;<span class="element-name">thrustOutput</span></div>
+</section>
+</li>
+<li>
+<section class="detail" id="absSensorOmega">
+<h3>absSensorOmega</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">double</span>&nbsp;<span class="element-name">absSensorOmega</span></div>
+</section>
+</li>
+<li>
+<section class="detail" id="absSensorAngle">
+<h3>absSensorAngle</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">double</span>&nbsp;<span class="element-name">absSensorAngle</span></div>
 </section>
 </li>
 <li>

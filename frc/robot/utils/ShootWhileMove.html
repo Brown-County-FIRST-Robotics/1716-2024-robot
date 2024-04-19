@@ -148,11 +148,10 @@ loadScripts(document, 'script');</script>
 <div class="block">Calculates a shooting command using kinematics and prediction</div>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="ShootWhileMove.ShootingCommand.html" title="class in frc.robot.utils">ShootWhileMove.ShootingCommand</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#calcSimpleCommand(edu.wpi.first.math.geometry.Translation3d,edu.wpi.first.math.geometry.Translation2d)" class="member-name-link">calcSimpleCommand</a><wbr>(edu.wpi.first.math.geometry.Translation3d&nbsp;botPose,
- edu.wpi.first.math.geometry.Translation2d&nbsp;botVelocity)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
-<div class="block">Calculates a basic shooting command</div>
-</div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#calcSimpleCommand(edu.wpi.first.math.geometry.Translation3d,edu.wpi.first.math.geometry.Translation3d,edu.wpi.first.math.geometry.Translation2d)" class="member-name-link">calcSimpleCommand</a><wbr>(edu.wpi.first.math.geometry.Translation3d&nbsp;target,
+ edu.wpi.first.math.geometry.Translation3d&nbsp;botPose,
+ edu.wpi.first.math.geometry.Translation2d&nbsp;botVel)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static edu.wpi.first.math.geometry.Twist2d</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#discreteSpeeds(edu.wpi.first.math.kinematics.ChassisSpeeds,double)" class="member-name-link">discreteSpeeds</a><wbr>(edu.wpi.first.math.kinematics.ChassisSpeeds&nbsp;speeds,
  double&nbsp;dt)</code></div>
@@ -230,18 +229,11 @@ loadScripts(document, 'script');</script>
 </section>
 </li>
 <li>
-<section class="detail" id="calcSimpleCommand(edu.wpi.first.math.geometry.Translation3d,edu.wpi.first.math.geometry.Translation2d)">
+<section class="detail" id="calcSimpleCommand(edu.wpi.first.math.geometry.Translation3d,edu.wpi.first.math.geometry.Translation3d,edu.wpi.first.math.geometry.Translation2d)">
 <h3>calcSimpleCommand</h3>
-<div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="ShootWhileMove.ShootingCommand.html" title="class in frc.robot.utils">ShootWhileMove.ShootingCommand</a></span>&nbsp;<span class="element-name">calcSimpleCommand</span><wbr><span class="parameters">(edu.wpi.first.math.geometry.Translation3d&nbsp;botPose,
- edu.wpi.first.math.geometry.Translation2d&nbsp;botVelocity)</span></div>
-<div class="block">Calculates a basic shooting command</div>
-<dl class="notes">
-<dt>Parameters:</dt>
-<dd><code>botPose</code> - The pose of the robot relative to the target</dd>
-<dd><code>botVelocity</code> - The velocity of the robot</dd>
-<dt>Returns:</dt>
-<dd>The commands for the shooter and drive base</dd>
-</dl>
+<div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="ShootWhileMove.ShootingCommand.html" title="class in frc.robot.utils">ShootWhileMove.ShootingCommand</a></span>&nbsp;<span class="element-name">calcSimpleCommand</span><wbr><span class="parameters">(edu.wpi.first.math.geometry.Translation3d&nbsp;target,
+ edu.wpi.first.math.geometry.Translation3d&nbsp;botPose,
+ edu.wpi.first.math.geometry.Translation2d&nbsp;botVel)</span></div>
 </section>
 </li>
 <li>

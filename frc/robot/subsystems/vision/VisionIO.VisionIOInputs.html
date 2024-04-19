@@ -99,36 +99,12 @@ implements org.littletonrobotics.junction.inputs.LoggableInputs</span></div>
 <div class="table-header col-first">Modifier and Type</div>
 <div class="table-header col-second">Field</div>
 <div class="table-header col-last">Description</div>
-<div class="col-first even-row-color"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Optional.html" title="class or interface in java.util" class="external-link">Optional</a>&lt;<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Double.html" title="class or interface in java.lang" class="external-link">Double</a>&gt;</code></div>
-<div class="col-second even-row-color"><code><a href="#errors" class="member-name-link">errors</a></code></div>
-<div class="col-last even-row-color">
-<div class="block">The RMS error of the detection</div>
-</div>
-<div class="col-first odd-row-color"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Optional.html" title="class or interface in java.util" class="external-link">Optional</a>&lt;<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>[]&gt;</code></div>
-<div class="col-second odd-row-color"><code><a href="#ids" class="member-name-link">ids</a></code></div>
-<div class="col-last odd-row-color">
-<div class="block">The IDs of the apriltags detected</div>
-</div>
-<div class="col-first even-row-color"><code>boolean</code></div>
-<div class="col-second even-row-color"><code><a href="#isRecording" class="member-name-link">isRecording</a></code></div>
-<div class="col-last even-row-color">
-<div class="block">If the camera is recording</div>
-</div>
-<div class="col-first odd-row-color"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Optional.html" title="class or interface in java.util" class="external-link">Optional</a>&lt;double[]&gt;</code></div>
-<div class="col-second odd-row-color"><code><a href="#pose" class="member-name-link">pose</a></code></div>
-<div class="col-last odd-row-color">
-<div class="block">The pose from the camera</div>
-</div>
-<div class="col-first even-row-color"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
-<div class="col-second even-row-color"><code><a href="#recordingPath" class="member-name-link">recordingPath</a></code></div>
-<div class="col-last even-row-color">
-<div class="block">The current path of the video file</div>
-</div>
+<div class="col-first even-row-color"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Optional.html" title="class or interface in java.util" class="external-link">Optional</a>&lt;edu.wpi.first.math.geometry.Pose3d&gt;</code></div>
+<div class="col-second even-row-color"><code><a href="#pose" class="member-name-link">pose</a></code></div>
+<div class="col-last even-row-color">&nbsp;</div>
 <div class="col-first odd-row-color"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Optional.html" title="class or interface in java.util" class="external-link">Optional</a>&lt;<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Double.html" title="class or interface in java.lang" class="external-link">Double</a>&gt;</code></div>
 <div class="col-second odd-row-color"><code><a href="#timestamp" class="member-name-link">timestamp</a></code></div>
-<div class="col-last odd-row-color">
-<div class="block">The timestamp of the frame</div>
-</div>
+<div class="col-last odd-row-color">&nbsp;</div>
 </div>
 </section>
 </li>
@@ -182,43 +158,13 @@ implements org.littletonrobotics.junction.inputs.LoggableInputs</span></div>
 <li>
 <section class="detail" id="pose">
 <h3>pose</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Optional.html" title="class or interface in java.util" class="external-link">Optional</a>&lt;double[]&gt;</span>&nbsp;<span class="element-name">pose</span></div>
-<div class="block">The pose from the camera</div>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Optional.html" title="class or interface in java.util" class="external-link">Optional</a>&lt;edu.wpi.first.math.geometry.Pose3d&gt;</span>&nbsp;<span class="element-name">pose</span></div>
 </section>
 </li>
 <li>
 <section class="detail" id="timestamp">
 <h3>timestamp</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Optional.html" title="class or interface in java.util" class="external-link">Optional</a>&lt;<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Double.html" title="class or interface in java.lang" class="external-link">Double</a>&gt;</span>&nbsp;<span class="element-name">timestamp</span></div>
-<div class="block">The timestamp of the frame</div>
-</section>
-</li>
-<li>
-<section class="detail" id="ids">
-<h3>ids</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Optional.html" title="class or interface in java.util" class="external-link">Optional</a>&lt;<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>[]&gt;</span>&nbsp;<span class="element-name">ids</span></div>
-<div class="block">The IDs of the apriltags detected</div>
-</section>
-</li>
-<li>
-<section class="detail" id="errors">
-<h3>errors</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Optional.html" title="class or interface in java.util" class="external-link">Optional</a>&lt;<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Double.html" title="class or interface in java.lang" class="external-link">Double</a>&gt;</span>&nbsp;<span class="element-name">errors</span></div>
-<div class="block">The RMS error of the detection</div>
-</section>
-</li>
-<li>
-<section class="detail" id="isRecording">
-<h3>isRecording</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">isRecording</span></div>
-<div class="block">If the camera is recording</div>
-</section>
-</li>
-<li>
-<section class="detail" id="recordingPath">
-<h3>recordingPath</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></span>&nbsp;<span class="element-name">recordingPath</span></div>
-<div class="block">The current path of the video file</div>
 </section>
 </li>
 </ul>
