@@ -151,7 +151,12 @@ public class RobotContainer {
     if (shooter == null) {
       shooter = new Shooter(new ShooterIO() {}, new FeederIO() {});
     }
-    configureBindings();
+    configureSharedBindings();
+    if (WhoAmI.isDemoMode) {
+      configureDemoBindings();
+    } else {
+      configureCompBindings();
+    }
   }
 
   public void configureAutos() {
@@ -273,34 +278,23 @@ public class RobotContainer {
     driveSys.setPosition(pose);
   }
 
-  /**
-   * Use this method to define your trigger->command mappings. Triggers can be created via the
-   * {@link Trigger#Trigger(java.util.function.BooleanSupplier)} constructor with an arbitrary
-   * predicate, or via the named factories in {@link
-   * edu.wpi.first.wpilibj2.command.button.CommandGenericHID}'s subclasses for {@link
-   * CommandXboxController Xbox}/{@link edu.wpi.first.wpilibj2.command.button.CommandPS4Controller
-   * PS4} controllers or {@link edu.wpi.first.wpilibj2.command.button.CommandJoystick Flight
-   * joysticks}.
-   */
-  private void configureBindings() {
-    var teleopDrive = new TeleopDrive(driveSys, driverController);
-    driveSys.setDefaultCommand(teleopDrive);
+  private void configureDemoBindings() {
+    secondController
+        .leftStick()
+        .whileFalse(
+            arm.run(
+                () -> {
+                  arm.commandIncrement(
+                      Rotation2d.fromRotations(
+                          Overrides.armAngleOverrideIncrementScale.get()
+                              * secondController.getLeftY()));
+                }));
+  }
 
-    // Intake commands
-    driverController
-        .leftTrigger(0.2)
-        .whileTrue(
-            Intake.fromFloor(shooter, arm, secondController.getHID())
-                .andThen(
-                    new StartEndCommand(
-                            () -> driverController.getHID().setRumble(RumbleType.kLeftRumble, 1.0),
-                            () -> driverController.getHID().setRumble(RumbleType.kLeftRumble, 0.0))
-                        .withTimeout(1.0)));
+  private void configureCompBindings() {
     secondController
         .leftBumper()
         .whileTrue(Intake.fromSource(shooter, arm, secondController.getHID()));
-    secondController.b().whileTrue(Intake.fromFloor(shooter, arm, secondController.getHID()));
-
     LoggedTunableNumber ampPreset =
         new LoggedTunableNumber("Presets/Arm Amp", 0.17); // TODO: add value
     LoggedTunableNumber ampTop =
@@ -362,6 +356,32 @@ public class RobotContainer {
         .and(() -> secondController.getHID().getPOV() == 270)
         .onTrue(Commands.runOnce(() -> shooter.shoot(ampTop.get(), ampBottom.get()), shooter))
         .onFalse(Commands.runOnce(shooter::stop, shooter));
+  }
+
+  /**
+   * Use this method to define your trigger->command mappings. Triggers can be created via the
+   * {@link Trigger#Trigger(java.util.function.BooleanSupplier)} constructor with an arbitrary
+   * predicate, or via the named factories in {@link
+   * edu.wpi.first.wpilibj2.command.button.CommandGenericHID}'s subclasses for {@link
+   * CommandXboxController Xbox}/{@link edu.wpi.first.wpilibj2.command.button.CommandPS4Controller
+   * PS4} controllers or {@link edu.wpi.first.wpilibj2.command.button.CommandJoystick Flight
+   * joysticks}.
+   */
+  private void configureSharedBindings() {
+    var teleopDrive = new TeleopDrive(driveSys, driverController);
+    driveSys.setDefaultCommand(teleopDrive);
+
+    // Intake commands
+    driverController
+        .leftTrigger(0.2)
+        .whileTrue(
+            Intake.fromFloor(shooter, arm, secondController.getHID())
+                .andThen(
+                    new StartEndCommand(
+                            () -> driverController.getHID().setRumble(RumbleType.kLeftRumble, 1.0),
+                            () -> driverController.getHID().setRumble(RumbleType.kLeftRumble, 0.0))
+                        .withTimeout(1.0)));
+    secondController.b().whileTrue(Intake.fromFloor(shooter, arm, secondController.getHID()));
 
     // Speaker scoring
     driverController
@@ -398,23 +418,6 @@ public class RobotContainer {
                 },
                 shooter));
 
-    // Climb
-    climber.setDefaultCommand(
-        new ClimbAndLevel(
-            climber, () -> -secondController.getRightY(), () -> driveSys.getGyro().getX()));
-    secondController
-        .leftStick()
-        .onTrue(
-            new ClimbSplit(
-                    climber,
-                    () -> -secondController.getLeftY(),
-                    () -> -secondController.getRightY())
-                .until(() -> secondController.getHID().getRightStickButtonPressed()));
-    // Pre-spin up
-    secondController
-        .rightTrigger(0.2)
-        .whileTrue(Commands.run(() -> shooter.cmdVel(-4000, 4000), shooter));
-
     driverController
         .x()
         .onTrue(
@@ -424,6 +427,15 @@ public class RobotContainer {
                       FieldConstants.flip(new Pose2d(1.4, 5.5, Rotation2d.fromRotations(0.5))));
                   ;
                 }));
+    // Climb
+    climber.setDefaultCommand(
+        new ClimbAndLevel(
+            climber, () -> -secondController.getRightY(), () -> driveSys.getGyro().getX()));
+    secondController
+        .leftStick()
+        .whileTrue(
+            new ClimbSplit(
+                climber, () -> -secondController.getLeftY(), () -> -secondController.getRightY()));
   }
 
   /**
