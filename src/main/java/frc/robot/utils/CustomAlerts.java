@@ -7,12 +7,21 @@ import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
 import org.littletonrobotics.junction.inputs.LoggedSystemStats;
 
+/** Utility class for some custom alerts */
 public class CustomAlerts {
+  /** Alert that takes a supplier, and calls it once every tick */
   public static class CustomAlert extends PeriodicRunnable {
     final Alert alert;
     final BooleanSupplier isActive;
     final Supplier<String> message;
 
+    /**
+     * Makes a new CustomAlert
+     *
+     * @param level The alert level
+     * @param isActive Whether the alert should be displayed
+     * @param message The message to show when displayed
+     */
     public CustomAlert(Alert.AlertType level, BooleanSupplier isActive, Supplier<String> message) {
       super();
       this.isActive = isActive;
@@ -20,6 +29,13 @@ public class CustomAlerts {
       alert = new Alert(message.get(), level);
     }
 
+    /**
+     * Makes a new CustomAlert
+     *
+     * @param level The alert level
+     * @param isActive Whether the alert should be displayed
+     * @param message The message to show when displayed
+     */
     public CustomAlert(Alert.AlertType level, BooleanSupplier isActive, String message) {
       this(level, isActive, () -> message);
     }
@@ -35,17 +51,26 @@ public class CustomAlerts {
     }
   }
 
+  /** An alert that will activate if latch is called, the stay activated for a given duration */
   public static class TimeLatchAlert extends PeriodicRunnable {
     final Timer lastTrue = new Timer();
     boolean hasTrue = false;
     double duration;
     final Alert alert;
 
+    /**
+     * Makes a new TimeLatchAlert
+     *
+     * @param level The alert level
+     * @param duration The duration the alert will stay active for
+     * @param message The message to show
+     */
     public TimeLatchAlert(Alert.AlertType level, double duration, String message) {
       super();
       alert = new Alert(message, level);
     }
 
+    /** Activates the alert for a given time */
     public void latch() {
       hasTrue = true;
       lastTrue.restart();
@@ -60,11 +85,19 @@ public class CustomAlerts {
     }
   }
 
+  /** An alert that will activate if feed has not been called for a given time */
   public static class TimeoutAlert extends PeriodicRunnable {
     final double timeout;
     final Alert alert;
     double lastFeedTime;
 
+    /**
+     * Makes a new TimeoutAlert
+     *
+     * @param level The alert level
+     * @param timeout The maximum time between feeds
+     * @param message The message to show when activated
+     */
     public TimeoutAlert(Alert.AlertType level, double timeout, String message) {
       super();
       this.timeout = timeout;
@@ -72,6 +105,7 @@ public class CustomAlerts {
       alert = new Alert(message, level);
     }
 
+    /** Resets the watchdog timer and deactivates the alert */
     public void feed() {
       lastFeedTime = Timer.getFPGATimestamp();
     }
@@ -81,7 +115,13 @@ public class CustomAlerts {
       alert.set(Timer.getFPGATimestamp() > lastFeedTime + timeout);
     }
   }
-
+  /**
+   * Makes an alert for when a motor temperature is too high
+   *
+   * @param spark The motor controller
+   * @param errTemp The temperature at which to activate the error alert
+   * @param deviceName The name of the motor
+   */
   public static void makeOverTempAlert(CANSparkBase spark, double errTemp, String deviceName) {
     new CustomAlert(
         Alert.AlertType.ERROR,
@@ -95,6 +135,14 @@ public class CustomAlerts {
                 + "). Prolonged usage could permanently damage the motor");
   }
 
+  /**
+   * Makes an alert for when a motor temperature is too high
+   *
+   * @param spark The motor controller
+   * @param errTemp The temperature at which to activate the error alert
+   * @param warnTemp The temperature at which to activate the warning alert
+   * @param deviceName The name of the motor
+   */
   public static void makeOverTempAlert(
       CANSparkBase spark, double errTemp, double warnTemp, String deviceName) {
     makeOverTempAlert(spark, errTemp, deviceName);
@@ -110,6 +158,11 @@ public class CustomAlerts {
                 + ")");
   }
 
+  /**
+   * Makes Alerts for when CAN utilization is too high
+   *
+   * @param errUtilization The minimum utilization to trigger an alert
+   */
   public static void makeCANFailAlerts(double errUtilization) {
     new CustomAlert(
         Alert.AlertType.ERROR,
@@ -122,6 +175,11 @@ public class CustomAlerts {
                 + "). All mechanisms may soon cease to function. ");
   }
 
+  /**
+   * Makes alerts for when the NAVX is unplugged or calibrating
+   *
+   * @param navx The NAVX to track
+   */
   public static void makeNavxFailAlerts(AHRS navx) {
     new CustomAlert(
         Alert.AlertType.ERROR,

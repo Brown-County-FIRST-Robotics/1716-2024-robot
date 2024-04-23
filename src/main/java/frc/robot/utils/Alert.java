@@ -62,6 +62,8 @@ public class Alert {
   /**
    * Sets whether the alert should currently be displayed. When activated, the alert text will also
    * be sent to the console.
+   *
+   * @param active Whether the alert should be shown
    */
   public void set(boolean active) {
     if (active && !this.active) {
@@ -85,7 +87,11 @@ public class Alert {
     }
   }
 
-  /** Updates current alert text. */
+  /**
+   * Updates current alert text.
+   *
+   * @param text The alert text
+   */
   public void setText(String text) {
     if (active && !text.equals(this.text)) {
       switch (type) {
