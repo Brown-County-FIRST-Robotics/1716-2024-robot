@@ -17,6 +17,12 @@ public class FieldConstants {
     return flip(new Translation3d(-.04 + 9 * .0254, 5.55, 81 * 0.0254));
   }
 
+  /**
+   * Gets the position of a preset game piece
+   *
+   * @param ind The index of the game piece
+   * @return The position of the game piece, flipped based on FMS alliance
+   */
   public static Translation2d getGamePiece(int ind) {
     /* Game Pieces (blue alliance):
      * _______________________________________________
