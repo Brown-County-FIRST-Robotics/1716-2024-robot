@@ -55,12 +55,10 @@ public final class Constants {
     public static final double MAX_SPEED = 6.0;
     /** The maximum angular velocity during manual operation in rad/s */
     public static final double MAX_THETA_SPEED = 9;
-    /** The maximum acceleration in m/s^2 (does not include decelleration) */
+    /** The maximum acceleration in m/s^2 (does not include deceleration) */
     public static final double MAX_ACCELERATION = MAX_SPEED;
     /** The maximum acceleration to prevent slipping in m/s^2 */
     public static final double MAX_FRICTION_ACCELERATION = 9.8 * 1.0; // social studies carpet :0.5
-    /** The port the driver controller is on */
-    public static final int DRIVER_CONTROLLER_PORT = 0;
   }
 
   /** Current limits for different motors */

@@ -9,7 +9,7 @@ import frc.robot.utils.LoggedTunableNumber;
 public class ArmIOSparkFlex implements ArmIO {
   final CANSparkMax controller;
   final SparkPIDController pid;
-  final AbsoluteEncoder absencoder;
+  final AbsoluteEncoder absEncoder;
   private static final double GEAR_RATIO = 25.0 * 72.0 / 15.0;
   private static final double FREE_RPM = 5676.0;
   final LoggedTunableNumber ffTuner =
@@ -23,14 +23,14 @@ public class ArmIOSparkFlex implements ArmIO {
   public ArmIOSparkFlex(int id) {
     controller = new CANSparkMax(id, CANSparkLowLevel.MotorType.kBrushless);
     pid = controller.getPIDController();
-    absencoder = controller.getAbsoluteEncoder(SparkAbsoluteEncoder.Type.kDutyCycle);
+    absEncoder = controller.getAbsoluteEncoder(SparkAbsoluteEncoder.Type.kDutyCycle);
     controller.restoreFactoryDefaults();
-    absencoder.setInverted(true);
+    absEncoder.setInverted(true);
     controller.setInverted(true);
 
     controller.setIdleMode(CANSparkBase.IdleMode.kBrake);
     controller.setSmartCurrentLimit(Constants.CurrentLimits.NEO);
-    pid.setFeedbackDevice(absencoder);
+    pid.setFeedbackDevice(absEncoder);
     pid.setOutputRange(-1, 1);
     pid.setSmartMotionMaxVelocity(FREE_RPM / GEAR_RATIO, 0);
     pid.setSmartMotionMinOutputVelocity(0, 0);
@@ -51,9 +51,9 @@ public class ArmIOSparkFlex implements ArmIO {
   @Override
   public void updateInputs(ArmIOInputs inputs) {
     inputs.angle =
-        Rotation2d.fromRotations(absencoder.getPosition())
+        Rotation2d.fromRotations(absEncoder.getPosition())
             .minus(Rotation2d.fromRotations(offset.get()));
-    inputs.omega = absencoder.getVelocity();
+    inputs.omega = absEncoder.getVelocity();
     inputs.appliedOutput = controller.getAppliedOutput();
     inputs.temperature = controller.getMotorTemperature();
     inputs.current = controller.getOutputCurrent();
@@ -62,15 +62,15 @@ public class ArmIOSparkFlex implements ArmIO {
   @Override
   public void setAngle(Rotation2d cmdAng, double arbFF) {
     double adjustedRelCmd =
-        absencoder.getPosition()
-            - (absencoder.getPosition() % 1.0)
+        absEncoder.getPosition()
+            - (absEncoder.getPosition() % 1.0)
             + cmdAng.plus(Rotation2d.fromRotations(offset.get())).getRotations();
-    if (Math.abs(adjustedRelCmd - absencoder.getPosition())
-        > Math.abs(1.0 + adjustedRelCmd - absencoder.getPosition())) {
+    if (Math.abs(adjustedRelCmd - absEncoder.getPosition())
+        > Math.abs(1.0 + adjustedRelCmd - absEncoder.getPosition())) {
       adjustedRelCmd += 1.0;
     }
-    if (Math.abs(adjustedRelCmd - absencoder.getPosition())
-        > Math.abs(-1.0 + adjustedRelCmd - absencoder.getPosition())) {
+    if (Math.abs(adjustedRelCmd - absEncoder.getPosition())
+        > Math.abs(-1.0 + adjustedRelCmd - absEncoder.getPosition())) {
       adjustedRelCmd -= 1.0;
     }
     pid.setReference(

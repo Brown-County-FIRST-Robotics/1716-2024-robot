@@ -19,7 +19,7 @@ public class Shooter extends SubsystemBase {
 
   boolean isShooting = false;
   public boolean isFiring = false;
-  public boolean intaking = false;
+  public boolean isIntaking = false;
   double feedCmd = 0.0;
 
   boolean holding = true;
@@ -69,19 +69,19 @@ public class Shooter extends SubsystemBase {
       firingStartTime = Timer.getFPGATimestamp();
     }
     // The open and closed should always be opposite, and anything else would be an electrical fault
-    if (intaking && (feederInputs.closedContact == feederInputs.openContact)) {
-      intaking = false;
+    if (isIntaking && (feederInputs.closedContact == feederInputs.openContact)) {
+      isIntaking = false;
       // Shut down to prevent damage to ring
       setFeeder(0);
       cmdVel(0, 0);
       holding = true;
       System.out.println("Feeder limit switch disconnected!!");
     }
-    if (intaking && feederInputs.closedContact) {
+    if (isIntaking && feederInputs.closedContact) {
       setFeeder(0);
       cmdVel(0, 0);
       holding = true;
-      intaking = false;
+      isIntaking = false;
     }
     if (isFiring) {
       setFeeder(-8000);

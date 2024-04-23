@@ -77,10 +77,10 @@ public class TeleopDrive extends Command {
     locked = false;
     commandedSpeeds =
         new ChassisSpeeds(
-            deadscale(controller.getLeftY()) * slowModeSpeedModifier,
-            deadscale(controller.getLeftX()) * slowModeSpeedModifier,
+            deadScale(controller.getLeftY()) * slowModeSpeedModifier,
+            deadScale(controller.getLeftX()) * slowModeSpeedModifier,
             rotationLimiter.calculate(
-                    deadscale(controller.getRightX())
+                    deadScale(controller.getRightX())
                         * Constants.Driver.MAX_THETA_SPEED
                         * slowModeSpeedModifier)
                 - customAngleModifier); // This needs to be a different type, the speeds need to be
@@ -216,7 +216,7 @@ public class TeleopDrive extends Command {
    * @param val The value to scale
    * @return The value with the deadband applied
    */
-  static double deadscale(double val) {
+  static double deadScale(double val) {
     return withinDeadband(val)
         ? 0
         : (val > 0
