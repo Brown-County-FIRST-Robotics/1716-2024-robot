@@ -9,6 +9,7 @@ import frc.robot.utils.CustomAlerts;
 import frc.robot.utils.LoggedTunableNumber;
 import org.littletonrobotics.junction.Logger;
 
+/** A wrapper class for a Swerve module */
 public class Module {
   private static final LoggedTunableNumber minNoMotionTime =
       new LoggedTunableNumber("Min no motion time", 0.5);
@@ -22,6 +23,12 @@ public class Module {
   Rotation2d relativeSensorZeroPosition = new Rotation2d();
   final Timer noMotionTimer = new Timer();
 
+  /**
+   * Creates a new Swerve Module
+   *
+   * @param io The IO for the module
+   * @param ind The index of the module (fl:0, fr:1, bl:2, br:3)
+   */
   public Module(ModuleIO io, int ind) {
     this.io = io;
     this.ind = ind;
@@ -51,6 +58,7 @@ public class Module {
     reZero();
   }
 
+  /** Periodic functionality. Call every tick. */
   public void periodic() {
     io.updateInputs(inputs);
     Logger.processInputs("Drive/" + name + "_Inputs", inputs);
@@ -89,14 +97,29 @@ public class Module {
     return getProcessedRelativeEncoderPos().minus(chassisOffset);
   }
 
+  /**
+   * Gets the module state
+   *
+   * @return The module state
+   */
   public SwerveModuleState getChassisRelativeState() {
     return new SwerveModuleState(inputs.thrustVel, getChassisRelativeRotation());
   }
 
+  /**
+   * Gets the module position
+   *
+   * @return The module position
+   */
   public SwerveModulePosition getChassisRelativePosition() {
     return new SwerveModulePosition(inputs.thrustPos, getChassisRelativeRotation());
   }
 
+  /**
+   * Commands a state to the module
+   *
+   * @param state The command state
+   */
   public void setState(SwerveModuleState state) {
     state = SwerveModuleState.optimize(state, getChassisRelativeRotation());
     state.speedMetersPerSecond *= getChassisRelativeRotation().minus(state.angle).getCos();

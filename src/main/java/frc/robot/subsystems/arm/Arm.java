@@ -59,6 +59,7 @@ public class Arm extends SubsystemBase {
     io.setAngle(cmdAng, cmdAng.getCos() * gravFF.get());
   }
 
+  /** Moves the arm back to its neutral position */
   public void commandNeutral() {
     setAngle(Rotation2d.fromRotations(neutralPosition.get()));
   }
@@ -71,6 +72,11 @@ public class Arm extends SubsystemBase {
     return inputs.angle;
   }
 
+  /**
+   * Gets the arm velocity
+   *
+   * @return The angular velocity of the arm
+   */
   public double getOmega() {
     return inputs.omega;
   }

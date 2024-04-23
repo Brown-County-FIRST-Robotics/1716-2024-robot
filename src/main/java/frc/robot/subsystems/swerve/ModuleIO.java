@@ -37,5 +37,11 @@ public interface ModuleIO {
    */
   default void updateInputs(ModuleIOInputs inputs) {}
 
+  /**
+   * Commands a steer angle and thrust speed to the module
+   *
+   * @param ang The command angle, as relative encoder position
+   * @param vel The thrust velocity (meters per second)
+   */
   default void setCmdState(double ang, double vel) {}
 }

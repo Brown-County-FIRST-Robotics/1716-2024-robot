@@ -6,6 +6,7 @@ import frc.robot.Constants;
 import frc.robot.utils.CustomAlerts;
 import frc.robot.utils.LoggedTunableNumber;
 
+/** IO implementation for Arm using a Spark Flex */
 public class ArmIOSparkFlex implements ArmIO {
   final CANSparkMax controller;
   final SparkPIDController pid;
@@ -20,6 +21,11 @@ public class ArmIOSparkFlex implements ArmIO {
   final LoggedTunableNumber dTuner = new LoggedTunableNumber("Arm/d_tuner", 0.0);
   final LoggedTunableNumber offset = new LoggedTunableNumber("Arm/offset", 0.496);
 
+  /**
+   * Creates a <code>ArmIOSparkFlex</code> from a CAN id
+   *
+   * @param id The CAN id of the arm
+   */
   public ArmIOSparkFlex(int id) {
     controller = new CANSparkMax(id, CANSparkLowLevel.MotorType.kBrushless);
     pid = controller.getPIDController();
