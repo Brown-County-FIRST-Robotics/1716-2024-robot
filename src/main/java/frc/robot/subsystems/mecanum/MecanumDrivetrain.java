@@ -31,13 +31,13 @@ public class MecanumDrivetrain implements Drivetrain {
           new Translation2d(25.75 * 0.0254 / 2, -18.75 * 0.0254 / 2),
           new Translation2d(-25.75 * 0.0254 / 2, 18.75 * 0.0254 / 2),
           new Translation2d(-25.75 * 0.0254 / 2, -18.75 * 0.0254 / 2));
-  MecanumIO drive;
-  IMUIO imu;
-  MecanumIOInputsAutoLogged driveInputs = new MecanumIOInputsAutoLogged();
-  IMUIOInputsAutoLogged imuInputs = new IMUIOInputsAutoLogged();
+  final MecanumIO drive;
+  final IMUIO imu;
+  final MecanumIOInputsAutoLogged driveInputs = new MecanumIOInputsAutoLogged();
+  final IMUIOInputsAutoLogged imuInputs = new IMUIOInputsAutoLogged();
   Rotation2d lastIMU;
   MecanumDriveWheelPositions lastPositions;
-  PoseEstimator poseEstimator;
+  final PoseEstimator poseEstimator;
   /**
    * Constructs a <code>MecanumDrivetrain</code> from IO
    *

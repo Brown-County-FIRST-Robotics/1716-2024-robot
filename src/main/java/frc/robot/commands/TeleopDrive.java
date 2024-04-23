@@ -21,15 +21,16 @@ public class TeleopDrive extends Command {
   private final CommandXboxController controller;
 
   boolean doFieldOriented = true;
-  boolean locked = false; // point wheels towards center in x pattern so we can't be pushed
-  DualRateLimiter translationLimiter =
+  boolean locked = false; // point wheels towards center in x pattern
+  final DualRateLimiter translationLimiter =
       new DualRateLimiter(6, 100); // translational velocity limiter
-  DualRateLimiter rotationLimiter = new DualRateLimiter(8, 100); // angular velocity limiter (omega)
+  final DualRateLimiter rotationLimiter =
+      new DualRateLimiter(8, 100); // angular velocity limiter (omega)
 
   Optional<Rotation2d> customRotation =
       Optional.empty(); // used for auto align; if empty, no target is set
 
-  private static double deadbandSize = 0.08;
+  private static final double deadbandSize = 0.08;
 
   double slowModeSpeedModifier = 0.0;
   double customAngleModifier = 0.0;

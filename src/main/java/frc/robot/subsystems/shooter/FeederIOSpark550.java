@@ -6,16 +6,16 @@ import frc.robot.Constants;
 import frc.robot.utils.LoggedTunableNumber;
 
 public class FeederIOSpark550 implements FeederIO {
-  CANSparkMax motor;
-  RelativeEncoder encoder;
-  SparkPIDController pid;
-  DigitalInput openContact;
-  DigitalInput closedContact;
+  final CANSparkMax motor;
+  final RelativeEncoder encoder;
+  final SparkPIDController pid;
+  final DigitalInput openContact;
+  final DigitalInput closedContact;
 
-  LoggedTunableNumber feederP = new LoggedTunableNumber("Feeder P", 0);
-  LoggedTunableNumber feederI = new LoggedTunableNumber("Feeder I", 0);
-  LoggedTunableNumber feederD = new LoggedTunableNumber("Feeder D", 0);
-  LoggedTunableNumber feederKV = new LoggedTunableNumber("Feeder KV", 1.0 / 11000.0);
+  final LoggedTunableNumber feederP = new LoggedTunableNumber("Feeder P", 0);
+  final LoggedTunableNumber feederI = new LoggedTunableNumber("Feeder I", 0);
+  final LoggedTunableNumber feederD = new LoggedTunableNumber("Feeder D", 0);
+  final LoggedTunableNumber feederKV = new LoggedTunableNumber("Feeder KV", 1.0 / 11000.0);
 
   public FeederIOSpark550(int motorId, int openContactPin, int closedContactPin) {
     openContact = new DigitalInput(openContactPin);

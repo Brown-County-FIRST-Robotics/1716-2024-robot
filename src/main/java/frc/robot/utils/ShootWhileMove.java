@@ -8,7 +8,7 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 
 /** Utility functions for calculating shooter angles */
 public class ShootWhileMove {
-  static CustomAlerts.TimeLatchAlert nanLatch =
+  static final CustomAlerts.TimeLatchAlert nanLatch =
       new CustomAlerts.TimeLatchAlert(
           Alert.AlertType.ERROR, 2.0, "You are too far away (NaN arm goal)");
   /** The kinematics of the shooter */
@@ -79,7 +79,7 @@ public class ShootWhileMove {
   /** A command to give to the shooter */
   public static class ShootingCommand {
     /** The angle of the robot */
-    public Rotation2d botAngle;
+    public final Rotation2d botAngle;
     /** The angle of the shooter */
     public Rotation2d shooterAngle;
 
@@ -207,6 +207,4 @@ public class ShootWhileMove {
     System.out.println("calcCommandWithPrediction did not converge");
     return lastCommand;
   }
-
-  public static void main(String[] args) {}
 }

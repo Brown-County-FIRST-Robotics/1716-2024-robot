@@ -8,7 +8,7 @@ import frc.robot.utils.HolonomicTrajectoryFollower;
 import java.util.Optional;
 
 public class RotateTo extends Command {
-  Drivetrain drivetrain;
+  final Drivetrain drivetrain;
   Optional<Rotation2d> customRotation = Optional.empty();
 
   public void setCustomRotation(Optional<Rotation2d> customRotation) {

@@ -4,7 +4,7 @@ import org.littletonrobotics.junction.AutoLog;
 
 public interface ClimberIO {
   @AutoLog
-  public static class ClimberIOInputs {
+  class ClimberIOInputs {
     double leftPosition = 0;
     double rightPosition = 0;
 
@@ -23,9 +23,9 @@ public interface ClimberIO {
     boolean rightTopSensor = false;
   }
 
-  public default void updateInputs(ClimberIOInputs inputs) {}
+  default void updateInputs(ClimberIOInputs inputs) {}
 
-  public default void setMotors(double left, double right) {}
+  default void setMotors(double left, double right) {}
 
-  public default void setMotorEncoderPosition(boolean setRight, double position) {}
+  default void setMotorEncoderPosition(boolean setRight, double position) {}
 }

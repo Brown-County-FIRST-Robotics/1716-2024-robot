@@ -32,17 +32,17 @@ public class SwerveDrivetrain implements Drivetrain {
           new Translation2d(-D / 2, D / 2),
           new Translation2d(-D / 2, -D / 2));
   private static final double MAX_WHEEL_SPEED = 5.0;
-  Module fl;
-  Module fr;
-  Module bl;
-  Module br;
+  final Module fl;
+  final Module fr;
+  final Module bl;
+  final Module br;
 
   Rotation2d lastIMU;
   SwerveModulePosition[] lastPositions;
-  PoseEstimator poseEstimator;
+  final PoseEstimator poseEstimator;
 
-  IMUIO imu;
-  IMUIOInputsAutoLogged imuInputs = new IMUIOInputsAutoLogged();
+  final IMUIO imu;
+  final IMUIOInputsAutoLogged imuInputs = new IMUIOInputsAutoLogged();
 
   private SwerveModulePosition[] getPositions() {
 

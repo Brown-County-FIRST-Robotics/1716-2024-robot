@@ -14,13 +14,13 @@ public class Module {
       new LoggedTunableNumber("Min no motion time", 0.5);
   private static final LoggedTunableNumber maxMotionAllowed =
       new LoggedTunableNumber("Max motion", 0.05);
-  ModuleIOInputsAutoLogged inputs = new ModuleIOInputsAutoLogged();
-  ModuleIO io;
-  int ind;
+  final ModuleIOInputsAutoLogged inputs = new ModuleIOInputsAutoLogged();
+  final ModuleIO io;
+  final int ind;
   String name;
   Rotation2d chassisOffset;
   Rotation2d relativeSensorZeroPosition = new Rotation2d();
-  Timer noMotionTimer = new Timer();
+  final Timer noMotionTimer = new Timer();
 
   public Module(ModuleIO io, int ind) {
     this.io = io;

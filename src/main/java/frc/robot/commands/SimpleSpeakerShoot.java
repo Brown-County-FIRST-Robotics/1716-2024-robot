@@ -13,14 +13,16 @@ import java.util.Optional;
 import java.util.function.Consumer;
 
 public class SimpleSpeakerShoot extends Command {
-  Drivetrain drive;
-  Arm arm;
-  Consumer<Optional<Rotation2d>> rotationCommander;
-  Shooter shooter;
-  boolean firing = false;
-  LoggedTunableNumber shooterAngleThreshold = new LoggedTunableNumber("Simple ang threshold", 0.01);
-  LoggedTunableNumber botAngleThreshold = new LoggedTunableNumber("Simple bot ang threshold", 0.02);
-  XboxController overrideController;
+  final Drivetrain drive;
+  final Arm arm;
+  final Consumer<Optional<Rotation2d>> rotationCommander;
+  final Shooter shooter;
+  final boolean firing = false;
+  final LoggedTunableNumber shooterAngleThreshold =
+      new LoggedTunableNumber("Simple ang threshold", 0.01);
+  final LoggedTunableNumber botAngleThreshold =
+      new LoggedTunableNumber("Simple bot ang threshold", 0.02);
+  final XboxController overrideController;
 
   public SimpleSpeakerShoot(
       Drivetrain drive,

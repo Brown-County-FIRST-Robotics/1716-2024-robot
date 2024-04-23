@@ -55,7 +55,7 @@ public class RobotContainer {
   private Arm arm;
   private Shooter shooter;
   private Climber climber;
-  LoggedShuffleBoardChooser<Command> autoChooser =
+  final LoggedShuffleBoardChooser<Command> autoChooser =
       new LoggedShuffleBoardChooser<>("Pre Match", "Auto chooser");
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
@@ -283,12 +283,11 @@ public class RobotContainer {
         .leftStick()
         .whileFalse(
             arm.run(
-                () -> {
-                  arm.commandIncrement(
-                      Rotation2d.fromRotations(
-                          Overrides.armAngleOverrideIncrementScale.get()
-                              * secondController.getLeftY()));
-                }));
+                () ->
+                    arm.commandIncrement(
+                        Rotation2d.fromRotations(
+                            Overrides.armAngleOverrideIncrementScale.get()
+                                * secondController.getLeftY()))));
   }
 
   private void configureCompBindings() {
@@ -413,20 +412,16 @@ public class RobotContainer {
                   shooter.setFeeder(-8000);
                   shooter.cmdVel(-2000, 2000);
                 },
-                () -> {
-                  shooter.setFeeder(0);
-                },
+                () -> shooter.setFeeder(0),
                 shooter));
 
     driverController
         .x()
         .onTrue(
             Commands.runOnce(
-                () -> {
-                  driveSys.setPosition(
-                      FieldConstants.flip(new Pose2d(1.4, 5.5, Rotation2d.fromRotations(0.5))));
-                  ;
-                }));
+                () ->
+                    driveSys.setPosition(
+                        FieldConstants.flip(new Pose2d(1.4, 5.5, Rotation2d.fromRotations(0.5))))));
     // Climb
     climber.setDefaultCommand(
         new ClimbAndLevel(

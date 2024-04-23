@@ -14,15 +14,16 @@ import frc.robot.utils.Overrides;
  * Intake#fromSource} for floor and source respectively.
  */
 public class Intake extends Command {
-  Shooter shooter;
-  Arm arm;
+  final Shooter shooter;
+  final Arm arm;
   XboxController controller;
-  static LoggedTunableNumber armPreset = new LoggedTunableNumber("Presets/Intake_Arm", -0.16);
-  static LoggedTunableNumber topSpeed = new LoggedTunableNumber("Presets/Intake_Top", 1700);
-  static LoggedTunableNumber bottomSpeed = new LoggedTunableNumber("Presets/Intake_Bottom", -2000);
-  static LoggedTunableNumber armSourcePreset =
+  static final LoggedTunableNumber armPreset = new LoggedTunableNumber("Presets/Intake_Arm", -0.16);
+  static final LoggedTunableNumber topSpeed = new LoggedTunableNumber("Presets/Intake_Top", 1700);
+  static final LoggedTunableNumber bottomSpeed =
+      new LoggedTunableNumber("Presets/Intake_Bottom", -2000);
+  static final LoggedTunableNumber armSourcePreset =
       new LoggedTunableNumber("Presets/Intake_Arm_Source", 0.16); // TODO: find real preset
-  LoggedTunableNumber preset;
+  final LoggedTunableNumber preset;
 
   /**
    * Makes a new command to intake from the floor

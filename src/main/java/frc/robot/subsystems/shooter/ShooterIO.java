@@ -4,7 +4,7 @@ import org.littletonrobotics.junction.AutoLog;
 
 public interface ShooterIO {
   @AutoLog
-  public static class ShooterIOInputs {
+  class ShooterIOInputs {
     double[] motorTemperature = new double[] {0, 0};
     double[] motorCurrent = new double[] {0, 0};
     double[] motorOutput = new double[] {0, 0};

@@ -9,17 +9,17 @@ public class ShooterIOSparkFlexes implements ShooterIO {
   private final SparkPIDController pid1;
   private final SparkPIDController pid2;
 
-  CANSparkFlex motor1;
-  CANSparkFlex motor2;
-  RelativeEncoder encoder1;
-  RelativeEncoder encoder2;
-  LoggedTunableNumber ffTuner =
+  final CANSparkFlex motor1;
+  final CANSparkFlex motor2;
+  final RelativeEncoder encoder1;
+  final RelativeEncoder encoder2;
+  final LoggedTunableNumber ffTuner =
       new LoggedTunableNumber(
           "Shooter FF",
           1.03 * 12.0 / 9.0 / 6784); // 1.03: drag compensation,   12/9: voltage compensation
-  LoggedTunableNumber pTuner = new LoggedTunableNumber("Shooter P", 0.000025);
-  LoggedTunableNumber iTuner = new LoggedTunableNumber("Shooter I", 0.0000001);
-  LoggedTunableNumber dTuner = new LoggedTunableNumber("Shooter D", 0);
+  final LoggedTunableNumber pTuner = new LoggedTunableNumber("Shooter P", 0.000025);
+  final LoggedTunableNumber iTuner = new LoggedTunableNumber("Shooter I", 0.0000001);
+  final LoggedTunableNumber dTuner = new LoggedTunableNumber("Shooter D", 0);
 
   public ShooterIOSparkFlexes(int motorID1, int motorID2) {
     motor1 = new CANSparkFlex(motorID1, CANSparkLowLevel.MotorType.kBrushless);

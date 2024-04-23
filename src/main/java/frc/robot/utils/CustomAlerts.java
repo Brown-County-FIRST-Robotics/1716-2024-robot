@@ -9,9 +9,9 @@ import org.littletonrobotics.junction.inputs.LoggedSystemStats;
 
 public class CustomAlerts {
   public static class CustomAlert extends PeriodicRunnable {
-    Alert alert;
-    BooleanSupplier isActive;
-    Supplier<String> message;
+    final Alert alert;
+    final BooleanSupplier isActive;
+    final Supplier<String> message;
 
     public CustomAlert(Alert.AlertType level, BooleanSupplier isActive, Supplier<String> message) {
       super();
@@ -36,10 +36,10 @@ public class CustomAlerts {
   }
 
   public static class TimeLatchAlert extends PeriodicRunnable {
-    Timer lastTrue = new Timer();
+    final Timer lastTrue = new Timer();
     boolean hasTrue = false;
     double duration;
-    Alert alert;
+    final Alert alert;
 
     public TimeLatchAlert(Alert.AlertType level, double duration, String message) {
       super();
@@ -62,7 +62,7 @@ public class CustomAlerts {
 
   public static class TimeoutAlert extends PeriodicRunnable {
     final double timeout;
-    Alert alert;
+    final Alert alert;
     double lastFeedTime;
 
     public TimeoutAlert(Alert.AlertType level, double timeout, String message) {

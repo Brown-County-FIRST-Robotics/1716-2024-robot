@@ -15,7 +15,8 @@ import org.littletonrobotics.junction.Logger;
 public class HolonomicTrajectoryFollower extends Command {
   private static final TrapezoidProfile.Constraints constraints =
       new TrapezoidProfile.Constraints(10, 10);
-  public static LoggedTunableNumber allowedErr = new LoggedTunableNumber("Rotation Allowed Err", 3);
+  public static final LoggedTunableNumber allowedErr =
+      new LoggedTunableNumber("Rotation Allowed Err", 3);
   private static final LoggedTunableNumber replanErr =
       new LoggedTunableNumber("Replanning threshold", 0.1);
 
@@ -39,10 +40,10 @@ public class HolonomicTrajectoryFollower extends Command {
     return tp.totalTime() > 0.02 ? fvel : 0;
   }
 
-  Drivetrain drivetrain;
-  Supplier<Trajectory> trajectorySupplier;
+  final Drivetrain drivetrain;
+  final Supplier<Trajectory> trajectorySupplier;
   Trajectory activeTrajectory;
-  Timer timer = new Timer();
+  final Timer timer = new Timer();
   Optional<Rotation2d> customRotation = Optional.empty();
 
   public void setCustomRotation(Optional<Rotation2d> customRotation) {

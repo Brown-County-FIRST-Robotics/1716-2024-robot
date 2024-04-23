@@ -6,7 +6,7 @@ import org.littletonrobotics.junction.AutoLog;
 public interface ModuleIO {
   /** The inputs to the code from a swerve module */
   @AutoLog
-  public static class ModuleIOInputs {
+  class ModuleIOInputs {
     /** The velocity according to the encoders */
     public double thrustVel = 0.0;
 
@@ -31,7 +31,7 @@ public interface ModuleIO {
    *
    * @param inputs A reference to the inputs
    */
-  public default void updateInputs(ModuleIOInputs inputs) {}
+  default void updateInputs(ModuleIOInputs inputs) {}
 
-  public default void setCmdState(double ang, double vel) {}
+  default void setCmdState(double ang, double vel) {}
 }

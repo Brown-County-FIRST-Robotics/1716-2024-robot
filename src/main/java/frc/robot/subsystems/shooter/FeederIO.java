@@ -6,7 +6,7 @@ public interface FeederIO {
   default void setVel(double vel) {}
 
   @AutoLog
-  public static class FeederIOInputs {
+  class FeederIOInputs {
     public double position = 0.0;
     public double velocity = 0.0;
     public double current = 0.0;

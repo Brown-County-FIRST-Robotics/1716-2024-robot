@@ -11,15 +11,15 @@ import org.littletonrobotics.junction.Logger;
 
 /** The Arm subsystem */
 public class Arm extends SubsystemBase {
-  Mechanism2d realStates = new Mechanism2d(100, 100);
-  MechanismLigament2d realArmStates = new MechanismLigament2d("Arm", 40, 0);
-  Mechanism2d cmdStates = new Mechanism2d(100, 100);
-  MechanismLigament2d cmdArmStates = new MechanismLigament2d("Arm", 40, 0);
-  ArmIO io;
-  ArmIOInputsAutoLogged inputs = new ArmIOInputsAutoLogged();
+  final Mechanism2d realStates = new Mechanism2d(100, 100);
+  final MechanismLigament2d realArmStates = new MechanismLigament2d("Arm", 40, 0);
+  final Mechanism2d cmdStates = new Mechanism2d(100, 100);
+  final MechanismLigament2d cmdArmStates = new MechanismLigament2d("Arm", 40, 0);
+  final ArmIO io;
+  final ArmIOInputsAutoLogged inputs = new ArmIOInputsAutoLogged();
   Rotation2d cmdAng = new Rotation2d();
-  LoggedTunableNumber gravFF = new LoggedTunableNumber("Arm Gravity FF", 0.0);
-  LoggedTunableNumber neutralPosition = new LoggedTunableNumber("Arm neutral position", 0.2);
+  final LoggedTunableNumber gravFF = new LoggedTunableNumber("Arm Gravity FF", 0.0);
+  final LoggedTunableNumber neutralPosition = new LoggedTunableNumber("Arm neutral position", 0.2);
 
   /**
    * Constructs the subsystem from an IO object

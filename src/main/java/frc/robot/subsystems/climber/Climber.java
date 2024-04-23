@@ -4,13 +4,13 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import org.littletonrobotics.junction.Logger;
 
 public class Climber extends SubsystemBase {
-  ClimberIO climberIO;
-  ClimberIOInputsAutoLogged inputs = new ClimberIOInputsAutoLogged();
+  final ClimberIO climberIO;
+  final ClimberIOInputsAutoLogged inputs = new ClimberIOInputsAutoLogged();
   private final double[] sensorOffsetFromBottom = {
     3.5, 6
   }; // The bottom sensors are a certain distance from the hardware limit, this amount
   private final double maxSpeed = 1;
-  boolean[] downLocked = {
+  final boolean[] downLocked = {
     true, true
   }; // doesn't know the current position, so it can't move down (left, right)
 

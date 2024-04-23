@@ -23,7 +23,7 @@ public class SwerveSimManager {
           new Translation2d(D / 2, -D / 2),
           new Translation2d(-D / 2, D / 2),
           new Translation2d(-D / 2, -D / 2));
-  static SwerveSimManager single = new SwerveSimManager();
+  static final SwerveSimManager single = new SwerveSimManager();
 
   /**
    * Gets the global instance of SwerveSim
@@ -35,24 +35,24 @@ public class SwerveSimManager {
   }
 
   private Pose2d realPose = new Pose2d();
-  private double[] thrustPos = {0, 0, 0, 0};
+  private final double[] thrustPos = {0, 0, 0, 0};
   private double[] lastthrustPos = {0, 0, 0, 0};
-  private double[] thrustVel = {0, 0, 0, 0};
+  private final double[] thrustVel = {0, 0, 0, 0};
   private final double thrustMaxAccel = 5;
   private final double thrustBrakeAccel = 30;
-  private DualRateLimiter[] thrustRateLimiters = {
+  private final DualRateLimiter[] thrustRateLimiters = {
     new DualRateLimiter(thrustMaxAccel, thrustBrakeAccel),
     new DualRateLimiter(thrustMaxAccel, thrustBrakeAccel),
     new DualRateLimiter(thrustMaxAccel, thrustBrakeAccel),
     new DualRateLimiter(thrustMaxAccel, thrustBrakeAccel)
   };
-  private TrapezoidProfile.State[] steerStates = {
+  private final TrapezoidProfile.State[] steerStates = {
     new TrapezoidProfile.State(),
     new TrapezoidProfile.State(),
     new TrapezoidProfile.State(),
     new TrapezoidProfile.State()
   };
-  private double[] cmdSteerPos = {0, 0, 0, 0};
+  private final double[] cmdSteerPos = {0, 0, 0, 0};
 
   /** Constructs a new SwerveSimManager */
   public SwerveSimManager() {}
