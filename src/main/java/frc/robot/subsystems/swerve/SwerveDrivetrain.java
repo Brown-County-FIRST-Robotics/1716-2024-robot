@@ -7,19 +7,13 @@ import edu.wpi.first.math.geometry.*;
 import edu.wpi.first.math.kinematics.*;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.trajectory.Trajectory;
-import edu.wpi.first.math.trajectory.TrajectoryConfig;
-import edu.wpi.first.math.trajectory.TrajectoryGenerator;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.DeferredCommand;
-import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
 import frc.robot.Constants;
 import frc.robot.subsystems.*;
 import frc.robot.utils.Overrides;
 import frc.robot.utils.PoseEstimator;
-import java.util.List;
-import java.util.Set;
 import org.littletonrobotics.junction.Logger;
 
 /** The swerve drivetrain subsystem */
@@ -158,47 +152,6 @@ public class SwerveDrivetrain implements Drivetrain {
   @Override
   public void addVisionUpdate(Pose2d newPose, Vector<N3> stdDevs, double timestamp) {
     poseEstimator.addVision(newPose, stdDevs, timestamp);
-  }
-
-  @Override
-  public Command getDriveToPointCmd(Pose2d pose) {
-    return getDriveToPointCmd(pose, 0, 0);
-  }
-
-  @Override
-  public Command getDriveToPointCmd(Pose2d pose, double endVelX, double endVelY) {
-    return new DeferredCommand(
-        () -> {
-          TrajectoryConfig conf =
-              new TrajectoryConfig(Constants.Auto.MAX_VELOCITY, Constants.Auto.MAX_ACCELERATION)
-                  .setEndVelocity(Math.hypot(endVelX, endVelY));
-          conf.setKinematics(KINEMATICS);
-          Trajectory trajectory =
-              TrajectoryGenerator.generateTrajectory(getPosition(), List.of(), pose, conf);
-          return makeTrajectoryCommand(trajectory);
-        },
-        Set.of(this));
-  }
-
-  @Override
-  public Command getFollowWaypointsCmd(List<Translation2d> waypoints, Pose2d pose) {
-    return getFollowWaypointsCmd(waypoints, pose, 0, 0);
-  }
-
-  @Override
-  public Command getFollowWaypointsCmd(
-      List<Translation2d> waypoints, Pose2d pose, double endVelX, double endVelY) {
-    return new DeferredCommand(
-        () -> {
-          TrajectoryConfig conf =
-              new TrajectoryConfig(Constants.Auto.MAX_VELOCITY, Constants.Auto.MAX_ACCELERATION)
-                  .setEndVelocity(Math.hypot(endVelX, endVelY));
-          conf.setKinematics(KINEMATICS);
-          Trajectory trajectory =
-              TrajectoryGenerator.generateTrajectory(getPosition(), waypoints, pose, conf);
-          return makeTrajectoryCommand(trajectory);
-        },
-        (Set<Subsystem>) this);
   }
 
   @Override

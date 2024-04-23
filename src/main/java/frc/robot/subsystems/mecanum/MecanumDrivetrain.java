@@ -7,19 +7,13 @@ import edu.wpi.first.math.geometry.*;
 import edu.wpi.first.math.kinematics.*;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.trajectory.Trajectory;
-import edu.wpi.first.math.trajectory.TrajectoryConfig;
-import edu.wpi.first.math.trajectory.TrajectoryGenerator;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.DeferredCommand;
 import edu.wpi.first.wpilibj2.command.MecanumControllerCommand;
-import edu.wpi.first.wpilibj2.command.Subsystem;
 import frc.robot.Constants;
 import frc.robot.subsystems.*;
 import frc.robot.utils.Overrides;
 import frc.robot.utils.PoseEstimator;
-import java.util.List;
-import java.util.Set;
 import org.littletonrobotics.junction.Logger;
 
 /** The mecanum drivetrain subsystem */
@@ -102,37 +96,6 @@ public class MecanumDrivetrain implements Drivetrain {
   @Override
   public void setPosition(Pose2d newPose) {
     poseEstimator.setPose(newPose);
-  }
-
-  @Override
-  public Command getDriveToPointCmd(Pose2d pose) {
-    return null;
-  }
-
-  @Override
-  public Command getDriveToPointCmd(Pose2d pose, double endVelX, double endVelY) {
-    return new DeferredCommand(
-        () -> {
-          TrajectoryConfig conf =
-              new TrajectoryConfig(Constants.Auto.MAX_VELOCITY, Constants.Auto.MAX_ACCELERATION)
-                  .setEndVelocity(Math.hypot(endVelX, endVelY));
-          // conf.setKinematics(KINEMATICS);
-          Trajectory trajectory =
-              TrajectoryGenerator.generateTrajectory(getPosition(), List.of(), pose, conf);
-          return makeTrajectoryCommand(trajectory);
-        },
-        (Set<Subsystem>) this);
-  }
-
-  @Override
-  public Command getFollowWaypointsCmd(List<Translation2d> waypoints, Pose2d pose) {
-    return null;
-  }
-
-  @Override
-  public Command getFollowWaypointsCmd(
-      List<Translation2d> waypoints, Pose2d pose, double endVelX, double endVelY) {
-    return null;
   }
 
   Command makeTrajectoryCommand(Trajectory trajectory) {
