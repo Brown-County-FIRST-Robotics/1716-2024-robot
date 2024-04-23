@@ -17,7 +17,7 @@ public class IMUIONavx implements IMUIO {
     while (!imu.isConnected()) {
       imu.isConnected();
     }
-    Logger.recordMetadata("IMUFW", imu.getFirmwareVersion());
+    Logger.recordOutput("Firmware/NAVX", imu.getFirmwareVersion());
     CustomAlerts.makeNavxFailAlerts(imu);
   }
 
