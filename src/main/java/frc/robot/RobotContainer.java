@@ -279,15 +279,12 @@ public class RobotContainer {
   }
 
   private void configureDemoBindings() {
-    secondController
-        .leftStick()
-        .whileFalse(
-            arm.run(
+    arm.setDefaultCommand(            arm.run(
                 () ->
                     arm.commandIncrement(
                         Rotation2d.fromRotations(
-                            Overrides.armAngleOverrideIncrementScale.get()
-                                * secondController.getLeftY()))));
+                            -Overrides.armAngleOverrideIncrementScale.get()
+                                * TeleopDrive.deadScale(secondController.getLeftY())))).unless(secondController.leftStick()).repeatedly());
   }
 
   private void configureCompBindings() {
