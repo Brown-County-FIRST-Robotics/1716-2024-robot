@@ -287,7 +287,7 @@ public class RobotContainer {
                     arm.commandIncrement(
                         Rotation2d.fromRotations(
                             Overrides.armAngleOverrideIncrementScale.get()
-                                * secondController.getLeftY()))));
+                                * secondController.getLeftY()))).beforeStarting(Commands.print("asdffdsasfdadfsasfdsdfasdfa")));
   }
 
   private void configureCompBindings() {
