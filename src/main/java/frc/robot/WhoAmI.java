@@ -13,7 +13,7 @@ public final class WhoAmI {
     Appendages.SHOOTER, Appendages.ARM, Appendages.CLIMBER
   };
 
-  public static final boolean isDemoMode = false;
+  public static final boolean isDemoMode = true;
 
   /** The robot types */
   public enum RobotType {

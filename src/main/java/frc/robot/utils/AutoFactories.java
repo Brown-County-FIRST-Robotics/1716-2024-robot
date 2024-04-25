@@ -35,6 +35,16 @@ public class AutoFactories {
     return makeTrajectory(drive, target, 3, 5);
   }
 
+  /**
+   * Makes a trajectory
+   *
+   * @param drive The drivetrain
+   * @param target The target pose
+   * @param vel The maximum velocity
+   * @param accel The maximum acceleration
+   * @return The trajectory that goes from the current position to the goal, obeying the given
+   *     constraints
+   */
   public static Trajectory makeTrajectory(
       Drivetrain drive, Pose2d target, double vel, double accel) {
     TrajectoryConfig trajectoryConfig = new TrajectoryConfig(vel, accel);
@@ -71,10 +81,23 @@ public class AutoFactories {
         drive, new Pose2d(target, target.minus(drive.getPosition().getTranslation()).getAngle()));
   }
 
+  /**
+   * Returns a command to drive to a position
+   *
+   * @param drivetrain The drivetrain subsystem
+   * @param target The target to drive to
+   * @return A command that drives to the target
+   */
   public static Command driveToPos(Drivetrain drivetrain, Translation2d target) {
     return new HolonomicTrajectoryFollower(drivetrain, () -> makeTrajectory(drivetrain, target));
   }
-
+  /**
+   * Returns a command to drive to a position
+   *
+   * @param drivetrain The drivetrain subsystem
+   * @param target The target to drive to
+   * @return A command that drives to the target
+   */
   public static Command driveToPos(Drivetrain drivetrain, Pose2d target) {
     return new HolonomicTrajectoryFollower(drivetrain, () -> makeTrajectory(drivetrain, target));
   }
