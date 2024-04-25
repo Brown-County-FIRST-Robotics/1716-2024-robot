@@ -279,15 +279,12 @@ public class RobotContainer {
   }
 
   private void configureDemoBindings() {
-    secondController
-        .leftStick()
-        .whileFalse(
-            arm.run(
+    secondController.leftStick().whileTrue(            arm.run(
                 () ->
                     arm.commandIncrement(
                         Rotation2d.fromRotations(
-                            Overrides.armAngleOverrideIncrementScale.get()
-                                * secondController.getLeftY()))));
+                            -Overrides.armAngleOverrideIncrementScale.get()
+                                * TeleopDrive.deadScale(secondController.getLeftY())))).finallyDo(arm::commandNeutral));
   }
 
   private void configureCompBindings() {
@@ -427,7 +424,7 @@ public class RobotContainer {
         new ClimbAndLevel(
             climber, () -> -secondController.getRightY(), () -> driveSys.getGyro().getX()));
     secondController
-        .leftStick()
+        .rightStick().and(secondController.leftStick().negate())
         .whileTrue(
             new ClimbSplit(
                 climber, () -> -secondController.getLeftY(), () -> -secondController.getRightY()));
