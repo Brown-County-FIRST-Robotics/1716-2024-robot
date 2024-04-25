@@ -20,6 +20,6 @@ public class Overrides {
   public static final LoggedDashboardBoolean disableArmAnglePresets =
       new LoggedDashboardBoolean("Disable Arm Angle Presets", false);
   public static final LoggedTunableNumber armAngleOverrideIncrementScale =
-      new LoggedTunableNumber("arm angle override increment scale", 1.0);
+      new LoggedTunableNumber("arm angle override increment scale", 0.1);
   public static final LoggedTunableNumber kitbot = new LoggedTunableNumber("kitbot", 60);
 }
