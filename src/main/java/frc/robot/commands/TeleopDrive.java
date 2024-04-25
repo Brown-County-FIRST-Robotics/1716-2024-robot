@@ -31,6 +31,8 @@ public class TeleopDrive extends Command {
       Optional.empty(); // used for auto align; if empty, no target is set
 
   private static final double deadbandSize = 0.08;
+  boolean isKidMode=false;
+  double kidModeSpeed;
 
   double slowModeSpeedModifier = 0.0;
   double customAngleModifier = 0.0;
@@ -49,6 +51,14 @@ public class TeleopDrive extends Command {
     this.drivetrain = drivetrain;
     this.controller = controller;
     addRequirements(this.drivetrain);
+  }
+
+  public TeleopDrive(Drivetrain drivetrain, CommandXboxController controller, double kidModeMaxSpeed) {
+    this.drivetrain = drivetrain;
+    this.controller = controller;
+    addRequirements(this.drivetrain);
+    this.isKidMode=true;
+    this.kidModeSpeed=kidModeMaxSpeed;
   }
 
   /** The initial subroutine of a command. Called once when the command is initially scheduled. */
@@ -72,17 +82,16 @@ public class TeleopDrive extends Command {
             .orElse(0.0); // The velocity added to the rotation to apply the custom angle
 
     Logger.recordOutput("TeleopDrive/ext", customAngleModifier);
-    slowModeSpeedModifier = controller.getHID().getLeftBumper() ? 0.2 : 1.0;
+    slowModeSpeedModifier = controller.getHID().getLeftBumper() ? 0.5 : 1.0;
     doFieldOriented = !controller.getHID().getRightBumper();
     locked = false;
     commandedSpeeds =
         new ChassisSpeeds(
-            deadScale(controller.getLeftY()) * slowModeSpeedModifier,
-            deadScale(controller.getLeftX()) * slowModeSpeedModifier,
+            deadScale(controller.getLeftY()),
+            deadScale(controller.getLeftX()),
             rotationLimiter.calculate(
                     deadScale(controller.getRightX())
-                        * Constants.Driver.MAX_THETA_SPEED
-                        * slowModeSpeedModifier)
+                        * Constants.Driver.MAX_THETA_SPEED*(isKidMode?0.5:1))
                 - customAngleModifier); // This needs to be a different type, the speeds need to be
     // percentage at this step, not velocity
 
@@ -130,7 +139,7 @@ public class TeleopDrive extends Command {
     commandedVector.setNorm(
         commandedVector.getNorm() * Math.abs(commandedVector.getNorm())); // square it
     commandedVector.setNorm(
-        commandedVector.getNorm() * Constants.Driver.MAX_SPEED); // convert to m/s from percent
+        commandedVector.getNorm() * (isKidMode?kidModeSpeed:Constants.Driver.MAX_SPEED)*slowModeSpeedModifier); // convert to m/s from percent
 
     // make sure command never gets too far from reality
     Vector realVelocity =
@@ -216,7 +225,7 @@ public class TeleopDrive extends Command {
    * @param val The value to scale
    * @return The value with the deadband applied
    */
-  static double deadScale(double val) {
+  public static double deadScale(double val) {
     return withinDeadband(val)
         ? 0
         : (val > 0
