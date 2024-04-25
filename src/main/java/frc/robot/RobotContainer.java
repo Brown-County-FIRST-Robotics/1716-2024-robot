@@ -279,15 +279,13 @@ public class RobotContainer {
   }
 
   private void configureDemoBindings() {
-    secondController
-        .leftStick()
-        .whileFalse(
-            arm.run(
+    secondController.leftTrigger().whileTrue(            arm.run(
                 () ->
                     arm.commandIncrement(
                         Rotation2d.fromRotations(
-                            Overrides.armAngleOverrideIncrementScale.get()
-                                * secondController.getLeftY()))));
+                            -Overrides.armAngleOverrideIncrementScale.get()
+                                * TeleopDrive.deadScale(secondController.getLeftY())))).finallyDo(arm::commandNeutral));
+    secondController.rightTrigger().whileTrue(shooter.startEnd(()->shooter.shoot(-4700,4700),()->shooter.stop()));
   }
 
   private void configureCompBindings() {
@@ -380,7 +378,7 @@ public class RobotContainer {
                             () -> driverController.getHID().setRumble(RumbleType.kLeftRumble, 1.0),
                             () -> driverController.getHID().setRumble(RumbleType.kLeftRumble, 0.0))
                         .withTimeout(1.0)));
-    secondController.b().whileTrue(Intake.fromFloor(shooter, arm, secondController.getHID()));
+    secondController.b().whileTrue(Intake.inPlace(shooter));
 
     // Speaker scoring
     driverController
@@ -427,7 +425,7 @@ public class RobotContainer {
         new ClimbAndLevel(
             climber, () -> -secondController.getRightY(), () -> driveSys.getGyro().getX()));
     secondController
-        .leftStick()
+        .rightStick().and(secondController.leftStick().negate())
         .whileTrue(
             new ClimbSplit(
                 climber, () -> -secondController.getLeftY(), () -> -secondController.getRightY()));
