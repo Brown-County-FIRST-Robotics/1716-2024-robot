@@ -49,6 +49,12 @@ public class Arm extends SubsystemBase {
    * @param rot The angle set point
    */
   public void setAngle(Rotation2d rot) {
+    if (rot.minus(Rotation2d.fromRotations(neutralPosition.get() + 0.01)).getRotations() > 0) {
+      rot = Rotation2d.fromRotations(neutralPosition.get() + 0.01);
+    }
+    if (rot.getRadians() < -1.15) {
+      rot = Rotation2d.fromRadians(-1.15);
+    }
     cmdArmStates.setAngle(rot);
     Logger.recordOutput("Arm/cmdState", cmdStates);
     cmdAng = rot;
