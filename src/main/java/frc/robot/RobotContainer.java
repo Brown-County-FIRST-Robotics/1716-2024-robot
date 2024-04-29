@@ -380,7 +380,7 @@ public class RobotContainer {
                             () -> driverController.getHID().setRumble(RumbleType.kLeftRumble, 1.0),
                             () -> driverController.getHID().setRumble(RumbleType.kLeftRumble, 0.0))
                         .withTimeout(1.0)));
-    secondController.b().whileTrue(Intake.fromFloor(shooter, arm, secondController.getHID()));
+    secondController.b().whileTrue(Intake.inPlace(shooter));
 
     // Speaker scoring
     driverController

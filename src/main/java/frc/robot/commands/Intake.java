@@ -15,7 +15,7 @@ import frc.robot.utils.Overrides;
  */
 public class Intake extends Command {
   final Shooter shooter;
-  final Arm arm;
+  Arm arm;
   XboxController controller;
   static final LoggedTunableNumber armPreset = new LoggedTunableNumber("Presets/Intake_Arm", -0.16);
   static final LoggedTunableNumber topSpeed = new LoggedTunableNumber("Presets/Intake_Top", 1700);
@@ -23,7 +23,7 @@ public class Intake extends Command {
       new LoggedTunableNumber("Presets/Intake_Bottom", -2000);
   static final LoggedTunableNumber armSourcePreset =
       new LoggedTunableNumber("Presets/Intake_Arm_Source", 0.16); // TODO: find real preset
-  final LoggedTunableNumber preset;
+  LoggedTunableNumber preset;
 
   /**
    * Makes a new command to intake from the floor
@@ -39,6 +39,10 @@ public class Intake extends Command {
 
   public static Intake fromFloor(Shooter shooter, Arm arm) {
     return new Intake(shooter, arm, armPreset);
+  }
+
+  public static Intake inPlace(Shooter shooter) {
+    return new Intake(shooter);
   }
 
   /**
@@ -58,6 +62,11 @@ public class Intake extends Command {
     this.preset = preset;
     this.arm = arm;
     addRequirements(shooter, arm);
+  }
+
+  private Intake(Shooter shooter) {
+    this.shooter = shooter;
+    addRequirements(shooter);
   }
 
   private Intake(
@@ -83,7 +92,9 @@ public class Intake extends Command {
   public void end(boolean interrupted) {
     shooter.cmdVel(0, 0);
     shooter.setFeeder(0);
-    arm.commandNeutral();
+    if (arm != null) {
+      arm.commandNeutral();
+    }
     LEDs.getInstance().mode1();
     LEDs.getInstance().intakelight();
   }
@@ -94,16 +105,18 @@ public class Intake extends Command {
   }
 
   private void setSpeedsAndPositions() {
-    if (controller != null) {
-      if (!Overrides.disableArmAnglePresets.get() && !controller.getBButton()) {
+    if (arm != null) {
+      if (controller != null) {
+        if (!Overrides.disableArmAnglePresets.get() && !controller.getBButton()) {
+          arm.setAngle(Rotation2d.fromRotations(preset.get()));
+        } else if (Overrides.disableArmAnglePresets.get()) {
+          arm.commandIncrement(
+              Rotation2d.fromRotations(
+                  controller.getLeftY() * Overrides.armAngleOverrideIncrementScale.get()));
+        }
+      } else {
         arm.setAngle(Rotation2d.fromRotations(preset.get()));
-      } else if (Overrides.disableArmAnglePresets.get()) {
-        arm.commandIncrement(
-            Rotation2d.fromRotations(
-                controller.getLeftY() * Overrides.armAngleOverrideIncrementScale.get()));
       }
-    } else {
-      arm.setAngle(Rotation2d.fromRotations(preset.get()));
     }
     shooter.cmdVel(topSpeed.get(), bottomSpeed.get());
   }
