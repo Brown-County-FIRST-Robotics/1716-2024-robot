@@ -6,9 +6,11 @@
 package frc.robot;
 
 import edu.wpi.first.math.geometry.*;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.ScheduleCommand;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -280,14 +282,28 @@ public class RobotContainer {
 
   private void configureDemoBindings() {
     secondController
-        .leftStick()
-        .whileFalse(
-            arm.run(
-                () ->
-                    arm.commandIncrement(
-                        Rotation2d.fromRotations(
-                            Overrides.armAngleOverrideIncrementScale.get()
-                                * secondController.getLeftY()))));
+        .rightBumper()
+        .whileTrue(shooter.startEnd(() -> shooter.shoot(-4700, 4700), () -> shooter.stop()));
+    secondController
+        .povRight()
+        .and(secondController.y())
+        .onTrue(new ScheduleCommand(new TeleopDrive(driveSys, driverController, 0.5)));
+    secondController
+        .rightTrigger()
+        .onTrue(
+            driveSys
+                .run(() -> driveSys.humanDrive(new ChassisSpeeds()))
+                .withInterruptBehavior(Command.InterruptionBehavior.kCancelIncoming)
+                .until(secondController.povLeft()));
+    driverController
+        .povUp()
+        .whileTrue(Commands.run(() -> arm.commandIncrement(Rotation2d.fromRotations(0.05))));
+    driverController
+        .povDown()
+        .whileTrue(Commands.run(() -> arm.commandIncrement(Rotation2d.fromRotations(-0.05))));
+    driverController
+        .y()
+        .whileTrue(shooter.startEnd(() -> shooter.shoot(-2000, 2000), () -> shooter.stop()));
   }
 
   private void configureCompBindings() {
@@ -416,6 +432,17 @@ public class RobotContainer {
                 shooter));
 
     driverController
+        .a()
+        .whileTrue(
+            Commands.runEnd(
+                () -> {
+                  shooter.setFeeder(-8000);
+                  shooter.cmdVel(-2000, 2000);
+                },
+                () -> shooter.setFeeder(0),
+                shooter));
+
+    driverController
         .x()
         .onTrue(
             Commands.runOnce(
@@ -427,7 +454,8 @@ public class RobotContainer {
         new ClimbAndLevel(
             climber, () -> -secondController.getRightY(), () -> driveSys.getGyro().getX()));
     secondController
-        .leftStick()
+        .rightStick()
+        .and(secondController.leftStick().negate())
         .whileTrue(
             new ClimbSplit(
                 climber, () -> -secondController.getLeftY(), () -> -secondController.getRightY()));

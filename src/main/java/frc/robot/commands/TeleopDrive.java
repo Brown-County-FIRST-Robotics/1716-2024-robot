@@ -229,7 +229,7 @@ public class TeleopDrive extends Command {
    * @param val The value to scale
    * @return The value with the deadband applied
    */
-  static double deadScale(double val) {
+  public static double deadScale(double val) {
     return withinDeadband(val)
         ? 0
         : (val > 0
