@@ -15,6 +15,7 @@ import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.commands.*;
+import frc.robot.commands.AutoBuilder;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.IMUIO;
 import frc.robot.subsystems.IMUIONavx;
@@ -37,7 +38,6 @@ import frc.robot.subsystems.swerve.SwerveDrivetrain;
 import frc.robot.subsystems.vision.Vision;
 import frc.robot.subsystems.vision.VisionIO;
 import frc.robot.subsystems.vision.VisionIOSecondSight;
-import frc.robot.utils.AutoFactories;
 import frc.robot.utils.HolonomicTrajectoryFollower;
 import frc.robot.utils.LoggedTunableNumber;
 import frc.robot.utils.Overrides;
@@ -57,6 +57,7 @@ public class RobotContainer {
   private Arm arm;
   private Shooter shooter;
   private Climber climber;
+  private AutoBuilder autoBuilder;
   final LoggedShuffleBoardChooser<Command> autoChooser =
       new LoggedShuffleBoardChooser<>("Pre Match", "Auto chooser");
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
@@ -153,6 +154,7 @@ public class RobotContainer {
     if (shooter == null) {
       shooter = new Shooter(new ShooterIO() {}, new FeederIO() {});
     }
+    autoBuilder = new AutoBuilder(driveSys, arm, shooter);
     configureSharedBindings();
     if (WhoAmI.isDemoMode) {
       configureDemoBindings();
@@ -168,8 +170,7 @@ public class RobotContainer {
         "Leave zone",
         Commands.defer(
             () ->
-                AutoFactories.driveToPos(
-                    driveSys,
+                autoBuilder.driveToPos(
                     new Pose2d(
                             driveSys.getPosition().getTranslation(),
                             FieldConstants.flip(new Rotation2d()))
@@ -180,99 +181,108 @@ public class RobotContainer {
     var shootingFromPosition = FieldConstants.flip(new Translation2d(2.2, 5.5));
     autoChooser.addOption(
         "Drive Shoot Pickup 0 drive shoot",
-        AutoFactories.driveToPos(driveSys, shootingFromPosition)
+        autoBuilder
+            .driveToPos(shootingFromPosition)
             .onlyIf(
                 () -> driveSys.getPosition().getTranslation().getDistance(returningShotPos) > 0.5)
-            .andThen(AutoFactories.speaker(driveSys, arm, shooter))
-            .andThen(AutoFactories.pickup(driveSys, arm, shooter, 0))
-            .andThen(AutoFactories.driveToPos(driveSys, returningShotPos))
-            .andThen(AutoFactories.speaker(driveSys, arm, shooter)));
+            .andThen(autoBuilder.speaker())
+            .andThen(autoBuilder.pickup(0))
+            .andThen(autoBuilder.driveToPos(returningShotPos))
+            .andThen(autoBuilder.speaker()));
     autoChooser.addOption(
         "Drive Shoot Pickup 1 drive shoot",
-        AutoFactories.driveToPos(driveSys, shootingFromPosition)
+        autoBuilder
+            .driveToPos(shootingFromPosition)
             .onlyIf(
                 () -> driveSys.getPosition().getTranslation().getDistance(returningShotPos) > 0.5)
-            .andThen(AutoFactories.speaker(driveSys, arm, shooter))
-            .andThen(AutoFactories.pickup(driveSys, arm, shooter, 1))
-            .andThen(AutoFactories.driveToPos(driveSys, returningShotPos))
-            .andThen(AutoFactories.speaker(driveSys, arm, shooter)));
+            .andThen(autoBuilder.speaker())
+            .andThen(autoBuilder.pickup(1))
+            .andThen(autoBuilder.driveToPos(returningShotPos))
+            .andThen(autoBuilder.speaker()));
 
     autoChooser.addOption(
         "Drive Shoot Pickup 2 drive shoot",
-        AutoFactories.driveToPos(driveSys, shootingFromPosition)
+        autoBuilder
+            .driveToPos(shootingFromPosition)
             .onlyIf(
                 () -> driveSys.getPosition().getTranslation().getDistance(returningShotPos) > 0.5)
-            .andThen(AutoFactories.speaker(driveSys, arm, shooter))
-            .andThen(AutoFactories.pickup(driveSys, arm, shooter, 2))
-            .andThen(AutoFactories.driveToPos(driveSys, returningShotPos))
-            .andThen(AutoFactories.speaker(driveSys, arm, shooter)));
+            .andThen(autoBuilder.speaker())
+            .andThen(autoBuilder.pickup(2))
+            .andThen(autoBuilder.driveToPos(returningShotPos))
+            .andThen(autoBuilder.speaker()));
 
     autoChooser.addOption(
         "Shoot Pickup 2 drive shoot",
-        AutoFactories.speaker(driveSys, arm, shooter)
-            .andThen(AutoFactories.pickup(driveSys, arm, shooter, 2))
-            .andThen(AutoFactories.driveToPos(driveSys, returningShotPos))
-            .andThen(AutoFactories.speaker(driveSys, arm, shooter)));
+        autoBuilder
+            .speaker()
+            .andThen(autoBuilder.pickup(2))
+            .andThen(autoBuilder.driveToPos(returningShotPos))
+            .andThen(autoBuilder.speaker()));
 
     autoChooser.addOption(
         "Shoot Pickup 1 drive shoot",
-        AutoFactories.speaker(driveSys, arm, shooter)
-            .andThen(AutoFactories.pickup(driveSys, arm, shooter, 1))
-            .andThen(AutoFactories.driveToPos(driveSys, returningShotPos))
-            .andThen(AutoFactories.speaker(driveSys, arm, shooter)));
+        autoBuilder
+            .speaker()
+            .andThen(autoBuilder.pickup(1))
+            .andThen(autoBuilder.driveToPos(returningShotPos))
+            .andThen(autoBuilder.speaker()));
     autoChooser.addOption(
         "Shoot Pickup 0 drive shoot",
-        AutoFactories.speaker(driveSys, arm, shooter)
-            .andThen(AutoFactories.pickup(driveSys, arm, shooter, 0))
-            .andThen(AutoFactories.driveToPos(driveSys, returningShotPos))
-            .andThen(AutoFactories.speaker(driveSys, arm, shooter)));
+        autoBuilder
+            .speaker()
+            .andThen(autoBuilder.pickup(0))
+            .andThen(autoBuilder.driveToPos(returningShotPos))
+            .andThen(autoBuilder.speaker()));
 
     autoChooser.addOption(
         "3 note (1 then 2)",
-        AutoFactories.speaker(driveSys, arm, shooter)
-            .andThen(AutoFactories.pickup(driveSys, arm, shooter, 1))
-            .andThen(AutoFactories.driveToPos(driveSys, returningShotPos))
-            .andThen(AutoFactories.speaker(driveSys, arm, shooter))
-            .andThen(AutoFactories.pickup(driveSys, arm, shooter, 2))
-            .andThen(AutoFactories.driveToPos(driveSys, returningShotPos))
-            .andThen(AutoFactories.speaker(driveSys, arm, shooter)));
+        autoBuilder
+            .speaker()
+            .andThen(autoBuilder.pickup(1))
+            .andThen(autoBuilder.driveToPos(returningShotPos))
+            .andThen(autoBuilder.speaker())
+            .andThen(autoBuilder.pickup(2))
+            .andThen(autoBuilder.driveToPos(returningShotPos))
+            .andThen(autoBuilder.speaker()));
 
     autoChooser.addOption(
         "3 note (2 then 0)",
-        AutoFactories.speaker(driveSys, arm, shooter)
-            .andThen(AutoFactories.pickup(driveSys, arm, shooter, 2))
-            .andThen(AutoFactories.driveToPos(driveSys, returningShotPos))
-            .andThen(AutoFactories.speaker(driveSys, arm, shooter))
-            .andThen(AutoFactories.pickup(driveSys, arm, shooter, 0))
-            .andThen(AutoFactories.driveToPos(driveSys, returningShotPos))
-            .andThen(AutoFactories.speaker(driveSys, arm, shooter)));
+        autoBuilder
+            .speaker()
+            .andThen(autoBuilder.pickup(2))
+            .andThen(autoBuilder.driveToPos(returningShotPos))
+            .andThen(autoBuilder.speaker())
+            .andThen(autoBuilder.pickup(0))
+            .andThen(autoBuilder.driveToPos(returningShotPos))
+            .andThen(autoBuilder.speaker()));
 
     autoChooser.addOption(
         "3 note (1 then 0)",
-        AutoFactories.speaker(driveSys, arm, shooter)
-            .andThen(AutoFactories.pickup(driveSys, arm, shooter, 1))
-            .andThen(AutoFactories.driveToPos(driveSys, returningShotPos))
-            .andThen(AutoFactories.speaker(driveSys, arm, shooter))
-            .andThen(AutoFactories.pickup(driveSys, arm, shooter, 0))
-            .andThen(AutoFactories.driveToPos(driveSys, returningShotPos))
-            .andThen(AutoFactories.speaker(driveSys, arm, shooter)));
+        autoBuilder
+            .speaker()
+            .andThen(autoBuilder.pickup(1))
+            .andThen(autoBuilder.driveToPos(returningShotPos))
+            .andThen(autoBuilder.speaker())
+            .andThen(autoBuilder.pickup(0))
+            .andThen(autoBuilder.driveToPos(returningShotPos))
+            .andThen(autoBuilder.speaker()));
 
     autoChooser.addOption(
         "4 note (2 1 0)",
-        AutoFactories.speaker(driveSys, arm, shooter)
-            .andThen(AutoFactories.pickup(driveSys, arm, shooter, 2))
+        autoBuilder
+            .speaker()
+            .andThen(autoBuilder.pickup(2))
             .andThen(
-                AutoFactories.driveToPos(
-                    driveSys, new Pose2d(returningShotPos, Rotation2d.fromDegrees(-90))))
-            .andThen(AutoFactories.speaker(driveSys, arm, shooter))
-            .andThen(AutoFactories.pickup(driveSys, arm, shooter, 1))
-            .andThen(AutoFactories.driveToPos(driveSys, returningShotPos))
-            .andThen(AutoFactories.speaker(driveSys, arm, shooter))
-            .andThen(AutoFactories.pickup(driveSys, arm, shooter, 0))
-            .andThen(AutoFactories.driveToPos(driveSys, returningShotPos))
-            .andThen(AutoFactories.speaker(driveSys, arm, shooter)));
+                autoBuilder.driveToPos(new Pose2d(returningShotPos, Rotation2d.fromDegrees(-90))))
+            .andThen(autoBuilder.speaker())
+            .andThen(autoBuilder.pickup(1))
+            .andThen(autoBuilder.driveToPos(returningShotPos))
+            .andThen(autoBuilder.speaker())
+            .andThen(autoBuilder.pickup(0))
+            .andThen(autoBuilder.driveToPos(returningShotPos))
+            .andThen(autoBuilder.speaker()));
 
-    autoChooser.addOption("1 note", AutoFactories.speaker(driveSys, arm, shooter));
+    autoChooser.addOption("1 note", autoBuilder.speaker());
   }
 
   /** Updates the pose estimator to use the correct initial pose */
@@ -326,8 +336,7 @@ public class RobotContainer {
                     new HolonomicTrajectoryFollower(
                             driveSys,
                             () ->
-                                AutoFactories.makeTrajectory(
-                                    driveSys,
+                                autoBuilder.makeTrajectory(
                                     new Pose2d(
                                         FieldConstants.getAmp(), Rotation2d.fromDegrees(90))),
                             Rotation2d.fromDegrees(90))
