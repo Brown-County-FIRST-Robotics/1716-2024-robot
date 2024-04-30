@@ -1,6 +1,7 @@
 package frc.robot.subsystems.climber;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.utils.CustomAlerts;
 import org.littletonrobotics.junction.Logger;
 
 public class Climber extends SubsystemBase {
@@ -16,6 +17,8 @@ public class Climber extends SubsystemBase {
 
   public Climber(ClimberIO io) {
     climberIO = io;
+    CustomAlerts.makeOverTempAlert(() -> inputs.leftTemp, 60, 50, "Left Climber Motor");
+    CustomAlerts.makeOverTempAlert(() -> inputs.rightTemp, 60, 50, "Right Climber Motor");
   }
 
   @Override

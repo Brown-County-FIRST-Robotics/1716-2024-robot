@@ -51,6 +51,7 @@ public class Shooter extends SubsystemBase {
         () -> shooterInputs.motorTemperature[0], 60, 50, "Shooter motor 1");
     CustomAlerts.makeOverTempAlert(
         () -> shooterInputs.motorTemperature[1], 60, 50, "Shooter motor 2");
+    CustomAlerts.makeOverTempAlert(() -> feederInputs.temperature, 50, 30, "Feeder Motor");
   }
 
   @Override
