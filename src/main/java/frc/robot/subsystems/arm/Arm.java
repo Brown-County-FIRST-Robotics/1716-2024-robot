@@ -6,6 +6,7 @@ import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj.util.Color8Bit;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.utils.CustomAlerts;
 import frc.robot.utils.LoggedTunableNumber;
 import org.littletonrobotics.junction.Logger;
 
@@ -41,6 +42,7 @@ public class Arm extends SubsystemBase {
     io.updateInputs(inputs);
     Logger.processInputs("Arm/Inputs", inputs);
     commandNeutral();
+    CustomAlerts.makeOverTempAlert(() -> inputs.temperature, 60, 50, "Arm motor");
   }
 
   /**

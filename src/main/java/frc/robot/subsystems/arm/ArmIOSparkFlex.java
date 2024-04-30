@@ -3,7 +3,6 @@ package frc.robot.subsystems.arm;
 import com.revrobotics.*;
 import edu.wpi.first.math.geometry.Rotation2d;
 import frc.robot.Constants;
-import frc.robot.utils.CustomAlerts;
 import frc.robot.utils.LoggedTunableNumber;
 
 /** IO implementation for Arm using a Spark Flex */
@@ -51,7 +50,6 @@ public class ArmIOSparkFlex implements ArmIO {
     controller.setPeriodicFramePeriod(CANSparkLowLevel.PeriodicFrame.kStatus6, 20);
 
     controller.burnFlash();
-    CustomAlerts.makeOverTempAlert(controller, 60, 50, "Arm motor");
   }
 
   @Override

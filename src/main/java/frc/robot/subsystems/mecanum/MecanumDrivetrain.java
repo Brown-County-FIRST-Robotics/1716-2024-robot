@@ -6,6 +6,7 @@ import edu.wpi.first.math.kinematics.*;
 import edu.wpi.first.math.numbers.N3;
 import frc.robot.Constants;
 import frc.robot.subsystems.*;
+import frc.robot.utils.CustomAlerts;
 import frc.robot.utils.Overrides;
 import frc.robot.utils.PoseEstimator;
 import org.littletonrobotics.junction.Logger;
@@ -42,6 +43,10 @@ public class MecanumDrivetrain implements Drivetrain {
     poseEstimator.setPose(Constants.INIT_POSE);
     lastIMU = getGyro().toRotation2d();
     lastPositions = driveInputs.pos;
+    CustomAlerts.makeOverTempAlert(() -> driveInputs.flTemp, 60, 50, "FL motor");
+    CustomAlerts.makeOverTempAlert(() -> driveInputs.frTemp, 60, 50, "FR motor");
+    CustomAlerts.makeOverTempAlert(() -> driveInputs.blTemp, 60, 50, "BL motor");
+    CustomAlerts.makeOverTempAlert(() -> driveInputs.brTemp, 60, 50, "BR motor");
   }
 
   @Override

@@ -2,6 +2,7 @@ package frc.robot.subsystems.shooter;
 
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.utils.CustomAlerts;
 import frc.robot.utils.LoggedTunableNumber;
 import org.littletonrobotics.junction.Logger;
 
@@ -46,6 +47,10 @@ public class Shooter extends SubsystemBase {
     Logger.processInputs("Shooter/ShooterInputs", shooterInputs);
     feederIO.updateInputs(feederInputs);
     Logger.processInputs("Shooter/FeederInputs", feederInputs);
+    CustomAlerts.makeOverTempAlert(
+        () -> shooterInputs.motorTemperature[0], 60, 50, "Shooter motor 1");
+    CustomAlerts.makeOverTempAlert(
+        () -> shooterInputs.motorTemperature[1], 60, 50, "Shooter motor 2");
   }
 
   @Override

@@ -2,7 +2,6 @@ package frc.robot.subsystems.shooter;
 
 import com.revrobotics.*;
 import frc.robot.Constants;
-import frc.robot.utils.CustomAlerts;
 import frc.robot.utils.LoggedTunableNumber;
 
 public class ShooterIOSparkFlexes implements ShooterIO {
@@ -63,8 +62,6 @@ public class ShooterIOSparkFlexes implements ShooterIO {
         });
     motor1.enableVoltageCompensation(9);
     motor2.enableVoltageCompensation(9);
-    CustomAlerts.makeOverTempAlert(motor1, 60, 50, "Shooter motor 1");
-    CustomAlerts.makeOverTempAlert(motor2, 60, 50, "Shooter motor 2");
   }
 
   @Override

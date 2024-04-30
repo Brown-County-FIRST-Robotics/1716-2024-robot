@@ -1,9 +1,9 @@
 package frc.robot.utils;
 
 import com.kauailabs.navx.frc.AHRS;
-import com.revrobotics.CANSparkBase;
 import edu.wpi.first.wpilibj.Timer;
 import java.util.function.BooleanSupplier;
+import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 import org.littletonrobotics.junction.inputs.LoggedSystemStats;
 
@@ -115,44 +115,31 @@ public class CustomAlerts {
       alert.set(Timer.getFPGATimestamp() > lastFeedTime + timeout);
     }
   }
-  /**
-   * Makes an alert for when a motor temperature is too high
-   *
-   * @param spark The motor controller
-   * @param errTemp The temperature at which to activate the error alert
-   * @param deviceName The name of the motor
-   */
-  public static void makeOverTempAlert(CANSparkBase spark, double errTemp, String deviceName) {
+
+  public static void makeOverTempAlert(
+      DoubleSupplier tempSupplier, double errTemp, String deviceName) {
     new CustomAlert(
         Alert.AlertType.ERROR,
-        () -> spark.getMotorTemperature() >= errTemp,
+        () -> tempSupplier.getAsDouble() >= errTemp,
         () ->
             deviceName
                 + " is currently "
-                + spark.getMotorTemperature()
+                + tempSupplier.getAsDouble()
                 + " degrees celsius (max "
                 + errTemp
                 + "). Prolonged usage could permanently damage the motor");
   }
 
-  /**
-   * Makes an alert for when a motor temperature is too high
-   *
-   * @param spark The motor controller
-   * @param errTemp The temperature at which to activate the error alert
-   * @param warnTemp The temperature at which to activate the warning alert
-   * @param deviceName The name of the motor
-   */
   public static void makeOverTempAlert(
-      CANSparkBase spark, double errTemp, double warnTemp, String deviceName) {
-    makeOverTempAlert(spark, errTemp, deviceName);
+      DoubleSupplier tempSupplier, double errTemp, double warnTemp, String deviceName) {
+    makeOverTempAlert(tempSupplier, errTemp, deviceName);
     new CustomAlert(
         Alert.AlertType.WARNING,
-        () -> (spark.getMotorTemperature() >= warnTemp && spark.getMotorTemperature() < errTemp),
+        () -> (tempSupplier.getAsDouble() >= warnTemp && tempSupplier.getAsDouble() < errTemp),
         () ->
             deviceName
                 + " is currently "
-                + spark.getMotorTemperature()
+                + tempSupplier.getAsDouble()
                 + " degrees celsius (max "
                 + errTemp
                 + ")");
