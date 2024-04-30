@@ -1,15 +1,9 @@
 package frc.robot.subsystems.mecanum;
 
 import edu.wpi.first.math.Vector;
-import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.*;
 import edu.wpi.first.math.kinematics.*;
 import edu.wpi.first.math.numbers.N3;
-import edu.wpi.first.math.trajectory.Trajectory;
-import edu.wpi.first.math.trajectory.TrapezoidProfile;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.MecanumControllerCommand;
 import frc.robot.Constants;
 import frc.robot.subsystems.*;
 import frc.robot.utils.Overrides;
@@ -18,7 +12,6 @@ import org.littletonrobotics.junction.Logger;
 
 /** The mecanum drivetrain subsystem */
 public class MecanumDrivetrain implements Drivetrain {
-  static final double MAX_WHEEL_SPEED = 5.85;
   static final MecanumDriveKinematics KINEMATICS =
       new MecanumDriveKinematics(
           new Translation2d(25.75 * 0.0254 / 2, 18.75 * 0.0254 / 2),
@@ -96,25 +89,6 @@ public class MecanumDrivetrain implements Drivetrain {
   @Override
   public void setPosition(Pose2d newPose) {
     poseEstimator.setPose(newPose);
-  }
-
-  Command makeTrajectoryCommand(Trajectory trajectory) {
-    Logger.recordOutput("Drive/CurrentTraj", trajectory);
-    return new MecanumControllerCommand(
-        trajectory,
-        this::getPosition,
-        KINEMATICS,
-        new PIDController(0, 0, 0),
-        new PIDController(0, 0, 0),
-        new ProfiledPIDController(
-            0,
-            0,
-            0,
-            new TrapezoidProfile.Constraints(
-                Constants.Auto.MAX_ANGULAR_VELOCITY, Constants.Auto.MAX_ANGULAR_ACCELERATION)),
-        MAX_WHEEL_SPEED,
-        this::setWheelSpeeds,
-        this);
   }
 
   @Override
