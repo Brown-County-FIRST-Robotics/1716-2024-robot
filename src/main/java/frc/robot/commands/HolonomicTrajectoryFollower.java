@@ -1,4 +1,4 @@
-package frc.robot.utils;
+package frc.robot.commands;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -8,18 +8,30 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.Drivetrain;
+import frc.robot.utils.LoggedTunableNumber;
 import java.util.Optional;
 import java.util.function.Supplier;
 import org.littletonrobotics.junction.Logger;
 
+/** A command that follows a trajectory */
 public class HolonomicTrajectoryFollower extends Command {
   private static final TrapezoidProfile.Constraints constraints =
       new TrapezoidProfile.Constraints(10, 10);
+  /** The maximum allowed rotation error */
   public static final LoggedTunableNumber allowedErr =
       new LoggedTunableNumber("Rotation Allowed Err", 3);
+
   private static final LoggedTunableNumber replanErr =
       new LoggedTunableNumber("Replanning threshold", 0.1);
 
+  /**
+   * Returns the command velocity to get to a rotational goal
+   *
+   * @param cmdRotation The commanded rotation
+   * @param currentRotation The current rotation
+   * @param currentVelocity The current angular velocity
+   * @return The command angular velocity
+   */
   public static double getExt(
       Rotation2d cmdRotation, Rotation2d currentRotation, double currentVelocity) {
     double goal = cmdRotation.getRadians();

@@ -14,7 +14,6 @@ import frc.robot.subsystems.arm.Arm;
 import frc.robot.subsystems.shooter.Shooter;
 import frc.robot.utils.Alert;
 import frc.robot.utils.CustomAlerts;
-import frc.robot.utils.HolonomicTrajectoryFollower;
 import frc.robot.utils.ShootWhileMove;
 import java.util.List;
 import java.util.Optional;
