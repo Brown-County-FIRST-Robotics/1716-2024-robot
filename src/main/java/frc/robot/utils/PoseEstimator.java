@@ -15,7 +15,7 @@ import java.util.*;
 public class PoseEstimator {
   // Ship of Theseused from
   // https://github.com/wpilibsuite/allwpilib/blob/1db3936965bd8ed33224ad388cf9f16d12999a08/wpimath/src/main/java/edu/wpi/first/math/estimator/PoseEstimator.java
-  NavigableMap<Double, PoseRecord> pastSnapshots = new TreeMap<>();
+  final NavigableMap<Double, PoseRecord> pastSnapshots = new TreeMap<>();
 
   /**
    * Adds an odometry record at the current time
@@ -179,11 +179,16 @@ public class PoseEstimator {
           }
         }
       }
+
+      @Override
+      public String getName() {
+        return "PoseEstimator Cleanup";
+      }
     };
   }
 
   static class PoseRecord {
-    public Pose2d poseEstimate;
+    public final Pose2d poseEstimate;
     public boolean isOdometryRecord = false;
     public Twist2d odometryData;
     public Pose2d visionData;

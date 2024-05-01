@@ -2,23 +2,25 @@ package frc.robot.subsystems.shooter;
 
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.utils.CustomAlerts;
 import frc.robot.utils.LoggedTunableNumber;
 import org.littletonrobotics.junction.Logger;
 
 public class Shooter extends SubsystemBase {
-  ShooterIO shooterIO;
-  FeederIO feederIO;
-  FeederIOInputsAutoLogged feederInputs = new FeederIOInputsAutoLogged();
+  final ShooterIO shooterIO;
+  final FeederIO feederIO;
+  final FeederIOInputsAutoLogged feederInputs = new FeederIOInputsAutoLogged();
 
-  ShooterIOInputsAutoLogged shooterInputs = new ShooterIOInputsAutoLogged();
+  final ShooterIOInputsAutoLogged shooterInputs = new ShooterIOInputsAutoLogged();
   double cmdTopSpeed;
   double cmdBottomSpeed;
-  LoggedTunableNumber speedThreshold = new LoggedTunableNumber("Shooting speed threshold", 0.02);
-  LoggedTunableNumber firingTime = new LoggedTunableNumber("Firing Time", 0.5);
+  final LoggedTunableNumber speedThreshold =
+      new LoggedTunableNumber("Shooting speed threshold", 0.02);
+  final LoggedTunableNumber firingTime = new LoggedTunableNumber("Firing Time", 0.5);
 
   boolean isShooting = false;
   public boolean isFiring = false;
-  public boolean intaking = false;
+  public boolean isIntaking = false;
   double feedCmd = 0.0;
 
   boolean holding = true;
@@ -45,6 +47,11 @@ public class Shooter extends SubsystemBase {
     Logger.processInputs("Shooter/ShooterInputs", shooterInputs);
     feederIO.updateInputs(feederInputs);
     Logger.processInputs("Shooter/FeederInputs", feederInputs);
+    CustomAlerts.makeOverTempAlert(
+        () -> shooterInputs.motorTemperature[0], 60, 50, "Shooter motor 1");
+    CustomAlerts.makeOverTempAlert(
+        () -> shooterInputs.motorTemperature[1], 60, 50, "Shooter motor 2");
+    CustomAlerts.makeOverTempAlert(() -> feederInputs.temperature, 50, 30, "Feeder Motor");
   }
 
   @Override
@@ -68,19 +75,19 @@ public class Shooter extends SubsystemBase {
       firingStartTime = Timer.getFPGATimestamp();
     }
     // The open and closed should always be opposite, and anything else would be an electrical fault
-    if (intaking && (feederInputs.closedContact == feederInputs.openContact)) {
-      intaking = false;
+    if (isIntaking && (feederInputs.closedContact == feederInputs.openContact)) {
+      isIntaking = false;
       // Shut down to prevent damage to ring
       setFeeder(0);
       cmdVel(0, 0);
       holding = true;
       System.out.println("Feeder limit switch disconnected!!");
     }
-    if (intaking && feederInputs.closedContact) {
+    if (isIntaking && feederInputs.closedContact) {
       setFeeder(0);
       cmdVel(0, 0);
       holding = true;
-      intaking = false;
+      isIntaking = false;
     }
     if (isFiring) {
       setFeeder(-8000);

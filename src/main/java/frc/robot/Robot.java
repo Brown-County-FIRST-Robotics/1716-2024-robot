@@ -19,9 +19,7 @@ import frc.robot.utils.shuffleboard.LoggedShuffleBoardChooser;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.Scanner;
+import java.util.*;
 import org.littletonrobotics.junction.LogFileUtil;
 import org.littletonrobotics.junction.LoggedRobot;
 import org.littletonrobotics.junction.Logger;
@@ -39,11 +37,14 @@ public class Robot extends LoggedRobot {
   private Command autonomousCommand;
   boolean builtPoseSetter = false;
   private RobotContainer robotContainer;
-  LoggedShuffleBoardChooser<Pose2d> poseChooser =
+  final LoggedShuffleBoardChooser<Pose2d> poseChooser =
       new LoggedShuffleBoardChooser<>("Pre Match", "Position chooser");
 
-  private XboxController driverController = new XboxController(0);
+  private final XboxController driverController = new XboxController(0);
   private boolean hasRumbledMatchTime = false; // hasStarted, hasEnded
+  private final List<Command> commandsInitalizing = new ArrayList<>();
+  private final List<Command> runningCommands = new ArrayList<>();
+  private final List<Command> endingCommands = new ArrayList<>();
 
   /**
    * This function is run when the robot is first started up and should be used for any
@@ -109,8 +110,10 @@ public class Robot extends LoggedRobot {
     robotContainer = new RobotContainer();
     var capture = CameraServer.startAutomaticCapture();
     Shuffleboard.getTab("Teleop").add(capture).withSize(6, 5).withPosition(3, 0);
-    // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
-    // autonomous chooser on the dashboard.
+    // Attach listeners to allow for command logging
+    CommandScheduler.getInstance().onCommandInterrupt((Command c) -> endingCommands.add(c));
+    CommandScheduler.getInstance().onCommandInitialize(commandsInitalizing::add);
+    CommandScheduler.getInstance().onCommandExecute(runningCommands::add);
   }
 
   /**
@@ -146,6 +149,18 @@ public class Robot extends LoggedRobot {
       builtPoseSetter = true;
       robotContainer.configureAutos();
     }
+    Logger.recordOutput(
+        "Commands/Running",
+        runningCommands.stream().map(Command::getName).toList().toArray(new String[] {}));
+    Logger.recordOutput(
+        "Commands/Ending",
+        endingCommands.stream().map(Command::getName).toList().toArray(new String[] {}));
+    Logger.recordOutput(
+        "Commands/Initializing",
+        commandsInitalizing.stream().map(Command::getName).toList().toArray(new String[] {}));
+    endingCommands.clear();
+    runningCommands.clear();
+    commandsInitalizing.clear();
   }
 
   /** This function is called once each time the robot enters Disabled mode. */

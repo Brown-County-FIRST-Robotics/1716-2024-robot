@@ -11,8 +11,8 @@ import org.littletonrobotics.junction.Logger;
 
 /** The vision subsystem */
 public class Vision extends PeriodicRunnable {
-  Transform3d[] camPoses;
-  VisionIO[] ios;
+  final Transform3d[] camPoses;
+  final VisionIO[] ios;
   VisionIOInputs[] inputs;
   Drivetrain drivetrain;
   AprilTagFieldLayout layout = AprilTagFields.k2024Crescendo.loadAprilTagLayoutField();
@@ -25,7 +25,7 @@ public class Vision extends PeriodicRunnable {
   LoggedTunableNumber multiTagRotationStdDev =
       new LoggedTunableNumber("Vision/Multi tag Rotation StdDev", 1);
   LoggedTunableNumber maxRMSError = new LoggedTunableNumber("Vision/Max RMS Error", 0.85);
-  CustomAlerts.TimeoutAlert visionWatchDog =
+  final CustomAlerts.TimeoutAlert visionWatchDog =
       new CustomAlerts.TimeoutAlert(Alert.AlertType.WARNING, 10, "Vision timeout");
 
   /**
@@ -57,15 +57,14 @@ public class Vision extends PeriodicRunnable {
       if (inputs[i].pose.isPresent() && inputs[i].timestamp.isPresent()) {
         visionWatchDog.feed();
         Pose3d outPose = inputs[i].pose.get();
-        Pose3d poseOfBot = outPose;
-        Logger.recordOutput("Vision/EstPose_" + i, poseOfBot);
+        Logger.recordOutput("Vision/EstPose_" + i, outPose);
         if (!Overrides.disableVision.get()
             && (ShootWhileMove.getFieldRelativeSpeeds(drivetrain.getVelocity(), new Rotation2d())
                     .getNorm()
                 < 0.8)
             && Math.abs(drivetrain.getVelocity().omegaRadiansPerSecond) < 0.5) {
           drivetrain.addVisionUpdate(
-              poseOfBot.toPose2d(), VecBuilder.fill(0.1, 0.1, 1), inputs[i].timestamp.get());
+              outPose.toPose2d(), VecBuilder.fill(0.1, 0.1, 1), inputs[i].timestamp.get());
         }
       }
     }

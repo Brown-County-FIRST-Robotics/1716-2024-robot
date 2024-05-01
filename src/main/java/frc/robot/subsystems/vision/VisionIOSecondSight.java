@@ -18,14 +18,14 @@ public class VisionIOSecondSight implements VisionIO {
   DoubleArraySubscriber posesSub;
   DoubleSubscriber errorSub;
 
-  PhotonCamera cam = new PhotonCamera("Arducam_OV2311_USB_Camera (1)");
-  Transform3d robotToCam =
+  final PhotonCamera cam = new PhotonCamera("Arducam_OV2311_USB_Camera (1)");
+  final Transform3d robotToCam =
       new Transform3d(
           new Translation3d(2 * 0.0254, 0 * 0.0254, 24 * 0.0254),
           new Rotation3d(0, -25.0 * Math.PI / 180, -4.6 * Math.PI / 180));
 
   // Construct PhotonPoseEstimator
-  PhotonPoseEstimator photonPoseEstimator =
+  final PhotonPoseEstimator photonPoseEstimator =
       new PhotonPoseEstimator(
           AprilTagFields.k2024Crescendo.loadAprilTagLayoutField(),
           PhotonPoseEstimator.PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR,

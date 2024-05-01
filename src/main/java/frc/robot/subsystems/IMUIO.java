@@ -7,7 +7,7 @@ import org.littletonrobotics.junction.AutoLog;
 public interface IMUIO {
   /** The inputs from the IMU. Access using <code>IMUInputsAutoLogged</code>. */
   @AutoLog
-  public static class IMUIOInputs {
+  class IMUIOInputs {
     /** The rotation from the gyro */
     public Rotation3d rotation = new Rotation3d();
     /** The acceleration in the x-axis in meters per second squared */
@@ -25,5 +25,5 @@ public interface IMUIO {
    *
    * @param inputs A reference to the inputs to update
    */
-  public default void updateInputs(IMUIOInputs inputs) {}
+  default void updateInputs(IMUIOInputs inputs) {}
 }

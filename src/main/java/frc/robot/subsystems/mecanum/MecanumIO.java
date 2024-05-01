@@ -8,7 +8,7 @@ import org.littletonrobotics.junction.AutoLog;
 public interface MecanumIO {
   /** Inputs from mecanum motors. Access using <code>MecanumIOInputsAutoLogged</code> */
   @AutoLog
-  public static class MecanumIOInputs {
+  class MecanumIOInputs {
     /** Front left motor temperature in Celsius */
     double flTemp = 0;
     /** Front right motor temperature in Celsius */
@@ -37,12 +37,12 @@ public interface MecanumIO {
    *
    * @param cmd The commanded speeds
    */
-  public default void setSpeeds(MecanumDriveWheelSpeeds cmd) {}
+  default void setSpeeds(MecanumDriveWheelSpeeds cmd) {}
 
   /**
    * Updates the inputs
    *
    * @param inputs A reference to the inputs
    */
-  public default void updateInputs(MecanumIOInputs inputs) {}
+  default void updateInputs(MecanumIOInputs inputs) {}
 }

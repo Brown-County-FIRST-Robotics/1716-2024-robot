@@ -14,13 +14,14 @@ import frc.robot.utils.Overrides;
  * Intake#fromSource} for floor and source respectively.
  */
 public class Intake extends Command {
-  Shooter shooter;
+  final Shooter shooter;
   Arm arm;
   XboxController controller;
-  static LoggedTunableNumber armPreset = new LoggedTunableNumber("Presets/Intake_Arm", -0.16);
-  static LoggedTunableNumber topSpeed = new LoggedTunableNumber("Presets/Intake_Top", 1700);
-  static LoggedTunableNumber bottomSpeed = new LoggedTunableNumber("Presets/Intake_Bottom", -2000);
-  static LoggedTunableNumber armSourcePreset =
+  static final LoggedTunableNumber armPreset = new LoggedTunableNumber("Presets/Intake_Arm", -0.16);
+  static final LoggedTunableNumber topSpeed = new LoggedTunableNumber("Presets/Intake_Top", 1700);
+  static final LoggedTunableNumber bottomSpeed =
+      new LoggedTunableNumber("Presets/Intake_Bottom", -2000);
+  static final LoggedTunableNumber armSourcePreset =
       new LoggedTunableNumber("Presets/Intake_Arm_Source", 0.16); // TODO: find real preset
   LoggedTunableNumber preset;
 
@@ -38,6 +39,10 @@ public class Intake extends Command {
 
   public static Intake fromFloor(Shooter shooter, Arm arm) {
     return new Intake(shooter, arm, armPreset);
+  }
+
+  public static Intake inPlace(Shooter shooter) {
+    return new Intake(shooter);
   }
 
   /**
@@ -59,6 +64,11 @@ public class Intake extends Command {
     addRequirements(shooter, arm);
   }
 
+  private Intake(Shooter shooter) {
+    this.shooter = shooter;
+    addRequirements(shooter);
+  }
+
   private Intake(
       Shooter shooter, Arm arm, XboxController overrideController, LoggedTunableNumber preset) {
     this(shooter, arm, preset);
@@ -67,7 +77,7 @@ public class Intake extends Command {
 
   @Override
   public void initialize() {
-    shooter.intaking = true;
+    shooter.isIntaking = true;
     shooter.setHolding(false);
     setSpeedsAndPositions();
     shooter.setFeeder(8000);
@@ -82,7 +92,9 @@ public class Intake extends Command {
   public void end(boolean interrupted) {
     shooter.cmdVel(0, 0);
     shooter.setFeeder(0);
-    arm.commandNeutral();
+    if (arm != null) {
+      arm.commandNeutral();
+    }
     LEDs.getInstance().mode1();
     LEDs.getInstance().intakelight();
   }
@@ -93,16 +105,18 @@ public class Intake extends Command {
   }
 
   private void setSpeedsAndPositions() {
-    if (controller != null) {
-      if (!Overrides.disableArmAnglePresets.get() && !controller.getBButton()) {
+    if (arm != null) {
+      if (controller != null) {
+        if (!Overrides.disableArmAnglePresets.get() && !controller.getBButton()) {
+          arm.setAngle(Rotation2d.fromRotations(preset.get()));
+        } else if (Overrides.disableArmAnglePresets.get()) {
+          arm.commandIncrement(
+              Rotation2d.fromRotations(
+                  controller.getLeftY() * Overrides.armAngleOverrideIncrementScale.get()));
+        }
+      } else {
         arm.setAngle(Rotation2d.fromRotations(preset.get()));
-      } else if (Overrides.disableArmAnglePresets.get()) {
-        arm.commandIncrement(
-            Rotation2d.fromRotations(
-                controller.getLeftY() * Overrides.armAngleOverrideIncrementScale.get()));
       }
-    } else {
-      arm.setAngle(Rotation2d.fromRotations(preset.get()));
     }
     shooter.cmdVel(topSpeed.get(), bottomSpeed.get());
   }

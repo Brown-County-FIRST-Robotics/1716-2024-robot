@@ -1,21 +1,24 @@
 package frc.robot.subsystems.climber;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.utils.CustomAlerts;
 import org.littletonrobotics.junction.Logger;
 
 public class Climber extends SubsystemBase {
-  ClimberIO climberIO;
-  ClimberIOInputsAutoLogged inputs = new ClimberIOInputsAutoLogged();
+  final ClimberIO climberIO;
+  final ClimberIOInputsAutoLogged inputs = new ClimberIOInputsAutoLogged();
   private final double[] sensorOffsetFromBottom = {
     3.5, 6
   }; // The bottom sensors are a certain distance from the hardware limit, this amount
   private final double maxSpeed = 1;
-  boolean[] downLocked = {
+  final boolean[] downLocked = {
     true, true
   }; // doesn't know the current position, so it can't move down (left, right)
 
   public Climber(ClimberIO io) {
     climberIO = io;
+    CustomAlerts.makeOverTempAlert(() -> inputs.leftTemp, 60, 50, "Left Climber Motor");
+    CustomAlerts.makeOverTempAlert(() -> inputs.rightTemp, 60, 50, "Right Climber Motor");
   }
 
   @Override

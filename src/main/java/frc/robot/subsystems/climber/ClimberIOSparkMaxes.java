@@ -4,14 +4,14 @@ import com.revrobotics.CANSparkMax;
 import edu.wpi.first.wpilibj.DigitalInput;
 
 public class ClimberIOSparkMaxes implements ClimberIO {
-  CANSparkMax leftMotor;
-  CANSparkMax rightMotor;
+  final CANSparkMax leftMotor;
+  final CANSparkMax rightMotor;
 
   // magnetic limit sensors
-  DigitalInput leftBottomLimit;
-  DigitalInput leftTopLimit;
-  DigitalInput rightBottomLimit;
-  DigitalInput rightTopLimit;
+  final DigitalInput leftBottomLimit;
+  final DigitalInput leftTopLimit;
+  final DigitalInput rightBottomLimit;
+  final DigitalInput rightTopLimit;
 
   public ClimberIOSparkMaxes(
       int leftID,

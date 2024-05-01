@@ -5,7 +5,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 
 /** A simulated arm */
 public class ArmIOSim implements ArmIO {
-  SlewRateLimiter armSRL = new SlewRateLimiter(3, -5, 0);
+  final SlewRateLimiter armSRL = new SlewRateLimiter(3, -5, 0);
   Rotation2d cmdAngle = new Rotation2d();
 
   @Override

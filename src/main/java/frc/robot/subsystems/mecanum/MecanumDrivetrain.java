@@ -1,43 +1,31 @@
 package frc.robot.subsystems.mecanum;
 
 import edu.wpi.first.math.Vector;
-import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.*;
 import edu.wpi.first.math.kinematics.*;
 import edu.wpi.first.math.numbers.N3;
-import edu.wpi.first.math.trajectory.Trajectory;
-import edu.wpi.first.math.trajectory.TrajectoryConfig;
-import edu.wpi.first.math.trajectory.TrajectoryGenerator;
-import edu.wpi.first.math.trajectory.TrapezoidProfile;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.DeferredCommand;
-import edu.wpi.first.wpilibj2.command.MecanumControllerCommand;
-import edu.wpi.first.wpilibj2.command.Subsystem;
 import frc.robot.Constants;
 import frc.robot.subsystems.*;
+import frc.robot.utils.CustomAlerts;
 import frc.robot.utils.Overrides;
 import frc.robot.utils.PoseEstimator;
-import java.util.List;
-import java.util.Set;
 import org.littletonrobotics.junction.Logger;
 
 /** The mecanum drivetrain subsystem */
 public class MecanumDrivetrain implements Drivetrain {
-  static final double MAX_WHEEL_SPEED = 5.85;
   static final MecanumDriveKinematics KINEMATICS =
       new MecanumDriveKinematics(
           new Translation2d(25.75 * 0.0254 / 2, 18.75 * 0.0254 / 2),
           new Translation2d(25.75 * 0.0254 / 2, -18.75 * 0.0254 / 2),
           new Translation2d(-25.75 * 0.0254 / 2, 18.75 * 0.0254 / 2),
           new Translation2d(-25.75 * 0.0254 / 2, -18.75 * 0.0254 / 2));
-  MecanumIO drive;
-  IMUIO imu;
-  MecanumIOInputsAutoLogged driveInputs = new MecanumIOInputsAutoLogged();
-  IMUIOInputsAutoLogged imuInputs = new IMUIOInputsAutoLogged();
+  final MecanumIO drive;
+  final IMUIO imu;
+  final MecanumIOInputsAutoLogged driveInputs = new MecanumIOInputsAutoLogged();
+  final IMUIOInputsAutoLogged imuInputs = new IMUIOInputsAutoLogged();
   Rotation2d lastIMU;
   MecanumDriveWheelPositions lastPositions;
-  PoseEstimator poseEstimator;
+  final PoseEstimator poseEstimator;
   /**
    * Constructs a <code>MecanumDrivetrain</code> from IO
    *
@@ -55,6 +43,10 @@ public class MecanumDrivetrain implements Drivetrain {
     poseEstimator.setPose(Constants.INIT_POSE);
     lastIMU = getGyro().toRotation2d();
     lastPositions = driveInputs.pos;
+    CustomAlerts.makeOverTempAlert(() -> driveInputs.flTemp, 60, 50, "FL motor");
+    CustomAlerts.makeOverTempAlert(() -> driveInputs.frTemp, 60, 50, "FR motor");
+    CustomAlerts.makeOverTempAlert(() -> driveInputs.blTemp, 60, 50, "BL motor");
+    CustomAlerts.makeOverTempAlert(() -> driveInputs.brTemp, 60, 50, "BR motor");
   }
 
   @Override
@@ -102,56 +94,6 @@ public class MecanumDrivetrain implements Drivetrain {
   @Override
   public void setPosition(Pose2d newPose) {
     poseEstimator.setPose(newPose);
-  }
-
-  @Override
-  public Command getDriveToPointCmd(Pose2d pose) {
-    return null;
-  }
-
-  @Override
-  public Command getDriveToPointCmd(Pose2d pose, double endVelX, double endVelY) {
-    return new DeferredCommand(
-        () -> {
-          TrajectoryConfig conf =
-              new TrajectoryConfig(Constants.Auto.MAX_VELOCITY, Constants.Auto.MAX_ACCELERATION)
-                  .setEndVelocity(Math.hypot(endVelX, endVelY));
-          // conf.setKinematics(KINEMATICS);
-          Trajectory trajectory =
-              TrajectoryGenerator.generateTrajectory(getPosition(), List.of(), pose, conf);
-          return makeTrajectoryCommand(trajectory);
-        },
-        (Set<Subsystem>) this);
-  }
-
-  @Override
-  public Command getFollowWaypointsCmd(List<Translation2d> waypoints, Pose2d pose) {
-    return null;
-  }
-
-  @Override
-  public Command getFollowWaypointsCmd(
-      List<Translation2d> waypoints, Pose2d pose, double endVelX, double endVelY) {
-    return null;
-  }
-
-  Command makeTrajectoryCommand(Trajectory trajectory) {
-    Logger.recordOutput("Drive/CurrentTraj", trajectory);
-    return new MecanumControllerCommand(
-        trajectory,
-        this::getPosition,
-        KINEMATICS,
-        new PIDController(0, 0, 0),
-        new PIDController(0, 0, 0),
-        new ProfiledPIDController(
-            0,
-            0,
-            0,
-            new TrapezoidProfile.Constraints(
-                Constants.Auto.MAX_ANGULAR_VELOCITY, Constants.Auto.MAX_ANGULAR_ACCELERATION)),
-        MAX_WHEEL_SPEED,
-        this::setWheelSpeeds,
-        this);
   }
 
   @Override
