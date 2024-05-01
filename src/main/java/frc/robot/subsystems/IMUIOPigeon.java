@@ -8,15 +8,15 @@ import edu.wpi.first.math.geometry.Rotation3d;
 
 /** The abstraction for the CTRE Pigeon 2 IMU */
 public class IMUIOPigeon implements IMUIO {
-  Pigeon2 imu;
-  StatusSignal<Double> qW;
-  StatusSignal<Double> qX;
-  StatusSignal<Double> qY;
-  StatusSignal<Double> qZ;
-  StatusSignal<Double> accelX;
-  StatusSignal<Double> accelY;
-  StatusSignal<Double> accelZ;
-  StatusSignal<Double> temp;
+  final Pigeon2 imu;
+  final StatusSignal<Double> qW;
+  final StatusSignal<Double> qX;
+  final StatusSignal<Double> qY;
+  final StatusSignal<Double> qZ;
+  final StatusSignal<Double> accelX;
+  final StatusSignal<Double> accelY;
+  final StatusSignal<Double> accelZ;
+  final StatusSignal<Double> temp;
 
   /**
    * Constructs an IMU using a CAN id

@@ -3,32 +3,39 @@ package frc.robot.subsystems.arm;
 import com.revrobotics.*;
 import edu.wpi.first.math.geometry.Rotation2d;
 import frc.robot.Constants;
-import frc.robot.utils.CustomAlerts;
 import frc.robot.utils.LoggedTunableNumber;
 
+/** IO implementation for Arm using a Spark Flex */
 public class ArmIOSparkFlex implements ArmIO {
-  CANSparkMax controller;
-  SparkPIDController pid;
-  AbsoluteEncoder absencoder;
+  final CANSparkMax controller;
+  final SparkPIDController pid;
+  final AbsoluteEncoder absEncoder;
   private static final double GEAR_RATIO = 25.0 * 72.0 / 15.0;
   private static final double FREE_RPM = 5676.0;
-  LoggedTunableNumber ffTuner = new LoggedTunableNumber("Arm/ff_tuner", GEAR_RATIO / FREE_RPM);
-  LoggedTunableNumber pTuner = new LoggedTunableNumber("Arm/p_tuner", 1.0 * GEAR_RATIO / FREE_RPM);
-  LoggedTunableNumber iTuner = new LoggedTunableNumber("Arm/i_tuner", 0.0);
-  LoggedTunableNumber dTuner = new LoggedTunableNumber("Arm/d_tuner", 0.0);
-  LoggedTunableNumber offset = new LoggedTunableNumber("Arm/offset", 0.496);
+  final LoggedTunableNumber ffTuner =
+      new LoggedTunableNumber("Arm/ff_tuner", GEAR_RATIO / FREE_RPM);
+  final LoggedTunableNumber pTuner =
+      new LoggedTunableNumber("Arm/p_tuner", 1.0 * GEAR_RATIO / FREE_RPM);
+  final LoggedTunableNumber iTuner = new LoggedTunableNumber("Arm/i_tuner", 0.0);
+  final LoggedTunableNumber dTuner = new LoggedTunableNumber("Arm/d_tuner", 0.0);
+  final LoggedTunableNumber offset = new LoggedTunableNumber("Arm/offset", 0.496);
 
+  /**
+   * Creates a <code>ArmIOSparkFlex</code> from a CAN id
+   *
+   * @param id The CAN id of the arm
+   */
   public ArmIOSparkFlex(int id) {
     controller = new CANSparkMax(id, CANSparkLowLevel.MotorType.kBrushless);
     pid = controller.getPIDController();
-    absencoder = controller.getAbsoluteEncoder(SparkAbsoluteEncoder.Type.kDutyCycle);
+    absEncoder = controller.getAbsoluteEncoder(SparkAbsoluteEncoder.Type.kDutyCycle);
     controller.restoreFactoryDefaults();
-    absencoder.setInverted(true);
+    absEncoder.setInverted(true);
     controller.setInverted(true);
 
     controller.setIdleMode(CANSparkBase.IdleMode.kBrake);
     controller.setSmartCurrentLimit(Constants.CurrentLimits.NEO);
-    pid.setFeedbackDevice(absencoder);
+    pid.setFeedbackDevice(absEncoder);
     pid.setOutputRange(-1, 1);
     pid.setSmartMotionMaxVelocity(FREE_RPM / GEAR_RATIO, 0);
     pid.setSmartMotionMinOutputVelocity(0, 0);
@@ -43,15 +50,14 @@ public class ArmIOSparkFlex implements ArmIO {
     controller.setPeriodicFramePeriod(CANSparkLowLevel.PeriodicFrame.kStatus6, 20);
 
     controller.burnFlash();
-    CustomAlerts.makeOverTempAlert(controller, 60, 50, "Arm motor");
   }
 
   @Override
   public void updateInputs(ArmIOInputs inputs) {
     inputs.angle =
-        Rotation2d.fromRotations(absencoder.getPosition())
+        Rotation2d.fromRotations(absEncoder.getPosition())
             .minus(Rotation2d.fromRotations(offset.get()));
-    inputs.omega = absencoder.getVelocity();
+    inputs.omega = absEncoder.getVelocity();
     inputs.appliedOutput = controller.getAppliedOutput();
     inputs.temperature = controller.getMotorTemperature();
     inputs.current = controller.getOutputCurrent();
@@ -60,15 +66,15 @@ public class ArmIOSparkFlex implements ArmIO {
   @Override
   public void setAngle(Rotation2d cmdAng, double arbFF) {
     double adjustedRelCmd =
-        absencoder.getPosition()
-            - (absencoder.getPosition() % 1.0)
+        absEncoder.getPosition()
+            - (absEncoder.getPosition() % 1.0)
             + cmdAng.plus(Rotation2d.fromRotations(offset.get())).getRotations();
-    if (Math.abs(adjustedRelCmd - absencoder.getPosition())
-        > Math.abs(1.0 + adjustedRelCmd - absencoder.getPosition())) {
+    if (Math.abs(adjustedRelCmd - absEncoder.getPosition())
+        > Math.abs(1.0 + adjustedRelCmd - absEncoder.getPosition())) {
       adjustedRelCmd += 1.0;
     }
-    if (Math.abs(adjustedRelCmd - absencoder.getPosition())
-        > Math.abs(-1.0 + adjustedRelCmd - absencoder.getPosition())) {
+    if (Math.abs(adjustedRelCmd - absEncoder.getPosition())
+        > Math.abs(-1.0 + adjustedRelCmd - absEncoder.getPosition())) {
       adjustedRelCmd -= 1.0;
     }
     pid.setReference(

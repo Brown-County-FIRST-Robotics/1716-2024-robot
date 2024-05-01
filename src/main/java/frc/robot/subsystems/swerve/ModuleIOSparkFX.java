@@ -9,7 +9,6 @@ import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.revrobotics.*;
 import frc.robot.Constants;
-import frc.robot.utils.CustomAlerts;
 import frc.robot.utils.LoggedTunableNumber;
 import org.littletonrobotics.junction.Logger;
 
@@ -23,24 +22,25 @@ public class ModuleIOSparkFX implements ModuleIO {
   private final RelativeEncoder relativeEncoder;
   private final SparkPIDController pid;
   private final TalonFX thrust;
-  StatusSignal<Double> velSignal;
-  StatusSignal<Double> posSignal;
-  StatusSignal<Double> errSignal;
-  StatusSignal<Double> tempSignal;
-  StatusSignal<Double> outputSignal;
+  final StatusSignal<Double> velSignal;
+  final StatusSignal<Double> posSignal;
+  final StatusSignal<Double> errSignal;
+  final StatusSignal<Double> tempSignal;
+  final StatusSignal<Double> outputSignal;
   double offset;
 
-  String name;
-  LoggedTunableNumber thrustP = new LoggedTunableNumber("Thrust P", 12.0 * 3.0 / (6380.0 / 60.0));
-  LoggedTunableNumber thrustI = new LoggedTunableNumber("Thrust I", 0);
+  final String name;
+  final LoggedTunableNumber thrustP =
+      new LoggedTunableNumber("Thrust P", 12.0 * 3.0 / (6380.0 / 60.0));
+  final LoggedTunableNumber thrustI = new LoggedTunableNumber("Thrust I", 0);
   LoggedTunableNumber thrustD = new LoggedTunableNumber("Thrust D", 0);
-  LoggedTunableNumber thrustKV = new LoggedTunableNumber("Thrust KV", 12.0 * 60.0 / 6380.0);
-  LoggedTunableNumber steerP = new LoggedTunableNumber("Steer P", 1.0 / STEER_FREE_RPM);
-  LoggedTunableNumber steerI = new LoggedTunableNumber("Steer I", 0);
-  LoggedTunableNumber steerD = new LoggedTunableNumber("Steer D", 0);
-  LoggedTunableNumber steerKV =
+  final LoggedTunableNumber thrustKV = new LoggedTunableNumber("Thrust KV", 12.0 * 60.0 / 6380.0);
+  final LoggedTunableNumber steerP = new LoggedTunableNumber("Steer P", 1.0 / STEER_FREE_RPM);
+  final LoggedTunableNumber steerI = new LoggedTunableNumber("Steer I", 0);
+  final LoggedTunableNumber steerD = new LoggedTunableNumber("Steer D", 0);
+  final LoggedTunableNumber steerKV =
       new LoggedTunableNumber("Steer KV", 0.7 * STEER_GEAR_RATIO / STEER_FREE_RPM);
-  LoggedTunableNumber offsetTun;
+  final LoggedTunableNumber offsetTun;
   double off;
 
   /**
@@ -48,7 +48,7 @@ public class ModuleIOSparkFX implements ModuleIO {
    *
    * @param thrustID Thrust motor CAN ID
    * @param steerID Steer motor controller CAN ID
-   * @param name The name of the module (eg. "FL", "BR")
+   * @param name The name of the module (e.g. "FL", "BR")
    */
   public ModuleIOSparkFX(int thrustID, int steerID, String name) {
     this.name = name;
@@ -119,7 +119,6 @@ public class ModuleIOSparkFX implements ModuleIO {
     steer.burnFlash();
     Logger.recordOutput("Firmware/" + name + "_Steer", steer.getFirmwareString());
     Logger.recordOutput("Firmware/" + name + "_Thrust", thrust.getVersion().getValue());
-    CustomAlerts.makeOverTempAlert(steer, 60, 50, name + " steer motor");
   }
 
   @Override

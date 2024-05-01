@@ -8,7 +8,7 @@ import org.littletonrobotics.junction.inputs.LoggableInputs;
 /** The IO layer for one camera */
 public interface VisionIO {
   /** The inputs from a camera */
-  public static class VisionIOInputs implements LoggableInputs {
+  class VisionIOInputs implements LoggableInputs {
     public Optional<Pose3d> pose = Optional.empty();
     public Optional<Double> timestamp = Optional.empty();
 

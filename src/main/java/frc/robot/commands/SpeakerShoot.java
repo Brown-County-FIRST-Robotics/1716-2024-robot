@@ -1,9 +1,6 @@
 package frc.robot.commands;
 
 import edu.wpi.first.math.geometry.*;
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -19,15 +16,15 @@ import java.util.function.Consumer;
 import org.littletonrobotics.junction.Logger;
 
 public class SpeakerShoot extends Command {
-  Drivetrain drive;
-  Arm arm;
-  Consumer<Optional<Rotation2d>> rotationCommander;
-  Shooter shooter;
+  final Drivetrain drive;
+  final Arm arm;
+  final Consumer<Optional<Rotation2d>> rotationCommander;
+  final Shooter shooter;
   boolean firing = false;
-  LoggedTunableNumber shooterAngleThreshold = new LoggedTunableNumber("ang threshold", 0.003);
+  final LoggedTunableNumber shooterAngleThreshold = new LoggedTunableNumber("ang threshold", 0.003);
   LoggedTunableNumber botAngleThreshold = new LoggedTunableNumber("bot ang threshold", 0.008);
   LoggedTunableNumber sp = new LoggedTunableNumber("Shooter Speed", 11.3);
-  Timer ft = new Timer();
+  final Timer ft = new Timer();
   private static final ShootWhileMove.ShooterKinematics kinematics =
       (cmd, botPose) ->
           new Pose3d(

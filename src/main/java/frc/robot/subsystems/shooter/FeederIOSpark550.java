@@ -5,18 +5,26 @@ import edu.wpi.first.wpilibj.DigitalInput;
 import frc.robot.Constants;
 import frc.robot.utils.LoggedTunableNumber;
 
+/** IO implementation of the feeder for a NEO 550 */
 public class FeederIOSpark550 implements FeederIO {
-  CANSparkMax motor;
-  RelativeEncoder encoder;
-  SparkPIDController pid;
-  DigitalInput openContact;
-  DigitalInput closedContact;
+  final CANSparkMax motor;
+  final RelativeEncoder encoder;
+  final SparkPIDController pid;
+  final DigitalInput openContact;
+  final DigitalInput closedContact;
 
-  LoggedTunableNumber feederP = new LoggedTunableNumber("Feeder P", 0);
-  LoggedTunableNumber feederI = new LoggedTunableNumber("Feeder I", 0);
-  LoggedTunableNumber feederD = new LoggedTunableNumber("Feeder D", 0);
-  LoggedTunableNumber feederKV = new LoggedTunableNumber("Feeder KV", 1.0 / 11000.0);
+  final LoggedTunableNumber feederP = new LoggedTunableNumber("Feeder P", 0);
+  final LoggedTunableNumber feederI = new LoggedTunableNumber("Feeder I", 0);
+  final LoggedTunableNumber feederD = new LoggedTunableNumber("Feeder D", 0);
+  final LoggedTunableNumber feederKV = new LoggedTunableNumber("Feeder KV", 1.0 / 11000.0);
 
+  /**
+   * Constructs the IO from a CAN ID and pin IDs
+   *
+   * @param motorId The CAN ID of the feeder motor
+   * @param openContactPin The digital input pin for the open contact
+   * @param closedContactPin The digital input pin for the closed contact
+   */
   public FeederIOSpark550(int motorId, int openContactPin, int closedContactPin) {
     openContact = new DigitalInput(openContactPin);
     closedContact = new DigitalInput(closedContactPin);

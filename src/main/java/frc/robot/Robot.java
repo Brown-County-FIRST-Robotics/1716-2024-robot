@@ -39,10 +39,10 @@ public class Robot extends LoggedRobot {
   private Command autonomousCommand;
   boolean builtPoseSetter = false;
   private RobotContainer robotContainer;
-  LoggedShuffleBoardChooser<Pose2d> poseChooser =
+  final LoggedShuffleBoardChooser<Pose2d> poseChooser =
       new LoggedShuffleBoardChooser<>("Pre Match", "Position chooser");
 
-  private XboxController driverController = new XboxController(0);
+  private final XboxController driverController = new XboxController(0);
   private boolean hasRumbledMatchTime = false; // hasStarted, hasEnded
 
   /**

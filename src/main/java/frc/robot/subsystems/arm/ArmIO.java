@@ -5,7 +5,7 @@ import org.littletonrobotics.junction.AutoLog;
 
 /** The arm IO layer */
 public interface ArmIO {
-  /** The inputs from the arm */
+  /** The inputs from the arm. Access using <code>ArmIOInputsAutoLogged</code> */
   @AutoLog
   class ArmIOInputs {
     /** The angle of the arm */
