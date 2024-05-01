@@ -103,4 +103,9 @@ public class LoggedTunableNumber extends PeriodicRunnable {
     }
     changedAlert.set(currentVal != defaultValue);
   }
+
+  @Override
+  public String getName() {
+    return "LoggedTunableNumber(" + name + ")";
+  }
 }

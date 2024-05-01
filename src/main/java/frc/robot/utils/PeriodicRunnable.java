@@ -1,6 +1,7 @@
 package frc.robot.utils;
 
 import java.util.ArrayList;
+import org.littletonrobotics.junction.Logger;
 
 /** Like a subsystem, but just the periodic function. Made for {@link LoggedTunableNumber}. */
 public abstract class PeriodicRunnable {
@@ -14,6 +15,9 @@ public abstract class PeriodicRunnable {
     for (PeriodicRunnable periodicRunnable : allRunnable) {
       periodicRunnable.periodic();
     }
+    Logger.recordOutput(
+        "PeriodicRunnable",
+        allRunnable.stream().map(PeriodicRunnable::getName).toList().toArray(new String[] {}));
   }
 
   /** Constructs a new runnable */
@@ -23,4 +27,8 @@ public abstract class PeriodicRunnable {
 
   /** Runs once every clock cycle (50hz) */
   public void periodic() {}
+
+  public String getName() {
+    return this.getClass().getName();
+  }
 }

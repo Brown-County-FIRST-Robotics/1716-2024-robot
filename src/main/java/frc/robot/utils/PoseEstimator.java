@@ -179,6 +179,11 @@ public class PoseEstimator {
           }
         }
       }
+
+      @Override
+      public String getName() {
+        return "PoseEstimator Cleanup";
+      }
     };
   }
 
