@@ -112,18 +112,19 @@ public class PoseEstimator {
         new Twist2d(k_times_twist.get(0, 0), k_times_twist.get(1, 0), k_times_twist.get(2, 0));
     pastSnapshots.put(
         t, new PoseRecord(poseAtTime.exp(resultantTwist), estimate, visionMeasurementStdDevs));
-    var updatesAfter = pastSnapshots.tailMap(t, false).entrySet().toArray();
+    var updatesAfter = pastSnapshots.tailMap(t, false).entrySet();
     while (pastSnapshots.lastKey() > t) {
       pastSnapshots.remove(pastSnapshots.lastKey());
     }
-    for (Object update2 : updatesAfter) {
-      Map.Entry<Double, PoseRecord> update = (Map.Entry<Double, PoseRecord>) update2;
-      if (update.getValue().isOdometryRecord) {
-        addOdometry(update.getValue().odometryData, update.getKey());
-      } else {
-        addVision(update.getValue().visionData, update.getValue().visionStdDevs, update.getKey());
-      }
-    }
+    updatesAfter.forEach(
+        update -> {
+          if (update.getValue().isOdometryRecord) {
+            addOdometry(update.getValue().odometryData, update.getKey());
+          } else {
+            addVision(
+                update.getValue().visionData, update.getValue().visionStdDevs, update.getKey());
+          }
+        });
   }
 
   /**
