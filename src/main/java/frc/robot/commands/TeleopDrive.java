@@ -30,8 +30,8 @@ public class TeleopDrive extends Command {
       Optional.empty(); // used for auto align; if empty, no target is set
 
   private static final double deadbandSize = 0.08;
-  boolean isKidMode = false;
-  double kidModeSpeed;
+  public boolean isKidMode = false;
+  public double kidModeSpeed = 1.0;
 
   double slowModeSpeedModifier = 0.0;
   double customAngleModifier = 0.0;
@@ -50,15 +50,6 @@ public class TeleopDrive extends Command {
     this.drivetrain = drivetrain;
     this.controller = controller;
     addRequirements(this.drivetrain);
-  }
-
-  public TeleopDrive(
-      Drivetrain drivetrain, CommandXboxController controller, double kidModeMaxSpeed) {
-    this.drivetrain = drivetrain;
-    this.controller = controller;
-    addRequirements(this.drivetrain);
-    this.isKidMode = true;
-    this.kidModeSpeed = kidModeMaxSpeed;
   }
 
   /** The initial subroutine of a command. Called once when the command is initially scheduled. */

@@ -10,7 +10,6 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.ScheduleCommand;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -155,9 +154,9 @@ public class RobotContainer {
       shooter = new Shooter(new ShooterIO() {}, new FeederIO() {});
     }
     autoBuilder = new AutoBuilder(driveSys, arm, shooter);
-    configureSharedBindings();
+    TeleopDrive teleopDrive = configureSharedBindings();
     if (WhoAmI.isDemoMode) {
-      configureDemoBindings();
+      configureDemoBindings(teleopDrive);
     } else {
       configureCompBindings();
     }
@@ -290,14 +289,15 @@ public class RobotContainer {
     driveSys.setPosition(pose);
   }
 
-  private void configureDemoBindings() {
+  private void configureDemoBindings(TeleopDrive teleopDrive) {
+    teleopDrive.isKidMode = true;
     secondController
         .rightBumper()
         .whileTrue(shooter.startEnd(() -> shooter.shoot(-4700, 4700), () -> shooter.stop()));
+
     secondController
         .povRight()
-        .and(secondController.y())
-        .onTrue(new ScheduleCommand(new TeleopDrive(driveSys, driverController, 0.5)));
+        .onTrue(Commands.runOnce(() -> teleopDrive.isKidMode = !teleopDrive.isKidMode));
     secondController
         .rightTrigger()
         .onTrue(
@@ -305,6 +305,14 @@ public class RobotContainer {
                 .run(() -> driveSys.humanDrive(new ChassisSpeeds()))
                 .withInterruptBehavior(Command.InterruptionBehavior.kCancelIncoming)
                 .until(secondController.povLeft()));
+    secondController
+        .leftBumper()
+        .and(secondController.povUp())
+        .onTrue(Commands.runOnce(() -> teleopDrive.kidModeSpeed += 0.1));
+    secondController
+        .leftBumper()
+        .and(secondController.povDown())
+        .onTrue(Commands.runOnce(() -> teleopDrive.kidModeSpeed -= 0.1));
     driverController
         .povUp()
         .whileTrue(Commands.run(() -> arm.commandIncrement(Rotation2d.fromRotations(0.05))));
@@ -391,7 +399,7 @@ public class RobotContainer {
    * PS4} controllers or {@link edu.wpi.first.wpilibj2.command.button.CommandJoystick Flight
    * joysticks}.
    */
-  private void configureSharedBindings() {
+  private TeleopDrive configureSharedBindings() {
     var teleopDrive = new TeleopDrive(driveSys, driverController);
     driveSys.setDefaultCommand(teleopDrive);
 
@@ -468,6 +476,7 @@ public class RobotContainer {
         .whileTrue(
             new ClimbSplit(
                 climber, () -> -secondController.getLeftY(), () -> -secondController.getRightY()));
+    return teleopDrive;
   }
 
   /**
