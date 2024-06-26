@@ -20,7 +20,8 @@ import java.util.Optional;
 
 /** A bunch of static factory methods for creating auto routines */
 public class AutoFactories {
-  private static final CustomAlerts.TimeLatchAlert failedAlert=new CustomAlerts.TimeLatchAlert(Alert.AlertType.WARNING,3.0,"Failed to pickup");
+  private static final CustomAlerts.TimeLatchAlert failedAlert =
+      new CustomAlerts.TimeLatchAlert(Alert.AlertType.WARNING, 3.0, "Failed to pickup");
   /**
    * Makes a trajectory using the current position and velocity that goes to the given position with
    * the ending tangent line slope
@@ -111,7 +112,8 @@ public class AutoFactories {
                                         .getTranslation()
                                         .minus(target)
                                         .getAngle()))))
-                .andThen(Commands.waitSeconds(1)).andThen(failedAlert::latch));
+                .andThen(Commands.waitSeconds(1))
+                .andThen(failedAlert::latch));
   }
   /**
    * Makes a command to pick up a game piece. If it is not successful, it will attempt to pick up
