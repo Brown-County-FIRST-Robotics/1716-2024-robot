@@ -1,5 +1,5 @@
 # Logged Tunable Number
-`LoggedTunableNumber` is a wrapper around a numeric dashboard input.
+`LoggedTunableNumber` is a wrapper around a numeric dashboard input. It is made for numbers that need to be tuned during testing, but not during competition, such as PIDF constants. They currently publish to `/SmartDashboard/Tuning/`, but this will change in future versions. 
 
 
 For Spark Max/Spark Flex
