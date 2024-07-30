@@ -56,7 +56,7 @@ public class RobotContainer {
   private Arm arm;
   private Shooter shooter;
   private Climber climber;
-  private AutoBuilder autoBuilder;
+  private final AutoBuilder autoBuilder;
   final LoggedShuffleBoardChooser<Command> autoChooser =
       new LoggedShuffleBoardChooser<>("Pre Match", "Auto chooser");
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
@@ -402,6 +402,9 @@ public class RobotContainer {
   private TeleopDrive configureSharedBindings() {
     var teleopDrive = new TeleopDrive(driveSys, driverController);
     driveSys.setDefaultCommand(teleopDrive);
+    secondController.start().onTrue(Commands.runOnce(()->teleopDrive.isKidMode=!teleopDrive.isKidMode));
+    secondController.povUp().onTrue(Commands.runOnce(()->teleopDrive.kidModeSpeed+=0.5));
+    secondController.povDown().onTrue(Commands.runOnce(()->teleopDrive.kidModeSpeed-=0.5));
 
     // Intake commands
     driverController
