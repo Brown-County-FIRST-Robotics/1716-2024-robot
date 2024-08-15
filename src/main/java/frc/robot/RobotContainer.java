@@ -56,7 +56,7 @@ public class RobotContainer {
   private Arm arm;
   private Shooter shooter;
   private Climber climber;
-  private AutoBuilder autoBuilder;
+  private final AutoBuilder autoBuilder;
   final LoggedShuffleBoardChooser<Command> autoChooser =
       new LoggedShuffleBoardChooser<>("Pre Match", "Auto chooser");
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
@@ -86,12 +86,12 @@ public class RobotContainer {
           var vision =
               new Vision(
                   driveSys,
-                  new Transform3d[] {
+                  new Transform3d[] {/*
                     new Transform3d(
                         new Translation3d(8 * 0.0254, 11 * 0.0254, 22 * 0.0254),
-                        new Rotation3d(0, -8.0 * Math.PI / 180, 0))
+                        new Rotation3d(0, -8.0 * Math.PI / 180, 0))*/
                   },
-                  new VisionIO[] {new VisionIOSecondSight("SS_LAPTOP", "0")});
+                  new VisionIO[] {/*new VisionIOSecondSight("SS_LAPTOP", "0")*/});
           break;
         default:
           driveSys = new MecanumDrivetrain(new MecanumIOSpark(1, 2, 3, 4), new IMUIONavx());
@@ -296,23 +296,12 @@ public class RobotContainer {
         .whileTrue(shooter.startEnd(() -> shooter.shoot(-4700, 4700), () -> shooter.stop()));
 
     secondController
-        .povRight()
-        .onTrue(Commands.runOnce(() -> teleopDrive.isKidMode = !teleopDrive.isKidMode));
-    secondController
         .rightTrigger()
         .onTrue(
             driveSys
                 .run(() -> driveSys.humanDrive(new ChassisSpeeds()))
                 .withInterruptBehavior(Command.InterruptionBehavior.kCancelIncoming)
                 .until(secondController.povLeft()));
-    secondController
-        .leftBumper()
-        .and(secondController.povUp())
-        .onTrue(Commands.runOnce(() -> teleopDrive.kidModeSpeed += 0.1));
-    secondController
-        .leftBumper()
-        .and(secondController.povDown())
-        .onTrue(Commands.runOnce(() -> teleopDrive.kidModeSpeed -= 0.1));
     driverController
         .povUp()
         .whileTrue(Commands.run(() -> arm.commandIncrement(Rotation2d.fromRotations(0.05))));
@@ -400,8 +389,11 @@ public class RobotContainer {
    * joysticks}.
    */
   private TeleopDrive configureSharedBindings() {
-    var teleopDrive = new TeleopDrive(driveSys, driverController);
+    var teleopDrive = new TeleopDrive(driveSys, driverController,secondController);
     driveSys.setDefaultCommand(teleopDrive);
+    secondController.start().onTrue(Commands.runOnce(()->teleopDrive.isKidMode=!teleopDrive.isKidMode));
+    secondController.povUp().onTrue(Commands.runOnce(()->teleopDrive.setKidModeSpeed(teleopDrive.getKidModeSpeed()+0.5)));
+    secondController.povDown().onTrue(Commands.runOnce(()->teleopDrive.setKidModeSpeed(teleopDrive.getKidModeSpeed()-0.5)));
 
     // Intake commands
     driverController
