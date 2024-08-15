@@ -18,6 +18,7 @@ import org.littletonrobotics.junction.Logger;
 public class TeleopDrive extends Command {
   private final Drivetrain drivetrain;
   private final CommandXboxController controller;
+  private final CommandXboxController secondController;
 
   boolean doFieldOriented = true;
   boolean locked = false; // point wheels towards center in x pattern
@@ -31,7 +32,18 @@ public class TeleopDrive extends Command {
 
   private static final double deadbandSize = 0.08;
   public boolean isKidMode = false;
-  public double kidModeSpeed = 1.0;
+
+  public double getKidModeSpeed() {
+    return kidModeSpeed;
+  }
+
+  public void setKidModeSpeed(double newKidModeSpeed) {
+    if(newKidModeSpeed>0&&newKidModeSpeed<=Constants.Driver.MAX_SPEED){
+      this.kidModeSpeed = newKidModeSpeed;
+    }
+  }
+
+  private double kidModeSpeed = 1.0;
 
   double slowModeSpeedModifier = 0.0;
   double customAngleModifier = 0.0;
@@ -46,9 +58,10 @@ public class TeleopDrive extends Command {
    * @param drivetrain The drivetrain subsystem
    * @param controller The driver controller, used for various inputs
    */
-  public TeleopDrive(Drivetrain drivetrain, CommandXboxController controller) {
+  public TeleopDrive(Drivetrain drivetrain, CommandXboxController controller, CommandXboxController secondController) {
     this.drivetrain = drivetrain;
     this.controller = controller;
+    this.secondController = secondController;
     addRequirements(this.drivetrain);
   }
 
@@ -73,7 +86,10 @@ public class TeleopDrive extends Command {
             .orElse(0.0); // The velocity added to the rotation to apply the custom angle
 
     Logger.recordOutput("TeleopDrive/ext", customAngleModifier);
-    slowModeSpeedModifier = controller.getHID().getLeftBumper() ? 0.5 : 1.0;
+    slowModeSpeedModifier = controller.getHID().getLeftBumper() ? 0.2 : 1.0;
+    if(isKidMode&&secondController.rightTrigger().getAsBoolean()){
+      slowModeSpeedModifier=0;
+    }
     doFieldOriented = !controller.getHID().getRightBumper() && !isKidMode;
     locked = false;
     commandedSpeeds =
