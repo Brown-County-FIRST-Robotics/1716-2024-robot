@@ -9,7 +9,6 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Constants;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.utils.DualRateLimiter;
-import frc.robot.utils.HolonomicTrajectoryFollower;
 import frc.robot.utils.Overrides;
 import frc.robot.utils.Vector;
 import java.util.Optional;
@@ -19,17 +18,32 @@ import org.littletonrobotics.junction.Logger;
 public class TeleopDrive extends Command {
   private final Drivetrain drivetrain;
   private final CommandXboxController controller;
+  private final CommandXboxController secondController;
 
   boolean doFieldOriented = true;
-  boolean locked = false; // point wheels towards center in x pattern so we can't be pushed
-  DualRateLimiter translationLimiter =
+  boolean locked = false; // point wheels towards center in x pattern
+  final DualRateLimiter translationLimiter =
       new DualRateLimiter(6, 100); // translational velocity limiter
-  DualRateLimiter rotationLimiter = new DualRateLimiter(8, 100); // angular velocity limiter (omega)
+  final DualRateLimiter rotationLimiter =
+      new DualRateLimiter(8, 100); // angular velocity limiter (omega)
 
   Optional<Rotation2d> customRotation =
       Optional.empty(); // used for auto align; if empty, no target is set
 
-  private static double deadbandSize = 0.08;
+  private static final double deadbandSize = 0.08;
+  public boolean isKidMode = false;
+
+  public double getKidModeSpeed() {
+    return kidModeSpeed;
+  }
+
+  public void setKidModeSpeed(double newKidModeSpeed) {
+    if (newKidModeSpeed > 0 && newKidModeSpeed <= Constants.Driver.MAX_SPEED) {
+      this.kidModeSpeed = newKidModeSpeed;
+    }
+  }
+
+  private double kidModeSpeed = 1.0;
 
   double slowModeSpeedModifier = 0.0;
   double customAngleModifier = 0.0;
@@ -44,9 +58,13 @@ public class TeleopDrive extends Command {
    * @param drivetrain The drivetrain subsystem
    * @param controller The driver controller, used for various inputs
    */
-  public TeleopDrive(Drivetrain drivetrain, CommandXboxController controller) {
+  public TeleopDrive(
+      Drivetrain drivetrain,
+      CommandXboxController controller,
+      CommandXboxController secondController) {
     this.drivetrain = drivetrain;
     this.controller = controller;
+    this.secondController = secondController;
     addRequirements(this.drivetrain);
   }
 
@@ -72,16 +90,19 @@ public class TeleopDrive extends Command {
 
     Logger.recordOutput("TeleopDrive/ext", customAngleModifier);
     slowModeSpeedModifier = controller.getHID().getLeftBumper() ? 0.2 : 1.0;
-    doFieldOriented = !controller.getHID().getRightBumper();
+    if (isKidMode && secondController.rightTrigger().getAsBoolean()) {
+      slowModeSpeedModifier = 0;
+    }
+    doFieldOriented = !controller.getHID().getRightBumper() && !isKidMode;
     locked = false;
     commandedSpeeds =
         new ChassisSpeeds(
-            deadscale(controller.getLeftY()) * slowModeSpeedModifier,
-            deadscale(controller.getLeftX()) * slowModeSpeedModifier,
+            deadScale(controller.getLeftY()),
+            deadScale(controller.getLeftX()),
             rotationLimiter.calculate(
-                    deadscale(controller.getRightX())
+                    deadScale(controller.getRightX())
                         * Constants.Driver.MAX_THETA_SPEED
-                        * slowModeSpeedModifier)
+                        * (isKidMode ? 0.2 : 1))
                 - customAngleModifier); // This needs to be a different type, the speeds need to be
     // percentage at this step, not velocity
 
@@ -129,7 +150,9 @@ public class TeleopDrive extends Command {
     commandedVector.setNorm(
         commandedVector.getNorm() * Math.abs(commandedVector.getNorm())); // square it
     commandedVector.setNorm(
-        commandedVector.getNorm() * Constants.Driver.MAX_SPEED); // convert to m/s from percent
+        commandedVector.getNorm()
+            * (isKidMode ? kidModeSpeed : Constants.Driver.MAX_SPEED)
+            * slowModeSpeedModifier); // convert to m/s from percent
 
     // make sure command never gets too far from reality
     Vector realVelocity =
@@ -163,7 +186,9 @@ public class TeleopDrive extends Command {
             new ChassisSpeeds(
                 commandedVector.getX(),
                 commandedVector.getY(),
-                commandedSpeeds.omegaRadiansPerSecond),
+                isKidMode && secondController.rightTrigger().getAsBoolean()
+                    ? 0
+                    : commandedSpeeds.omegaRadiansPerSecond),
             0.02));
     previousCommand = commandedVector;
 
@@ -215,7 +240,7 @@ public class TeleopDrive extends Command {
    * @param val The value to scale
    * @return The value with the deadband applied
    */
-  static double deadscale(double val) {
+  public static double deadScale(double val) {
     return withinDeadband(val)
         ? 0
         : (val > 0

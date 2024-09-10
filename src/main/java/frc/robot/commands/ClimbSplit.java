@@ -14,7 +14,7 @@ public class ClimbSplit extends Command {
   double leftPercent;
   double rightPercent;
 
-  LoggedTunableNumber deadzone = new LoggedTunableNumber("Climber/Deadzone", 0.1);
+  final LoggedTunableNumber deadzone = new LoggedTunableNumber("Climber/Deadzone", 0.1);
 
   public ClimbSplit(Climber climber, DoubleSupplier leftMovement, DoubleSupplier rightMovement) {
     this.climber = climber;

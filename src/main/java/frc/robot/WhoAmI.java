@@ -13,8 +13,10 @@ public final class WhoAmI {
     Appendages.SHOOTER, Appendages.ARM, Appendages.CLIMBER
   };
 
+  public static final boolean isDemoMode = true;
+
   /** The robot types */
-  public static enum RobotType {
+  public enum RobotType {
     /** The mecanum robot */
     MECHBASE,
     /** A simulated swerve robot */
@@ -24,7 +26,7 @@ public final class WhoAmI {
   }
 
   /** The appendages to the robot */
-  public static enum Appendages {
+  public enum Appendages {
     /** An arm that pivots the shooter */
     ARM,
     /** A simulated arm that pivots the shooter */
@@ -40,7 +42,7 @@ public final class WhoAmI {
   }
 
   /** The code execution mode */
-  public static enum Mode {
+  public enum Mode {
     /** A real robot */
     REAL,
     /** Log file replay */

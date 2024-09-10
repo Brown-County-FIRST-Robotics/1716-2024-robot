@@ -6,20 +6,21 @@ import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj.util.Color8Bit;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.utils.CustomAlerts;
 import frc.robot.utils.LoggedTunableNumber;
 import org.littletonrobotics.junction.Logger;
 
 /** The Arm subsystem */
 public class Arm extends SubsystemBase {
-  Mechanism2d realStates = new Mechanism2d(100, 100);
-  MechanismLigament2d realArmStates = new MechanismLigament2d("Arm", 40, 0);
-  Mechanism2d cmdStates = new Mechanism2d(100, 100);
-  MechanismLigament2d cmdArmStates = new MechanismLigament2d("Arm", 40, 0);
-  ArmIO io;
-  ArmIOInputsAutoLogged inputs = new ArmIOInputsAutoLogged();
+  final Mechanism2d realStates = new Mechanism2d(100, 100);
+  final MechanismLigament2d realArmStates = new MechanismLigament2d("Arm", 40, 0);
+  final Mechanism2d cmdStates = new Mechanism2d(100, 100);
+  final MechanismLigament2d cmdArmStates = new MechanismLigament2d("Arm", 40, 0);
+  final ArmIO io;
+  final ArmIOInputsAutoLogged inputs = new ArmIOInputsAutoLogged();
   Rotation2d cmdAng = new Rotation2d();
-  LoggedTunableNumber gravFF = new LoggedTunableNumber("Arm Gravity FF", 0.0);
-  LoggedTunableNumber neutralPosition = new LoggedTunableNumber("Arm neutral position", 0.2);
+  final LoggedTunableNumber gravFF = new LoggedTunableNumber("Arm Gravity FF", 0.0);
+  final LoggedTunableNumber neutralPosition = new LoggedTunableNumber("Arm neutral position", 0.2);
 
   /**
    * Constructs the subsystem from an IO object
@@ -41,6 +42,7 @@ public class Arm extends SubsystemBase {
     io.updateInputs(inputs);
     Logger.processInputs("Arm/Inputs", inputs);
     commandNeutral();
+    CustomAlerts.makeOverTempAlert(() -> inputs.temperature, 60, 50, "Arm motor");
   }
 
   /**
@@ -49,6 +51,12 @@ public class Arm extends SubsystemBase {
    * @param rot The angle set point
    */
   public void setAngle(Rotation2d rot) {
+    if (rot.minus(Rotation2d.fromRotations(neutralPosition.get() + 0.01)).getRotations() > 0) {
+      rot = Rotation2d.fromRotations(neutralPosition.get() + 0.01);
+    }
+    if (rot.getRadians() < -1.15) {
+      rot = Rotation2d.fromRadians(-1.15);
+    }
     cmdArmStates.setAngle(rot);
     Logger.recordOutput("Arm/cmdState", cmdStates);
     cmdAng = rot;
@@ -59,6 +67,7 @@ public class Arm extends SubsystemBase {
     io.setAngle(cmdAng, cmdAng.getCos() * gravFF.get());
   }
 
+  /** Moves the arm back to its neutral position */
   public void commandNeutral() {
     setAngle(Rotation2d.fromRotations(neutralPosition.get()));
   }
@@ -71,6 +80,11 @@ public class Arm extends SubsystemBase {
     return inputs.angle;
   }
 
+  /**
+   * Gets the arm velocity
+   *
+   * @return The angular velocity of the arm
+   */
   public double getOmega() {
     return inputs.omega;
   }
