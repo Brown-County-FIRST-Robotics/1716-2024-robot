@@ -11,6 +11,7 @@ import frc.robot.subsystems.Drivetrain;
 import frc.robot.utils.DualRateLimiter;
 import frc.robot.utils.Overrides;
 import frc.robot.utils.Vector;
+import frc.robot.utils.buttonbox.OverridePanel;
 import java.util.Optional;
 import org.littletonrobotics.junction.Logger;
 
@@ -19,6 +20,7 @@ public class TeleopDrive extends Command {
   private final Drivetrain drivetrain;
   private final CommandXboxController controller;
   private final CommandXboxController secondController;
+  private final OverridePanel overridePanel;
 
   boolean doFieldOriented = true;
   boolean locked = false; // point wheels towards center in x pattern
@@ -61,10 +63,12 @@ public class TeleopDrive extends Command {
   public TeleopDrive(
       Drivetrain drivetrain,
       CommandXboxController controller,
-      CommandXboxController secondController) {
+      CommandXboxController secondController,
+      OverridePanel overridePanel_) {
     this.drivetrain = drivetrain;
     this.controller = controller;
     this.secondController = secondController;
+    this.overridePanel = overridePanel_;
     addRequirements(this.drivetrain);
   }
 
@@ -78,6 +82,9 @@ public class TeleopDrive extends Command {
 
   @Override
   public void execute() {
+    isKidMode = overridePanel.kidMode().getAsBoolean();
+    Logger.recordOutput("kidmode", isKidMode);
+    Logger.recordOutput("kidmodespeed", kidModeSpeed);
     customAngleModifier =
         customRotation
             .map(

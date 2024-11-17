@@ -7,6 +7,7 @@ import edu.wpi.first.math.geometry.*;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.vision.VisionIO.VisionIOInputs;
 import frc.robot.utils.*;
+import frc.robot.utils.buttonbox.OverridePanel;
 import org.littletonrobotics.junction.Logger;
 
 /** The vision subsystem */
@@ -27,6 +28,7 @@ public class Vision extends PeriodicRunnable {
   LoggedTunableNumber maxRMSError = new LoggedTunableNumber("Vision/Max RMS Error", 0.85);
   final CustomAlerts.TimeoutAlert visionWatchDog =
       new CustomAlerts.TimeoutAlert(Alert.AlertType.WARNING, 10, "Vision timeout");
+  OverridePanel overridePanel;
 
   /**
    * Constructs a <code>Vision</code> subsystem
@@ -35,10 +37,12 @@ public class Vision extends PeriodicRunnable {
    * @param camPoses The positions of the cameras
    * @param ios The IOs of the cameras
    */
-  public Vision(Drivetrain drivetrain, Transform3d[] camPoses, VisionIO[] ios) {
+  public Vision(
+      Drivetrain drivetrain, Transform3d[] camPoses, VisionIO[] ios, OverridePanel overridePanel_) {
     super();
     this.camPoses = camPoses;
     this.ios = ios;
+    this.overridePanel = overridePanel_;
     if (camPoses.length != ios.length) {
       throw new IllegalArgumentException("Number of IOs and camera poses do not match");
     }
@@ -58,7 +62,7 @@ public class Vision extends PeriodicRunnable {
         visionWatchDog.feed();
         Pose3d outPose = inputs[i].pose.get();
         Logger.recordOutput("Vision/EstPose_" + i, outPose);
-        if (!Overrides.disableVision.get()
+        if (!overridePanel.disableVision().getAsBoolean()
             && (ShootWhileMove.getFieldRelativeSpeeds(drivetrain.getVelocity(), new Rotation2d())
                     .getNorm()
                 < 0.8)

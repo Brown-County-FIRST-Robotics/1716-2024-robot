@@ -39,6 +39,8 @@ import frc.robot.subsystems.vision.VisionIO;
 import frc.robot.subsystems.vision.VisionIOSecondSight;
 import frc.robot.utils.LoggedTunableNumber;
 import frc.robot.utils.Overrides;
+import frc.robot.utils.buttonbox.ButtonBox;
+import frc.robot.utils.buttonbox.OverridePanel;
 import frc.robot.utils.shuffleboard.LoggedShuffleBoardChooser;
 import java.util.Set;
 
@@ -51,6 +53,8 @@ import java.util.Set;
 public class RobotContainer {
   private final CommandXboxController driverController = new CommandXboxController(0);
   private final CommandXboxController secondController = new CommandXboxController(1);
+  private final ButtonBox buttonBox = new ButtonBox(2);
+  private final OverridePanel overridePanel = new OverridePanel(buttonBox);
   private final Drivetrain driveSys;
   private Arm arm;
   private Shooter shooter;
@@ -90,7 +94,8 @@ public class RobotContainer {
                         new Translation3d(8 * 0.0254, 11 * 0.0254, 22 * 0.0254),
                         new Rotation3d(0, -8.0 * Math.PI / 180, 0))
                   },
-                  new VisionIO[] {new VisionIOSecondSight("SS_LAPTOP", "0")});
+                  new VisionIO[] {new VisionIOSecondSight("SS_LAPTOP", "0")},
+                  overridePanel);
           break;
         default:
           driveSys = new MecanumDrivetrain(new MecanumIOSpark(1, 2, 3, 4), new IMUIONavx());
@@ -137,7 +142,8 @@ public class RobotContainer {
                         new Translation3d(0 * 0.0254, 0 * 0.0254, 22 * 0.0254),
                         new Rotation3d(0, -12 * Math.PI / 180, 0))
                   },
-                  new VisionIO[] {new VisionIO() {}});
+                  new VisionIO[] {new VisionIO() {}},
+                  overridePanel);
           break;
         default:
           driveSys = new MecanumDrivetrain(new MecanumIO() {}, new IMUIO() {});
@@ -381,11 +387,8 @@ public class RobotContainer {
    * joysticks}.
    */
   private TeleopDrive configureSharedBindings() {
-    var teleopDrive = new TeleopDrive(driveSys, driverController, secondController);
+    var teleopDrive = new TeleopDrive(driveSys, driverController, secondController, overridePanel);
     driveSys.setDefaultCommand(teleopDrive);
-    secondController
-        .start()
-        .onTrue(Commands.runOnce(() -> teleopDrive.isKidMode = !teleopDrive.isKidMode));
     secondController
         .povUp()
         .onTrue(
@@ -420,6 +423,15 @@ public class RobotContainer {
                         .negate())) // Make sure no overrides have been activated
         .whileTrue(new SpeakerShoot(driveSys, arm, teleopDrive::setCustomRotation, shooter));
 
+    overridePanel
+        .justFire()
+        .whileTrue(new SpeakerShoot(driveSys, arm, teleopDrive::setCustomRotation, shooter))
+        .whileTrue(
+            Commands.runOnce(
+                () ->
+                    driveSys.setPosition(
+                        FieldConstants.flip(new Pose2d(1.4, 5.5, Rotation2d.fromRotations(0.5))))));
+
     // Speaker scoring without auto-aim
     driverController
         .rightTrigger(0.2)
@@ -453,8 +465,8 @@ public class RobotContainer {
                 () -> shooter.setFeeder(0),
                 shooter));
 
-    driverController
-        .x()
+    overridePanel
+        .resetPosToSpeaker()
         .onTrue(
             Commands.runOnce(
                 () ->
